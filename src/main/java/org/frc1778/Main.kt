@@ -19,4 +19,4 @@ import edu.wpi.first.wpilibj.RobotBase
  * Refactoring when renaming the object, it will get changed everywhere
  * including here.)
  */
-fun main() = RobotBase.startRobot { Robot }
+fun main() = Robot.start()

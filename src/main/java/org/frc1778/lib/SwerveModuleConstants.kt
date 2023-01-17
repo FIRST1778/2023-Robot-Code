@@ -57,6 +57,7 @@ class SwerveModuleConstants {
     var kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
     var kDriveNativeUnitModel = NativeUnitLengthModel(4096.nativeUnits, kWheelDiameter.inches)
     var kDriveDeadband = 0.01
+    var kDriveMaxSpeed = 10.0
 
     // drive current/voltage
     var kDriveContinuousCurrentLimit = 30 // amps

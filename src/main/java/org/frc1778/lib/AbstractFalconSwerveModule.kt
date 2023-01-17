@@ -21,9 +21,9 @@ import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.ghrobotics.lib.motors.AbstractFalconMotor
 import org.ghrobotics.lib.motors.FalconEncoder
 
-interface AbstractFalconSwerveModule {
-    val driveMotor: AbstractFalconMotor<Meter>
-    val turnMotor: AbstractFalconMotor<Radian>
+interface AbstractFalconSwerveModule<D : AbstractFalconMotor<Meter>, T: AbstractFalconMotor<Radian>> {
+    val driveMotor: D
+    val turnMotor: T
 
     val encoder: FalconEncoder<Radian>
 
@@ -31,7 +31,7 @@ interface AbstractFalconSwerveModule {
 
     fun setState(state: SwerveModuleState, arbitraryFeedForward: SIUnit<Volt> = 0.0.volts)
 
-    fun setPositions(positions: SwerveModulePosition, arbitraryFeedForward: SIUnit<Volt> = 0.0.volts)
+    fun setPosition(position: SwerveModulePosition, arbitraryFeedForward: SIUnit<Volt> = 0.0.volts)
 
     /**
      * Resets turnMotor encoders
@@ -58,6 +58,10 @@ interface AbstractFalconSwerveModule {
     fun swervePosition(): SwerveModulePosition
 
     fun setNeutral()
+
+    fun setAngle(angle: Double)
+
+    fun setVoltage(voltage: Double)
 
     val voltageOutput: SIUnit<Volt>
 

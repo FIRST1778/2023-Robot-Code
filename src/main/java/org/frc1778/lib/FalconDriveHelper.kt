@@ -8,17 +8,11 @@
 
 package org.frc1778.lib
 
-import kotlin.math.abs
-import kotlin.math.absoluteValue
-import kotlin.math.pow
-import kotlin.math.sign
-import kotlin.math.withSign
-import org.frc1778.lib.FalconSwerveDrivetrain
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import org.ghrobotics.lib.mathematics.max
-import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
-import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
-import org.ghrobotics.lib.subsystems.drive.utils.DriveSignal
-import org.ghrobotics.lib.subsystems.drive.utils.Kinematics
+import kotlin.math.absoluteValue
+import kotlin.math.withSign
 
 /**
  * Helper class that contains all types of driving -- tank drive,
@@ -34,11 +28,9 @@ class FalconDriveHelper {
      * @param rotationPercent The percent for angular rotation.
      */
     fun arcadeDrive(
-        linearPercent: Double,
-        rotationPercent: Double
+        linearPercent: Double, rotationPercent: Double
     ): Pair<Double, Double> {
-        val maxInput = max(linearPercent.absoluteValue, rotationPercent.absoluteValue)
-            .withSign(linearPercent)
+        val maxInput = max(linearPercent.absoluteValue, rotationPercent.absoluteValue).withSign(linearPercent)
 
         val leftMotorOutput: Double
         val rightMotorOutput: Double
@@ -74,17 +66,18 @@ class FalconDriveHelper {
      * @param isQuickTurn Whether to use arcade drive or not.
      */
     fun curvatureDrive(
-        linearPercent: Double,
-        curvaturePercent: Double,
-        isQuickTurn: Boolean
+        linearPercent: Double, curvaturePercent: Double, isQuickTurn: Boolean
     ): Pair<Double, Double> {
         val angularPower: Double
         val overPower: Boolean
 
         if (isQuickTurn) {
             if (linearPercent.absoluteValue < kQuickStopThreshold) {
-                quickStopAccumulator = (1 - kQuickStopAlpha) * quickStopAccumulator +
-                    kQuickStopAlpha * curvaturePercent.coerceIn(-1.0, 1.0) * 2.0
+                quickStopAccumulator =
+                    (1 - kQuickStopAlpha) * quickStopAccumulator + kQuickStopAlpha * curvaturePercent.coerceIn(
+                        -1.0,
+                        1.0
+                    ) * 2.0
             }
             overPower = true
             angularPower = curvaturePercent
@@ -109,14 +102,17 @@ class FalconDriveHelper {
                     rightMotorOutput -= leftMotorOutput - 1.0
                     leftMotorOutput = 1.0
                 }
+
                 rightMotorOutput > 1.0 -> {
                     leftMotorOutput -= rightMotorOutput - 1.0
                     rightMotorOutput = 1.0
                 }
+
                 leftMotorOutput < -1.0 -> {
                     rightMotorOutput -= leftMotorOutput + 1.0
                     leftMotorOutput = -1.0
                 }
+
                 rightMotorOutput < -1.0 -> {
                     leftMotorOutput -= rightMotorOutput + 1.0
                     rightMotorOutput = -1.0
@@ -134,58 +130,17 @@ class FalconDriveHelper {
         return Pair(leftMotorOutput, rightMotorOutput)
     }
 
-//    fun swerveDrive(drivetrain: FalconSwerveDrivetrain, forwardInput: Double, strafeInput: Double, rotationInput: Double, fieldRelative: Boolean): DriveSignal {
-//        var translationalInput = Translation2d(forwardInput, strafeInput)
-//        var inputMagnitude: Double = translationalInput.norm()
-//        var rotationInput = rotationInput
-//
-//        // Snap the translational input to its nearest pole, if it is within a certain
-//        // threshold of it.
-//        if (fieldRelative) {
-//            if (abs(
-//                    translationalInput.direction()
-//                        .distance(translationalInput.direction().nearestPole())
-//                ) < kPoleThreshold
-//            ) {
-//                translationalInput = translationalInput.direction().nearestPole().toTranslation().scale(inputMagnitude)
-//            }
-//        } else {
-//            if (abs(
-//                    translationalInput.direction()
-//                        .distance(translationalInput.direction().nearestPole())
-//                ) < kRobotRelativePoleThreshold
-//            ) {
-//                translationalInput = translationalInput.direction().nearestPole().toTranslation().scale(inputMagnitude)
-//            }
-//        }
-//
-//        if (inputMagnitude < kDeadband) {
-//            translationalInput = Translation2d()
-//            inputMagnitude = 0.0
-//        }
-//
-//        // Scale x and y by applying a power to the magnitude of the vector they create,
-//        // in order to make the controls less sensitive at the lower end.
-//
-//        // Scale x and y by applying a power to the magnitude of the vector they create,
-//        // in order to make the controls less sensitive at the lower end.
-//        val power: Double = kLowAdjustmentPower
-//        val direction: Rotation2d = translationalInput.direction()
-//        val scaledMagnitude = inputMagnitude.pow(power)
-//        translationalInput = Translation2d(direction.cos() * scaledMagnitude, direction.sin() * scaledMagnitude)
-//
-//        rotationInput = if (abs(rotationInput) < kRotationDeadband) 0.0 else rotationInput
-//        rotationInput = abs(rotationInput).pow(kRotationExponent) * sign(rotationInput)
-//
-//        translationalInput = translationalInput.scale(kMaxSpeed)
-//        rotationInput *= kMaxSpeed
-//        rotationInput *= kHighPowerRotationScalar
-//
-//        return Kinematics(drivetrain).inverseKinematics(
-//            translationalInput.x(), translationalInput.y(), rotationInput,
-//            fieldRelative
-//        )
-//    }
+    fun swerveDrive(
+        drivetrain: FalconSwerveDrivetrain<*>,
+        forwardInput: Double,
+        strafeInput: Double,
+        rotationInput: Double,
+        fieldRelative: Boolean
+    ): ChassisSpeeds {
+        return ChassisSpeeds.fromFieldRelativeSpeeds(
+            forwardInput, strafeInput, rotationInput, drivetrain.gyro()
+        )
+    }
 
     companion object {
         const val kQuickStopThreshold = 0.2

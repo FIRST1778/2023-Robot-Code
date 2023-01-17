@@ -11,6 +11,7 @@ package org.frc1778.lib
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
@@ -28,6 +29,7 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
 import org.ghrobotics.lib.mathematics.units.amps
 import org.ghrobotics.lib.mathematics.units.derived.LinearVelocity
+import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.derived.Volt
 import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.ghrobotics.lib.mathematics.units.inFeet
@@ -36,14 +38,14 @@ import org.ghrobotics.lib.mathematics.units.operations.div
 import org.ghrobotics.lib.mathematics.units.seconds
 import org.ghrobotics.lib.subsystems.AbstractFalconSwerveModule
 import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
-import org.ghrobotics.lib.subsystems.drive.FalconDriveHelper
 import org.ghrobotics.lib.subsystems.drive.SwerveTrajectoryTrackerCommand
 import org.ghrobotics.lib.subsystems.drive.utils.DriveSignal
 import org.ghrobotics.lib.utils.BooleanSource
 import org.ghrobotics.lib.utils.Source
 import org.ghrobotics.lib.utils.map
 
-abstract class FalconSwerveDrivetrain : TrajectoryTrackerSwerveDriveBase(), SensorlessCompatibleSubsystem {
+abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveModule<*, *>> :
+    TrajectoryTrackerSwerveDriveBase(), SensorlessCompatibleSubsystem {
     /**
      * The current inputs and outputs
      */
@@ -69,11 +71,13 @@ abstract class FalconSwerveDrivetrain : TrajectoryTrackerSwerveDriveBase(), Sens
     /**
      * The left front motor
      */
-    protected abstract val modules: Array<out AbstractFalconSwerveModule>
+    protected abstract val modules: List<T>
 
     abstract val wheelbase: Double
 
     abstract val trackwidth: Double
+
+    abstract val maxSpeed: SIUnit<Velocity<Meter>>
 
     /**
      * The characterization for the left front swerve module.
@@ -148,15 +152,24 @@ abstract class FalconSwerveDrivetrain : TrajectoryTrackerSwerveDriveBase(), Sens
             is Output.Nothing -> {
                 modules.forEach { it.setNeutral() }
             }
+
             is Output.Percent -> {
                 for (i in 0..modules.size) {
                     modules[i].setControls(desiredOutput.speeds[i], desiredOutput.azimuths[i])
                 }
             }
-            is Output.States -> {
+
+            is Output.Positions -> {
                 for (i in 0..modules.size) {
 //                    modules[i].setState(states[i], feedForwards[i])
-                    modules[i].setPositions(periodicIO.positions[i], feedForwards[i])
+                    modules[i].setPosition(desiredOutput.positions[i], feedForwards[i])
+                }
+            }
+
+            is Output.States -> {
+
+                for (i in 0..modules.size) {
+                    modules[i].setState(desiredOutput.states[i], feedForwards[i])
                 }
             }
         }
@@ -188,6 +201,7 @@ abstract class FalconSwerveDrivetrain : TrajectoryTrackerSwerveDriveBase(), Sens
         periodicIO.desiredOutput = Output.States(states)
     }
 
+
     fun getPose(timestamp: SIUnit<Second> = Timer.getFPGATimestamp().seconds): Pose2d {
         return poseBuffer[timestamp] ?: kotlin.run {
             DriverStation.reportError("[FalconWCD] Pose Buffer is Empty!", false)
@@ -196,9 +210,11 @@ abstract class FalconSwerveDrivetrain : TrajectoryTrackerSwerveDriveBase(), Sens
     }
 
     fun swerveDrive(forwardInput: Double, strafeInput: Double, rotationInput: Double, fieldRelative: Boolean) {
-//        val signals = driveHelper.swerveDrive(this, forwardInput, strafeInput, rotationInput, fieldRelative)
-        val signals = DriveSignal()
-        periodicIO.desiredOutput = Output.Percent(signals.wheelSpeeds, signals.wheelAzimuths)
+        val speeds = driveHelper.swerveDrive(this, forwardInput, strafeInput, rotationInput, fieldRelative)
+        var states = kinematics.toSwerveModuleStates(speeds)
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeed.value)
+        periodicIO.desiredOutput = Output.States(states)
+
     }
 
     fun resetPosition(pose: Pose2d, positions: Array<SwerveModulePosition>) {
@@ -248,6 +264,7 @@ abstract class FalconSwerveDrivetrain : TrajectoryTrackerSwerveDriveBase(), Sens
         var rightBackFeedforward: SIUnit<Volt> = 0.volts
         var leftBackFeedforward: SIUnit<Volt> = 0.volts
     }
+
     /**
      * Represents the typical outputs for the drivetrain.
      */
@@ -256,7 +273,12 @@ abstract class FalconSwerveDrivetrain : TrajectoryTrackerSwerveDriveBase(), Sens
         object Nothing : Output()
 
         // Percent Output
-        class Percent(val speeds: DoubleArray, val azimuths: Array<org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d>) : Output()
+        class Percent(
+            val speeds: DoubleArray,
+            val azimuths: Array<org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d>
+        ) : Output()
+
+        class Positions(val positions: Array<SwerveModulePosition>) : Output()
 
         class States(val states: Array<SwerveModuleState>) : Output()
     }
