@@ -8,6 +8,7 @@
 
 package org.frc1778.lib
 
+import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
@@ -18,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj2.command.Command
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
@@ -231,6 +233,9 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
     fun followTrajectory(trajectory: Source<Trajectory>) =
         SwerveTrajectoryTrackerCommand(this, trajectory)
+
+    fun followTrajectoryWithCommands(trajectory: Source<PathPlannerTrajectory>, eventMap: HashMap<String, Command>) =
+        SwerveTrajectoryTrackerWithMarkerCommand(this, trajectory, eventMap)
 
     protected class PeriodicIO {
         var leftFrontVoltage: SIUnit<Volt> = 0.volts

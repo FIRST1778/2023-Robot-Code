@@ -3,6 +3,7 @@ package org.frc1778
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
 
 /**
@@ -20,6 +21,9 @@ object Robot : FalconTimedRobot()
 
     private var autonomousCommand: Command? = null
 
+    init {
+        +Drive
+    }
 
 
     override fun robotInit()
