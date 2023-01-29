@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.frc1778.Constants
 import org.frc1778.commands.TeleOpDriveCommand
 import org.frc1778.lib.FalconSwerveDrivetrain
@@ -25,9 +26,13 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     }
 
 
-    override val modules: List<FalconNeoSwerveModule> = List(4) {
-        FalconNeoSwerveModule(Constants.DriveConstants.swerveConstants)
-    }
+    override val modules: List<FalconNeoSwerveModule> = listOf(
+        FalconNeoSwerveModule(Constants.DriveConstants.topLeftSwerveModuleConstants),
+        FalconNeoSwerveModule(Constants.DriveConstants.topRightSwerveModuleConstants),
+        FalconNeoSwerveModule(Constants.DriveConstants.bottomRightSwerveModuleConstants),
+        FalconNeoSwerveModule(Constants.DriveConstants.bottomLeftSwerveModuleConstants),
+
+    )
     override val wheelbase: Double = Constants.DriveConstants.wheelBase
 
     override val trackwidth: Double = Constants.DriveConstants.trackWidth
@@ -65,7 +70,10 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     })
 
     init {
-        defaultCommand = TeleOpDriveCommand()
+        for(i in modules.indices) {
+//            SmartDashboard.putNumber("Encoder $i", modules[i].encoder.rawAbsolutePosition.value)
+        }
+//        defaultCommand = TeleOpDriveCommand()
     }
 
     override fun disableClosedLoopControl() {

@@ -1,10 +1,18 @@
 package org.frc1778
 
+import com.ctre.phoenix.sensors.CANCoder
+import edu.wpi.first.wpilibj.PneumaticHub
+import edu.wpi.first.wpilibj.PneumaticsModuleType
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import org.frc1778.lib.FalconCanCoder
 import org.frc1778.subsystems.Drive
+import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
+import org.ghrobotics.lib.wrappers.FalconSolenoid
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
+import javax.naming.ldap.Control
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -16,60 +24,70 @@ import org.ghrobotics.lib.wrappers.FalconTimedRobot
  * the `Main.kt` file in the project. (If you use the IDE's Rename or Move refactorings when renaming the
  * object or package, it will get changed everywhere.)
  */
-object Robot : FalconTimedRobot()
-{
+object Robot : FalconTimedRobot() {
 
     private var autonomousCommand: Command? = null
 
+    val pcm = PneumaticHub(30)
+    val compressor = pcm.makeCompressor()
+
+    val sol = FalconDoubleSolenoid(
+        1,
+        0,
+        PneumaticsModuleType.REVPH,
+        30
+    )
     init {
-        +Drive
+//        +Drive
     }
 
 
-    override fun robotInit()
-    {
+    override fun robotInit() {
         // Access the RobotContainer object so that it is initialized. This will perform all our
         // button bindings, and put our autonomous chooser on the dashboard.
         RobotContainer
     }
 
 
-    override fun robotPeriodic()
-    {
-        CommandScheduler.getInstance().run()
+    override fun robotPeriodic() {
+//        CommandScheduler.getInstance().run()
     }
 
-    override fun disabledInit()
-    {
-
-    }
-
-    override fun disabledPeriodic()
-    {
+    override fun disabledInit() {
+        compressor.disable()
 
     }
 
-    override fun autonomousInit()
-    {
+    override fun disabledPeriodic() {
+
+    }
+
+    override fun autonomousInit() {
         autonomousCommand = RobotContainer.getAutonomousCommand()
         autonomousCommand?.schedule()
     }
 
-    override fun autonomousPeriodic()
-    {
+    override fun autonomousPeriodic() {
 
     }
 
-    override fun teleopInit()
-    {
+    override fun teleopInit() {
         autonomousCommand?.cancel()
+        compressor.enableAnalog(
+            30.0,
+            40.0
+        )
+
+
     }
 
     /** This method is called periodically during operator control.  */
-    override fun teleopPeriodic()
-    {
-
+    override fun teleopPeriodic() {
+        println(compressor.pressure)
+        Controls.operatorController.update()
     }
+
+}
 
 //    override fun testInit()
 //    {
@@ -85,10 +103,4 @@ object Robot : FalconTimedRobot()
 //    override fun simulationInit()
 //    {
 //
-//    }
-//
-//    override fun simulationPeriodic()
-//    {
-//
-//    }
-}
+//   

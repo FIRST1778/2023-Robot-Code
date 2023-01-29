@@ -16,12 +16,12 @@ import kotlin.math.roundToInt
 class FalconCanCoder<K : SIKey>(
     canId: Int,
     model: NativeUnitModel<K>
-) : AbstractFalconEncoder<K>(model) {
+) : AbstractFalconAbsoluteEncoder<K>(model) {
 
     private val canCoder = CANCoder(canId)
     override val rawPosition: SIUnit<NativeUnit> = canCoder.position.nativeUnits
     override val rawVelocity: SIUnit<NativeUnitVelocity> = canCoder.velocity.nativeUnitsPer100ms
-    val absolutePosition: SIUnit<Radian> get() = canCoder.absolutePosition.degrees
+    override val absolutePosition: SIUnit<Radian> get() = canCoder.absolutePosition.degrees
 
     override fun resetPositionRaw(newPosition: SIUnit<NativeUnit>) {
         canCoder.position = newPosition.value

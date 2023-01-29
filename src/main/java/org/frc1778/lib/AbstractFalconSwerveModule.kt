@@ -25,7 +25,7 @@ interface AbstractFalconSwerveModule<D : AbstractFalconMotor<Meter>, T: Abstract
     val driveMotor: D
     val turnMotor: T
 
-    val encoder: FalconEncoder<Radian>
+    val encoder: AbstractFalconAbsoluteEncoder<Radian>
 
     fun setControls(speed: Double, azimuth: Rotation2d)
 

@@ -3,6 +3,7 @@ package org.frc1778.subsystems
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import org.frc1778.lib.AbstractFalconAbsoluteEncoder
 import org.frc1778.lib.AbstractFalconSwerveModule
 import org.frc1778.lib.FalconCanCoder
 import org.frc1778.lib.SwerveModuleConstants
@@ -47,7 +48,7 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
 
         }
     }
-    override var encoder: FalconEncoder<Radian> = FalconCanCoder(swerveModuleConstants.kCanCoderId, swerveModuleConstants.kCanCoderNativeUnitModel)
+    override var encoder: AbstractFalconAbsoluteEncoder<Radian> = FalconCanCoder(swerveModuleConstants.kCanCoderId, swerveModuleConstants.kCanCoderNativeUnitModel)
 
     private var angleController = with(swerveModuleConstants) {
         turnMotor.controller.apply{
@@ -176,6 +177,7 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
     override val drivePosition: SIUnit<Meter> = driveMotor.encoder.position
     override val driveVelocity: SIUnit<Velocity<Meter>> = driveMotor.encoder.velocity
     override val anglePosition: SIUnit<Radian> = encoder.position
+    val absoluteAngle: SIUnit<Radian> = encoder.absolutePosition
 
     companion object {
         private const  val ENCODER_RESET_ITERATIONS = 500
