@@ -48,7 +48,7 @@ class SwerveTrajectoryTrackerCommand(
 
         val chassisSpeeds = drivetrain.controller.calculate(
             drivetrain.robotPosition,
-            currentTrajectoryState
+            currentTrajectoryState,
         )
 
         val wheelStates = drivetrain.kinematics.toSwerveModuleStates(chassisSpeeds)

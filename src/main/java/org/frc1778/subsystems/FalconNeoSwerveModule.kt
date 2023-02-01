@@ -199,12 +199,12 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
     }
 
 
-    override val voltageOutput: SIUnit<Volt> = driveMotor.voltageOutput
-    override val drawnCurrent: SIUnit<Ampere> = driveMotor.drawnCurrent
-    override val drivePosition: SIUnit<Meter> = driveMotor.encoder.position
-    override val driveVelocity: SIUnit<Velocity<Meter>> = driveMotor.encoder.velocity
-    override val anglePosition: SIUnit<Radian> = encoder.position
-    val absoluteAngle: SIUnit<Radian> = encoder.absolutePosition
+    override val voltageOutput: SIUnit<Volt> get () = driveMotor.voltageOutput
+    override val drawnCurrent: SIUnit<Ampere> get() = driveMotor.drawnCurrent
+    override val drivePosition: SIUnit<Meter> get() = driveMotor.encoder.position
+    override val driveVelocity: SIUnit<Velocity<Meter>> get () = driveMotor.encoder.velocity
+    override val anglePosition: SIUnit<Radian> get() = encoder.position
+    val absoluteAngle: SIUnit<Radian> get() = encoder.absolutePosition
 
     companion object {
         private const val ENCODER_RESET_ITERATIONS = 500

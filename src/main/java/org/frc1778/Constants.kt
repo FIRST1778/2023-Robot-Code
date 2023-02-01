@@ -25,7 +25,7 @@ object Constants {
 
         const val pigeonCanID: Int = 21
         const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
-        const val driveMotorEncoderNativeUnisPerRotation = 6.8
+        const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
             kDriveTalonId = 2
@@ -40,7 +40,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(168.9)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(169.54)
 
 
             // azimuth motion
@@ -57,7 +57,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, kWheelDiameter.inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter/2).inches)
             kDriveDeadband = 0.01
             kDriveMaxSpeed = maxSpeed.value
 
@@ -77,7 +77,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(132.9)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(133.68)
 
 
             // azimuth motion
@@ -94,7 +94,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, kWheelDiameter.inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter/2).inches)
             kDriveMaxSpeed = maxSpeed.value
         }
         val bottomRightSwerveModuleConstants = SwerveModuleConstants().apply {
@@ -111,7 +111,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(356.0)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(354.81)
 
 
             // azimuth motion
@@ -128,7 +128,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, kWheelDiameter.inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter/2).inches)
             kDriveDeadband = 0.01
             kDriveMaxSpeed = maxSpeed.value
 
@@ -148,7 +148,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(252.6)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(252.77)
 
 
             // azimuth motion
@@ -165,7 +165,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, kWheelDiameter.inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter/2).inches)
             kDriveDeadband = 0.01
             kDriveMaxSpeed = maxSpeed.value
 

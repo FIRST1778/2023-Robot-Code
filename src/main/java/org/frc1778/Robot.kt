@@ -1,6 +1,8 @@
 package org.frc1778
 
 import com.ctre.phoenix.sensors.CANCoder
+import com.pathplanner.lib.PathPlanner
+import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PneumaticsModuleType
@@ -11,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.frc1778.lib.FalconCanCoder
+import org.frc1778.lib.SwerveTrajectoryTrackerCommand
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
@@ -32,6 +35,8 @@ object Robot : FalconTimedRobot() {
 
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
+    val trajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
+    lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
     private var autonomousCommand: Command? = null
 
 //    val pcm = PneumaticHub(30)
@@ -55,13 +60,16 @@ object Robot : FalconTimedRobot() {
         SmartDashboard.setNetworkTableInstance(
             NetworkTableInstance.getDefault()
         )
-        fieldTab.add("Field", field)
+        field.getObject("traj").setTrajectory(trajectory)
+        fieldTab.add("Field", field).withSize(8, 4)
+
     }
 
 
     override fun robotPeriodic() {
         CommandScheduler.getInstance().run()
         field.robotPose = Drive.robotPosition
+
 //        SmartDashboard.updateValues()
 
     }
@@ -76,8 +84,12 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun autonomousInit() {
-        autonomousCommand = RobotContainer.getAutonomousCommand()
+        trajectoryCommand = Drive.followTrajectory(trajectory)
+        Drive.setPose(trajectory.initialHolonomicPose)
+        autonomousCommand = trajectoryCommand
         autonomousCommand?.schedule()
+//        trajectoryCommand.schedule()
+
     }
 
     override fun autonomousPeriodic() {
@@ -86,14 +98,11 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         autonomousCommand?.cancel()
+        Drive.setPose(trajectory.initialHolonomicPose)
 //        compressor.enableAnalog(
 //            30.0,
 //            40.0
-//        )\
-        Drive.modules.forEach {
-            it.setAngle(0.0)
-        }
-
+//        )
 
     }
 
@@ -101,6 +110,7 @@ object Robot : FalconTimedRobot() {
     override fun teleopPeriodic() {
 //        println(compressor.pressure)
 //        Controls.operatorController.update()
+
     }
 
 }

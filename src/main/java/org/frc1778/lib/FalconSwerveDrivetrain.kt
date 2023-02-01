@@ -20,6 +20,8 @@ import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
+import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.FalconNeoSwerveModule
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
@@ -265,8 +267,7 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
         var desiredOutput: Output = Output.Nothing
 
-        var positions: Array<SwerveModulePosition> = Array(4) { SwerveModulePosition() }
-
+        var positions: Array<SwerveModulePosition> =  Array(4) {SwerveModulePosition() }
         var leftFrontFeedforward: SIUnit<Volt> = 0.volts
         var rightFrontFeedforward: SIUnit<Volt> = 0.volts
         var rightBackFeedforward: SIUnit<Volt> = 0.volts
@@ -289,5 +290,12 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
         class States(val states: Array<SwerveModuleState>) : Output()
     }
+
+    val Collection<T>.positions: List<SwerveModulePosition>
+        get() = List(4) {
+            SwerveModulePosition(
+                Drive.modules[it].drivePosition.value, Rotation2d(Drive.modules[it].encoder.absolutePosition.value)
+            )
+        }
 
 }
