@@ -2,14 +2,16 @@ package org.frc1778
 
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj2.command.InstantCommand
-import org.ghrobotics.lib.wrappers.FalconSolenoid
+import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.wrappers.hid.mapControls
+import kotlin.math.abs
+import kotlin.math.withSign
 
 
 object Controls {
     //TODO: Update to use a more personalized HID to go with new commands
     private val driverControllerGenericHID = Joystick(0)
-    private val operatorControllerGenericHID = Joystick(2)
+    private val operatorControllerGenericHID = Joystick(1)
 
 
 //    private val runIntakeCommand = RunIntake()
@@ -17,24 +19,20 @@ object Controls {
 
     val driverController = driverControllerGenericHID.mapControls {
 //        button(1) {
-//            change(Aim())
+//            changeOn(InstantCommand({
+//                Drive.setNeutral()
+//            }, Drive))
 //        }
     }
 
     val operatorController = operatorControllerGenericHID.mapControls {
-        button(1){
-            changeOn(
-                InstantCommand( {
-                    Robot.sol.state = FalconSolenoid.State.Forward
-                })
-            )
+
+    }
+
+    fun handleDeadBand(x: Double, tolerance: Double): Double {
+        if(abs(x) < tolerance) {
+            return 0.0
         }
-        button(2) {
-            changeOn(
-                InstantCommand( {
-                    Robot.sol.state = FalconSolenoid.State.Reverse
-                })
-            )
-        }
+        return x.withSign((x - tolerance) / (1.0 - tolerance))
     }
 }

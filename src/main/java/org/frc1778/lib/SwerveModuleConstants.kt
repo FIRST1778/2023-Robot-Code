@@ -32,7 +32,7 @@ class SwerveModuleConstants {
     var kAzimuthKi = 0.05
     var kAzimuthKd = 20.0
     var kAzimuthKf = 0.5421
-    var kAzimuthIZone = 25
+    var kAzimuthIZone = 25.0
     var kAzimuthCruiseVelocity = SIUnit<Velocity<Radian>>(2.6) // 1698 native units
     var kAzimuthAcceleration = SIUnit<Acceleration<Radian>>(31.26) // 20379 Native Units | 12 * kAzimuthCruiseVelocity
     var kAzimuthClosedLoopAllowableError = 5

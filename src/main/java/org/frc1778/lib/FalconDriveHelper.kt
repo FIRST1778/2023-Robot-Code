@@ -138,7 +138,7 @@ class FalconDriveHelper {
         fieldRelative: Boolean
     ): ChassisSpeeds {
         return ChassisSpeeds.fromFieldRelativeSpeeds(
-            forwardInput, strafeInput, rotationInput, drivetrain.gyro()
+            forwardInput, strafeInput, rotationInput, drivetrain.gyro() //drivetrain.robotPosition.rotation
         )
     }
 

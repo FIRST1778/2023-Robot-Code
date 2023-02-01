@@ -3,6 +3,8 @@ package org.frc1778.subsystems
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.util.sendable.Sendable
+import edu.wpi.first.util.sendable.SendableBuilder
 import org.frc1778.lib.AbstractFalconAbsoluteEncoder
 import org.frc1778.lib.AbstractFalconSwerveModule
 import org.frc1778.lib.FalconCanCoder
@@ -11,93 +13,110 @@ import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
 import org.ghrobotics.lib.mathematics.units.Ampere
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.amps
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.derived.Volt
+import org.ghrobotics.lib.mathematics.units.derived.inDegrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.derived.volts
-import org.ghrobotics.lib.motors.FalconEncoder
 import org.ghrobotics.lib.motors.rev.FalconMAX
 import org.ghrobotics.lib.motors.rev.falconMAX
 import kotlin.math.PI
+import kotlin.math.abs
 
-class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConstants) : AbstractFalconSwerveModule<FalconMAX<Meter>, FalconMAX<Radian>> {
+class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConstants) :
+    AbstractFalconSwerveModule<FalconMAX<Meter>, FalconMAX<Radian>>, Sendable {
     private var resetIteration: Int = 0
     private var referenceAngle: Double = 0.0
+    val name = swerveModuleConstants.kName
+
+    override var encoder: AbstractFalconAbsoluteEncoder<Radian> = FalconCanCoder(
+        swerveModuleConstants.kCanCoderId,
+        swerveModuleConstants.kCanCoderNativeUnitModel,
+        swerveModuleConstants.kAzimuthEncoderHomeOffset
+    )
 
     override var driveMotor = with(swerveModuleConstants) {
         falconMAX(
-            kDriveTalonId,
-            CANSparkMaxLowLevel.MotorType.kBrushless,
-            kDriveNativeUnitModel
+            kDriveTalonId, CANSparkMaxLowLevel.MotorType.kBrushless, kDriveNativeUnitModel
         ) {
             outputInverted = kInvertDrive
             brakeMode = kDriveBrakeMode
-            encoder.canEncoder.inverted = kInvertDriveSensorPhase
+            voltageCompSaturation = 12.volts
+            smartCurrentLimit = 80.amps
+            canSparkMax.run {
+                setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100)
+                setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20)
+                setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 20)
+
+            }
         }
     }
     override var turnMotor = with(swerveModuleConstants) {
         falconMAX(
-            kAzimuthTalonId,
-            CANSparkMaxLowLevel.MotorType.kBrushless,
-            kAzimuthNativeUnitModel
+            kAzimuthTalonId, CANSparkMaxLowLevel.MotorType.kBrushless, kAzimuthNativeUnitModel
         ) {
             outputInverted = kInvertAzimuth
             brakeMode = kAzimuthBrakeMode
-            encoder.canEncoder.inverted = brakeMode
+            canSparkMax.run {
+                setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100)
+                setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20)
+                setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 20)
+
+            }
+            voltageCompSaturation = 12.volts
+            smartCurrentLimit = 20.amps
+            controller.run {
+                ff = kAzimuthKf
+                p = kAzimuthKp
+                i = kAzimuthKi
+                d = kAzimuthKd
+                iZone = kAzimuthIZone
+                setFeedbackDevice(canSparkMax.encoder)
+            }
 
         }
     }
-    override var encoder: AbstractFalconAbsoluteEncoder<Radian> = FalconCanCoder(swerveModuleConstants.kCanCoderId, swerveModuleConstants.kCanCoderNativeUnitModel)
 
-    private var angleController = with(swerveModuleConstants) {
-        turnMotor.controller.apply{
-            ff = kAzimuthKf
-            p = kAzimuthKp
-            i = kAzimuthKi
-            d = kAzimuthKd
-            setFeedbackDevice(turnMotor.canSparkMax.encoder)
-        }
-
-    }
 
     override fun setControls(speed: Double, azimuth: Rotation2d) {
         TODO("Not yet implemented")
     }
 
     override fun setState(state: SwerveModuleState, arbitraryFeedForward: SIUnit<Volt>) {
-        var setAngle = state.angle.radians % (2*Math.PI)
-        var voltage = state.speedMetersPerSecond/ swerveModuleConstants.kDriveMaxSpeed
-        if( setAngle < 0.0) setAngle += 2.0 * Math.PI
+        var setAngle = state.angle.radians % (2 * Math.PI)
+        var voltage = (state.speedMetersPerSecond / swerveModuleConstants.kDriveMaxSpeed) * 12.0
+        if (setAngle < 0.0) setAngle += 2.0 * Math.PI
 
 
         var diff = setAngle - stateAngle()
-        if(diff >= PI) {
+        if (diff >= PI) {
             setAngle -= 2.0 * PI
-        } else if(diff < -PI) {
+        } else if (diff < -PI) {
             setAngle += 2.0 * PI
         }
         diff = setAngle - stateAngle()
-        if(diff > PI/2.0 || diff < -PI/2.0) {
+        if (diff > PI / 2.0 || diff < -PI / 2.0) {
             setAngle += PI
             voltage *= -1
         }
 
         setAngle %= 2.0 * PI
-        if(setAngle < 0.0) setAngle += 2.0 * PI
+        if (setAngle < 0.0) setAngle += 2.0 * PI
 
         setVoltage(voltage)
+        setAngle(setAngle)
 
 
     }
 
-    fun stateAngle(): Double {
+    private fun stateAngle(): Double {
         var motorAngle = turnMotor.encoder.position.value
         motorAngle %= 2.0 * PI
-        if(motorAngle < 0.0) motorAngle += 2.0 * PI
+        if (motorAngle < 0.0) motorAngle += 2.0 * PI
         return motorAngle
     }
-
 
 
     override fun setPosition(position: SwerveModulePosition, arbitraryFeedForward: SIUnit<Volt>) {
@@ -109,8 +128,9 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
     }
 
     override fun resetDriveEncoder(position: SIUnit<Meter>) {
-        TODO("Not yet implemented")
+        driveMotor.encoder.resetPosition(position)
     }
+
 
     override fun reset() {
         TODO("Not yet implemented")
@@ -120,9 +140,10 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
         TODO("Not yet implemented")
     }
 
-    override fun swervePosition(): SwerveModulePosition {
-        TODO("Not yet implemented")
-    }
+    //Keep an eye on this function
+    override fun swervePosition(): SwerveModulePosition = SwerveModulePosition(
+        drivePosition.value, edu.wpi.first.math.geometry.Rotation2d(stateAngle())
+    )
 
     override fun setNeutral() {
         driveMotor.setNeutral()
@@ -137,15 +158,15 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
         // Reset the NEO's encoder periodically when the module is not rotating.
         // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
         // end up getting a good reading. If we reset periodically this won't matter anymore.
-        if (turnMotor.encoder.velocity.absoluteValue.value < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
+        if (abs(turnMotor.encoder.velocity.value) < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
             if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
                 resetIteration = 0
-                val absoluteAngle: Double = encoder.position.value
-                turnMotor.encoder.resetPosition(absoluteAngle.radians)
-                currentAngleRadians = absoluteAngle
+                val absoluteAngle: SIUnit<Radian> = encoder.absolutePosition
+                turnMotor.encoder.resetPosition(absoluteAngle)
+                currentAngleRadians = absoluteAngle.value
             }
         } else {
-            resetIteration = 0
+            resetIteration++
         }
 
         var currentAngleRadiansMod = currentAngleRadians % (2.0 * Math.PI)
@@ -156,19 +177,25 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
         // The reference angle has the range [0, 2pi) but the Neo's encoder can go above that
 
         // The reference angle has the range [0, 2pi) but the Neo's encoder can go above that
-        var adjustedReferenceAngleRadians: Double = referenceAngle + currentAngleRadians - currentAngleRadiansMod
-        if (referenceAngle - currentAngleRadiansMod > Math.PI) {
+        var adjustedReferenceAngleRadians: Double = angle + currentAngleRadians - currentAngleRadiansMod
+        if (angle - currentAngleRadiansMod > Math.PI) {
             adjustedReferenceAngleRadians -= 2.0 * Math.PI
-        } else if (referenceAngle - currentAngleRadiansMod < -Math.PI) {
+        } else if (angle - currentAngleRadiansMod < -Math.PI) {
             adjustedReferenceAngleRadians += 2.0 * Math.PI
         }
 
-        this.referenceAngle = referenceAngle
+        referenceAngle = angle
+
+        turnMotor.setPosition(adjustedReferenceAngleRadians.radians)
 
     }
 
     override fun setVoltage(voltage: Double) {
         driveMotor.setVoltage(voltage.volts)
+    }
+
+    fun setPositionToAbsoluteEncoder() {
+        turnMotor.encoder.resetPosition(encoder.absolutePosition)
     }
 
 
@@ -180,7 +207,24 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
     val absoluteAngle: SIUnit<Radian> = encoder.absolutePosition
 
     companion object {
-        private const  val ENCODER_RESET_ITERATIONS = 500
+        private const val ENCODER_RESET_ITERATIONS = 500
         private val ENCODER_RESET_MAX_ANGULAR_VELOCITY = Math.toRadians(0.5)
+    }
+
+    override fun initSendable(builder: SendableBuilder?) {
+        builder!!.run {
+            addDoubleProperty("Absolute Position", {
+                encoder.absolutePosition.inDegrees()
+            }, {})
+            addDoubleProperty("Drive Voltage", {
+                driveMotor.voltageOutput.value
+            }, {})
+            addDoubleProperty("State Angle", { stateAngle() }, {})
+
+
+        }
+
+
+
     }
 }

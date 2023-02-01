@@ -1,9 +1,12 @@
 package org.frc1778
 
 import com.ctre.phoenix.sensors.CANCoder
+import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PneumaticsModuleType
 import edu.wpi.first.wpilibj.TimedRobot
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
@@ -26,19 +29,22 @@ import javax.naming.ldap.Control
  */
 object Robot : FalconTimedRobot() {
 
+
+    private val field = Field2d()
+    private val fieldTab = Shuffleboard.getTab("Field")
     private var autonomousCommand: Command? = null
 
-    val pcm = PneumaticHub(30)
-    val compressor = pcm.makeCompressor()
-
-    val sol = FalconDoubleSolenoid(
-        1,
-        0,
-        PneumaticsModuleType.REVPH,
-        30
-    )
+//    val pcm = PneumaticHub(30)
+//    val compressor = pcm.makeCompressor()
+//
+//    val sol = FalconDoubleSolenoid(
+//        1,
+//        0,
+//        PneumaticsModuleType.REVPH,
+//        30
+//    )
     init {
-//        +Drive
+        +Drive
     }
 
 
@@ -46,15 +52,22 @@ object Robot : FalconTimedRobot() {
         // Access the RobotContainer object so that it is initialized. This will perform all our
         // button bindings, and put our autonomous chooser on the dashboard.
         RobotContainer
+        SmartDashboard.setNetworkTableInstance(
+            NetworkTableInstance.getDefault()
+        )
+        fieldTab.add("Field", field)
     }
 
 
     override fun robotPeriodic() {
-//        CommandScheduler.getInstance().run()
+        CommandScheduler.getInstance().run()
+        field.robotPose = Drive.robotPosition
+//        SmartDashboard.updateValues()
+
     }
 
     override fun disabledInit() {
-        compressor.disable()
+//        compressor.disable()
 
     }
 
@@ -73,18 +86,21 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         autonomousCommand?.cancel()
-        compressor.enableAnalog(
-            30.0,
-            40.0
-        )
+//        compressor.enableAnalog(
+//            30.0,
+//            40.0
+//        )\
+        Drive.modules.forEach {
+            it.setAngle(0.0)
+        }
 
 
     }
 
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {
-        println(compressor.pressure)
-        Controls.operatorController.update()
+//        println(compressor.pressure)
+//        Controls.operatorController.update()
     }
 
 }

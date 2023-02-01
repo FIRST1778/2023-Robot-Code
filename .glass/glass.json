@@ -1,0 +1,45 @@
+{
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        "Drive": {
+          "Absolute Position of Bottom Left Swerve": {
+            "open": true
+          },
+          "Absolute Position of Bottom Right Swerve": {
+            "open": true
+          },
+          "Absolute Position of Top Left Swerve": {
+            "open": true
+          },
+          "Absolute Position of Top Right Swerve": {
+            "open": true
+          },
+          "Bottom Left Swerve": {
+            "open": true
+          },
+          "Bottom Right Swerve": {
+            "open": true
+          },
+          "Top Left Swerve": {
+            "open": true
+          },
+          "Top Right Swerve": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/Shuffleboard/Drive/Drive": "Subsystem"
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "1778",
+    "visible": false
+  }
+}

@@ -81,6 +81,8 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
     abstract val maxSpeed: SIUnit<Velocity<Meter>>
 
+    abstract val motorOutputLimiter: Source<Double>
+
     /**
      * The characterization for the left front swerve module.
      */
@@ -140,10 +142,7 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
         feedForwards[2] = periodicIO.rightBackFeedforward
         feedForwards[3] = periodicIO.leftBackFeedforward
 
-        periodicIO.positions = Array(4) { SwerveModulePosition() }
-        for (i in 0..modules.size) {
-            periodicIO.positions[i] = modules[i].swervePosition()
-        }
+        periodicIO.positions = Array(4) { modules[it].swervePosition() }
 
         robotPosition = odometry.update(
             periodicIO.gyro, periodicIO.positions
@@ -156,13 +155,13 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
             }
 
             is Output.Percent -> {
-                for (i in 0..modules.size) {
+                for (i in modules.indices) {
                     modules[i].setControls(desiredOutput.speeds[i], desiredOutput.azimuths[i])
                 }
             }
 
             is Output.Positions -> {
-                for (i in 0..modules.size) {
+                for (i in modules.indices) {
 //                    modules[i].setState(states[i], feedForwards[i])
                     modules[i].setPosition(desiredOutput.positions[i], feedForwards[i])
                 }
@@ -170,7 +169,7 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
             is Output.States -> {
 
-                for (i in 0..modules.size) {
+                for (i in modules.indices) {
                     modules[i].setState(desiredOutput.states[i], feedForwards[i])
                 }
             }
@@ -212,16 +211,21 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
     }
 
     fun swerveDrive(forwardInput: Double, strafeInput: Double, rotationInput: Double, fieldRelative: Boolean) {
-        val speeds = driveHelper.swerveDrive(this, forwardInput, strafeInput, rotationInput, fieldRelative)
-        var states = kinematics.toSwerveModuleStates(speeds)
+        val outputLimiter = motorOutputLimiter()
+        val speeds = driveHelper.swerveDrive(
+            this,
+            forwardInput * outputLimiter,
+            strafeInput * outputLimiter,
+            rotationInput * outputLimiter,
+            fieldRelative
+        )
+        val states = kinematics.toSwerveModuleStates(speeds)
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeed.value)
         periodicIO.desiredOutput = Output.States(states)
 
     }
 
     fun resetPosition(pose: Pose2d, positions: Array<SwerveModulePosition>) {
-        modules.forEach { it.resetDriveEncoder(0.meters) }
-//        odometry.resetPosition(pose, gyro())
         odometry.resetPosition(gyro(), positions, pose)
     }
 
@@ -231,8 +235,7 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
     fun followTrajectory(trajectory: Trajectory, mirrored: BooleanSource) =
         SwerveTrajectoryTrackerCommand(this, mirrored.map(trajectory.mirror(), trajectory))
 
-    fun followTrajectory(trajectory: Source<Trajectory>) =
-        SwerveTrajectoryTrackerCommand(this, trajectory)
+    fun followTrajectory(trajectory: Source<Trajectory>) = SwerveTrajectoryTrackerCommand(this, trajectory)
 
     fun followTrajectoryWithCommands(trajectory: Source<PathPlannerTrajectory>, eventMap: HashMap<String, Command>) =
         SwerveTrajectoryTrackerWithMarkerCommand(this, trajectory, eventMap)
@@ -279,12 +282,12 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
         // Percent Output
         class Percent(
-            val speeds: DoubleArray,
-            val azimuths: Array<org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d>
+            val speeds: DoubleArray, val azimuths: Array<org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d>
         ) : Output()
 
         class Positions(val positions: Array<SwerveModulePosition>) : Output()
 
         class States(val states: Array<SwerveModuleState>) : Output()
     }
+
 }
