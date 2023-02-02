@@ -10,18 +10,16 @@ package org.frc1778.lib
 
 import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.FalconNeoSwerveModule
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
@@ -40,13 +38,13 @@ import org.ghrobotics.lib.mathematics.units.inFeet
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.mathematics.units.operations.div
 import org.ghrobotics.lib.mathematics.units.seconds
-import org.ghrobotics.lib.subsystems.AbstractFalconSwerveModule
 import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
-import org.ghrobotics.lib.subsystems.drive.SwerveTrajectoryTrackerCommand
-import org.ghrobotics.lib.subsystems.drive.utils.DriveSignal
 import org.ghrobotics.lib.utils.BooleanSource
 import org.ghrobotics.lib.utils.Source
 import org.ghrobotics.lib.utils.map
+import org.photonvision.EstimatedRobotPose
+import java.util.*
+import kotlin.collections.HashMap
 
 abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveModule<*, *>> :
     TrajectoryTrackerSwerveDriveBase(), SensorlessCompatibleSubsystem {
@@ -60,17 +58,15 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
      */
     protected val driveHelper = FalconDriveHelper()
 
-    /**
-     * The odometry object that is used to calculate the robot's position
-     * on the field.
-     */
-    abstract val odometry: SwerveDriveOdometry
+    protected abstract val poseEstimator: SwerveDrivePoseEstimator
+
 
     /**
      * Buffer for storing the pose over a span of time. This is useful for
      * Vision and latency compensation.
      */
     protected open val poseBuffer = TimePoseInterpolatableBuffer()
+
 
     /**
      * The left front motor
@@ -115,6 +111,9 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
      */
     override var robotPosition: Pose2d = Pose2d()
 
+    abstract fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>?
+
+
     override fun periodic() {
         periodicIO.leftFrontVoltage = modules[0].voltageOutput
         periodicIO.rightFrontVoltage = modules[1].voltageOutput
@@ -146,9 +145,19 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
         periodicIO.positions = Array(4) { modules[it].swervePosition() }
 
-        robotPosition = odometry.update(
-            periodicIO.gyro, periodicIO.positions
-        )
+
+        val cameraOut = getEstimatedCameraPose(robotPosition)
+        if (cameraOut != null) {
+            val (cameraEstimatedRobotPose, timeStamp) = cameraOut
+            poseEstimator.addVisionMeasurement(cameraEstimatedRobotPose, timeStamp)
+        }
+
+        robotPosition = poseEstimator.update(gyro(), modules.positions.toTypedArray())
+
+
+//        robotPosition = odometry.update(
+//            periodicIO.gyro, periodicIO.positions
+//        )
         poseBuffer[Timer.getFPGATimestamp().seconds] = robotPosition
 
         when (val desiredOutput = periodicIO.desiredOutput) {
@@ -187,7 +196,7 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
      */
 
     override fun lateInit() {
-        resetPosition(Pose2d(), periodicIO.positions)
+        resetPosition(Pose2d(), modules.positions.toTypedArray())
     }
 
     override fun setNeutral() {
@@ -205,12 +214,16 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
     }
 
 
+    @Deprecated("Pose Buffer is not consistent with the internally interpolated pose buffer in the poseEstimator", )
     fun getPose(timestamp: SIUnit<Second> = Timer.getFPGATimestamp().seconds): Pose2d {
         return poseBuffer[timestamp] ?: kotlin.run {
-            DriverStation.reportError("[FalconWCD] Pose Buffer is Empty!", false)
+            DriverStation.reportError("[FalconSD] Pose Buffer is Empty!", false)
             Pose2d()
         }
     }
+
+
+
 
     fun swerveDrive(forwardInput: Double, strafeInput: Double, rotationInput: Double, fieldRelative: Boolean) {
         val outputLimiter = motorOutputLimiter()
@@ -227,8 +240,9 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
     }
 
+
     fun resetPosition(pose: Pose2d, positions: Array<SwerveModulePosition>) {
-        odometry.resetPosition(gyro(), positions, pose)
+        poseEstimator.resetPosition(gyro(), positions, pose)
     }
 
     fun followTrajectory(trajectory: Trajectory, mirrored: Boolean = false) =
@@ -263,11 +277,12 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
         var rightBackVelocity: SIUnit<LinearVelocity> = 0.meters / 1.seconds
         var leftBackVelocity: SIUnit<LinearVelocity> = 0.meters / 1.seconds
 
+
         var gyro: Rotation2d = Rotation2d()
 
         var desiredOutput: Output = Output.Nothing
 
-        var positions: Array<SwerveModulePosition> =  Array(4) {SwerveModulePosition() }
+        var positions: Array<SwerveModulePosition> = Array(4) { SwerveModulePosition() }
         var leftFrontFeedforward: SIUnit<Volt> = 0.volts
         var rightFrontFeedforward: SIUnit<Volt> = 0.volts
         var rightBackFeedforward: SIUnit<Volt> = 0.volts
@@ -291,10 +306,10 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
         class States(val states: Array<SwerveModuleState>) : Output()
     }
 
-    val Collection<T>.positions: List<SwerveModulePosition>
+    val List<T>.positions: List<SwerveModulePosition>
         get() = List(4) {
             SwerveModulePosition(
-                Drive.modules[it].drivePosition.value, Rotation2d(Drive.modules[it].encoder.absolutePosition.value)
+                this[it].drivePosition.value, Rotation2d(this[it].encoder.absolutePosition.value)
             )
         }
 

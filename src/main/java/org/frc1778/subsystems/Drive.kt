@@ -2,8 +2,10 @@ package org.frc1778.subsystems
 
 import com.ctre.phoenix.sensors.Pigeon2
 import com.pathplanner.lib.auto.RamseteAutoBuilder
+import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.controller.RamseteController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
@@ -29,9 +31,11 @@ import org.ghrobotics.lib.subsystems.AbstractFalconSwerveModule
 import org.ghrobotics.lib.utils.Source
 
 object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
-    private val pigeon = Pigeon2(Constants.DriveConstants.pigeonCanID)
+    val pigeon = Pigeon2(Constants.DriveConstants.pigeonCanID)
 
     private val maxVoltage = 12.0
+
+
 
     private var motorOutputLimiterEntry: GenericEntry =
         Constants.DriveConstants.driveTab.add("Motor Percentage", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
@@ -55,7 +59,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
             Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
         }
         pigeon.configMountPose(Pigeon2.AxisDirection.PositiveX, Pigeon2.AxisDirection.PositiveZ, 500)
-        pigeon.yaw = 0.0
         modules.forEach {
             it.setAngle(0.0)
         }
@@ -80,6 +83,15 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     override val rightBackCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
     override val gyro: Source<Rotation2d> = { Rotation2d.fromDegrees(pigeon.yaw) }
+    override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
+        val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
+        if (result != null) {
+            if(result.isPresent) {
+                return result.get().estimatedPose.toPose2d() to result.get().timestampSeconds
+            }
+        }
+        return null
+    }
 
     override val controller: RamseteController = RamseteController(
         .5, .125
@@ -102,16 +114,33 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
         Translation2d(-wheelbase / 2, trackwidth / 2),
     )
 
-    override val odometry: SwerveDriveOdometry = SwerveDriveOdometry(kinematics, gyro(), Array(4) {
+    val odometry: SwerveDriveOdometry = SwerveDriveOdometry(kinematics, gyro(), Array(4) {
         SwerveModulePosition(modules[it].drivePosition.value, Rotation2d(modules[it].anglePosition.value))
     })
 
+
+    // Estimator for the robot pose to integrate vision approximation,
+    // Two vectors represent the std dv of the robot pose and the std dv of the camera pose.
+    // Currently filled with default values.
+    override val poseEstimator = SwerveDrivePoseEstimator(
+        kinematics,
+        gyro(),
+        modules.positions.toTypedArray(),
+        robotPosition,
+        VecBuilder.fill(0.1, 0.1, 0.1),
+        VecBuilder.fill(0.9, 0.9, 0.9)
+    )
+
+
     fun setPose(pose: Pose2d) {
-        odometry.resetPosition(gyro(), modules.positions.toTypedArray(), pose)
+        resetPosition(pose, modules.positions.toTypedArray())
     }
 
 
+    override fun periodic() {
+        super.periodic()
 
+    }
 
 
     override fun disableClosedLoopControl() {

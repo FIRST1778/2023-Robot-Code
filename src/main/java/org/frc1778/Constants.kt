@@ -1,5 +1,10 @@
 package org.frc1778
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout
+import edu.wpi.first.apriltag.AprilTagFields
+import edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.math.geometry.Transform3d
+import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import org.frc1778.lib.SwerveModuleConstants
@@ -57,7 +62,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter/2).inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveDeadband = 0.01
             kDriveMaxSpeed = maxSpeed.value
 
@@ -77,7 +82,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(133.68)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(66.09)
 
 
             // azimuth motion
@@ -94,7 +99,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter/2).inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveMaxSpeed = maxSpeed.value
         }
         val bottomRightSwerveModuleConstants = SwerveModuleConstants().apply {
@@ -111,7 +116,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(354.81)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(175.51 + 180.0)
 
 
             // azimuth motion
@@ -128,7 +133,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter/2).inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveDeadband = 0.01
             kDriveMaxSpeed = maxSpeed.value
 
@@ -165,11 +170,22 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter/2).inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveDeadband = 0.01
             kDriveMaxSpeed = maxSpeed.value
 
 
         }
+
+
+    }
+
+    object VisionConstants {
+        val cameraName = "Default"
+        val APIRL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile)
+        val CAMERA_ROBOT_TRANSFORM = Transform3d(
+            Translation3d(0.0, 0.0, 0.0),
+            Rotation3d(0.0, 0.0, 0.0)
+        )
     }
 }
