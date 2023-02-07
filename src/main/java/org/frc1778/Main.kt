@@ -1,7 +1,7 @@
 @file:JvmName("Main") // set the compiled Java class name to "Main" rather than "MainKt"
 package org.frc1778
 
-import edu.wpi.first.wpilibj.RobotBase
+
 
 /**
  * Main initialization function. Do not perform any initialization here
@@ -20,3 +20,4 @@ import edu.wpi.first.wpilibj.RobotBase
  * including here.)
  */
 fun main() = Robot.start()
+

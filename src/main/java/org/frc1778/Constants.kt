@@ -181,8 +181,8 @@ object Constants {
     }
 
     object VisionConstants {
-        val cameraName = "Default"
-        val APIRL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile)
+        const val cameraName = "The Eye of Sauron"
+        val APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile)!!
         val CAMERA_ROBOT_TRANSFORM = Transform3d(
             Translation3d(0.0, 0.0, 0.0),
             Rotation3d(0.0, 0.0, 0.0)
