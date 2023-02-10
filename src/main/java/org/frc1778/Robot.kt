@@ -4,6 +4,12 @@ import ArmJointSim
 import com.ctre.phoenix.sensors.CANCoder
 import com.pathplanner.lib.PathPlanner
 import com.pathplanner.lib.PathPlannerTrajectory
+import edu.wpi.first.math.Nat
+import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.math.controller.LinearQuadraticRegulator
+import edu.wpi.first.math.estimator.KalmanFilter
+import edu.wpi.first.math.system.LinearSystemLoop
+import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.*
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax
@@ -22,7 +28,6 @@ import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 import org.frc1778.lib.FalconTimedRobot
 import javax.naming.ldap.Control
-
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
  * and to call the functions corresponding to each mode, as described in the TimedRobot documentation.
@@ -46,13 +51,38 @@ object Robot : FalconTimedRobot() {
 
     var motor = PWMSparkMax(2)
 
+    var kA : Double = 0.03516
+    var kV : Double = 1.615
+    var plant = LinearSystemId.identifyPositionSystem(kV, kA)
+
+    var observer = KalmanFilter(
+            Nat.N2(),
+            Nat.N1(),
+            plant,
+            VecBuilder.fill(0.5, 0.5),
+            VecBuilder.fill(0.01),
+            0.02
+    )
+    var controller = LinearQuadraticRegulator(
+            plant,
+            VecBuilder.fill(8.0, 8.0),
+            VecBuilder.fill(12.0),
+            0.020
+    )
+    var loop = LinearSystemLoop(
+            plant,
+            controller,
+            observer,
+            12.0,
+            0.020
+    )
     //    val pcm = PneumaticHub(30)
 //    val compressor = pcm.makeCompressor()
 //
 //    val sol = FalconDoubleSolenoid(
 //        1,
 //        0,
-//        PneumaticsModuleType.REVPH,
+//        PneumaticsModuleType.REV-PH,
 //        30
 //    )
     init {
@@ -73,9 +103,11 @@ object Robot : FalconTimedRobot() {
 
         encoder.setSamplesToAverage(5)
 
-        encoder.setDistancePerPulse(1.0 / 360.0 * 2.0 * Math.PI * 1.5)
+        encoder.setDistancePerPulse((2 * Math.PI) / 1024)
 
         encoder.setMinRate(1.0)
+
+
     }
 
 
@@ -84,6 +116,7 @@ object Robot : FalconTimedRobot() {
         field.robotPose = Drive.robotPosition
 
 //        SmartDashboard.updateValues()
+
 
     }
 
@@ -121,7 +154,12 @@ object Robot : FalconTimedRobot() {
 
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {
-        motor.set(0.5)
+        var desiredAngle : Double = Math.toRadians(90.0)
+        loop.setNextR((VecBuilder.fill(desiredAngle, 0.0)))
+        loop.correct(VecBuilder.fill(encoder.distance))
+        loop.predict(0.020)
+        val nextVoltage = loop.getU(0)
+        motor.setVoltage(nextVoltage)
     }
 
     override fun simulationPeriodic() {
@@ -129,13 +167,10 @@ object Robot : FalconTimedRobot() {
 
         armJointSim.update(0.02, armJointSim.getMinArmLength())
 
-        encoderSim.setRate(armJointSim.velocityAtJoint())
+        encoderSim.distance = armJointSim.angleAtJoint()
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps()))
     }
 
-    override fun simulationInit() {
-
-    }
 }
 
 //    override fun testInit()
