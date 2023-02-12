@@ -1,7 +1,6 @@
 package org.frc1778.subsystems
 
 import com.ctre.phoenix.sensors.Pigeon2
-import com.pathplanner.lib.auto.RamseteAutoBuilder
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.controller.RamseteController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
@@ -13,27 +12,20 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.networktables.GenericEntry
-import edu.wpi.first.networktables.NetworkTableEntry
-import edu.wpi.first.util.sendable.Sendable
-import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.frc1778.Constants
 import org.frc1778.commands.TeleOpDriveCommand
+import org.frc1778.lib.FalconNeoSwerveModule
 import org.frc1778.lib.FalconSwerveDrivetrain
-import org.frc1778.lib.SwerveModuleConstants
-import org.frc1778.subsystems.Drive.modules
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
-import org.ghrobotics.lib.subsystems.AbstractFalconSwerveModule
 import org.ghrobotics.lib.utils.Source
 
 object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     val pigeon = Pigeon2(Constants.DriveConstants.pigeonCanID)
 
-    private val maxVoltage = 12.0
+    private const val maxVoltage = 12.0
 
 
 
@@ -68,19 +60,13 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     override val wheelbase: Double = Constants.DriveConstants.wheelBase
 
 
-    override val trackwidth: Double = Constants.DriveConstants.trackWidth
+    override val trackWidth: Double = Constants.DriveConstants.trackWidth
     override val maxSpeed: SIUnit<Velocity<Meter>> = Constants.DriveConstants.maxSpeed
     override val motorOutputLimiter: Source<Double> = {
         motorOutputLimiterEntry.getDouble(100.0) / 100.0
     }
 
-    override val leftFrontCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
-
-    override val rightFrontCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
-
-    override val leftBackCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
-
-    override val rightBackCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
+    override val motorCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
     override val gyro: Source<Rotation2d> = { Rotation2d.fromDegrees(pigeon.yaw) }
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
@@ -108,11 +94,19 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
      * - Back Left
      */
     override val kinematics: SwerveDriveKinematics = SwerveDriveKinematics(
-        Translation2d(wheelbase / 2, trackwidth / 2),
-        Translation2d(wheelbase / 2, -trackwidth / 2),
-        Translation2d(-wheelbase / 2, -trackwidth / 2),
-        Translation2d(-wheelbase / 2, trackwidth / 2),
+        Translation2d(wheelbase / 2, trackWidth / 2),
+        Translation2d(wheelbase / 2, -trackWidth / 2),
+        Translation2d(-wheelbase / 2, -trackWidth / 2),
+        Translation2d(-wheelbase / 2, trackWidth / 2),
     )
+
+    override fun disableClosedLoopControl() {
+
+    }
+
+    override fun enableClosedLoopControl() {
+
+    }
 
     val odometry: SwerveDriveOdometry = SwerveDriveOdometry(kinematics, gyro(), Array(4) {
         SwerveModulePosition(modules[it].drivePosition.value, Rotation2d(modules[it].anglePosition.value))
@@ -137,19 +131,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     }
 
 
-    override fun periodic() {
-        super.periodic()
-
-    }
-
-
-    override fun disableClosedLoopControl() {
-        TODO("Not yet implemented")
-    }
-
-    override fun enableClosedLoopControl() {
-        TODO("Not yet implemented")
-    }
 
 
 }

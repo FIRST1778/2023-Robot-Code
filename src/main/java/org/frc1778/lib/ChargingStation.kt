@@ -67,7 +67,7 @@ class ChargingStation(private val alliance: Alliance) {
             )
         }
         /**
-         * Perform rotation to convert from station plane to field plane.
+         *   Perform rotation to convert from station plane to field plane.
          *  - Convert the station pose into a [Pose3d] and rotate its translation component by the difference in the
          *  held angle value([currAngle]) and the new angle.
          *  - Create a new [Pose2d] object with this rotated translation and the current yaw of the

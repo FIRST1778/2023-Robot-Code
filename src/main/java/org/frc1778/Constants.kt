@@ -23,14 +23,14 @@ object Constants {
         val driveTab: ShuffleboardTab = Shuffleboard.getTab("Drive")!!
         const val wheelBase: Double = 23.5
         const val trackWidth: Double = 23.5
-        const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
+        private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
         val maxSpeed: SIUnit<Frac<Meter, Second>> = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
         val maxAngularSpeed: SIUnit<Velocity<Radian>> =
             SIUnit(maxSpeed.value / hypot(trackWidth / 2.0, wheelBase / 2.0))
 
         const val pigeonCanID: Int = 21
-        const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
-        const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
+        private const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
+        private const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
             kDriveTalonId = 2
@@ -180,6 +180,9 @@ object Constants {
 
     }
 
+    object ArmConstants {
+        
+    }
     object VisionConstants {
         const val cameraName = "The Eye of Sauron"
         val APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile)!!
@@ -187,5 +190,9 @@ object Constants {
             Translation3d(0.0, 0.0, 0.0),
             Rotation3d(0.0, 0.0, 0.0)
         )
+    }
+
+    object LightConstants {
+        const val numLights = 100
     }
 }

@@ -42,11 +42,10 @@ import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
 import org.ghrobotics.lib.utils.BooleanSource
 import org.ghrobotics.lib.utils.Source
 import org.ghrobotics.lib.utils.map
-import org.photonvision.EstimatedRobotPose
 import java.util.*
 import kotlin.collections.HashMap
 
-abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveModule<*, *>> :
+abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
     TrajectoryTrackerSwerveDriveBase(), SensorlessCompatibleSubsystem {
     /**
      * The current inputs and outputs
@@ -75,31 +74,17 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
     abstract val wheelbase: Double
 
-    abstract val trackwidth: Double
+    abstract val trackWidth: Double
 
     abstract val maxSpeed: SIUnit<Velocity<Meter>>
 
     abstract val motorOutputLimiter: Source<Double>
 
     /**
-     * The characterization for the left front swerve module.
+     * The characterization for the swerve modules.
      */
-    abstract val leftFrontCharacterization: SimpleMotorFeedforward
+    abstract val motorCharacterization: SimpleMotorFeedforward
 
-    /**
-     * The characterization for the right front swerve module.
-     */
-    abstract val rightFrontCharacterization: SimpleMotorFeedforward
-
-    /**
-     * The characterization for the left back swerve module.
-     */
-    abstract val leftBackCharacterization: SimpleMotorFeedforward
-
-    /**
-     * The characterization for the right back swerve module.
-     */
-    abstract val rightBackCharacterization: SimpleMotorFeedforward
 
     /**
      * The rotation source / gyro
@@ -115,25 +100,25 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
 
 
     override fun periodic() {
-        periodicIO.leftFrontVoltage = modules[0].voltageOutput
-        periodicIO.rightFrontVoltage = modules[1].voltageOutput
-        periodicIO.rightBackVoltage = modules[2].voltageOutput
-        periodicIO.leftBackVoltage = modules[3].voltageOutput
-
-        periodicIO.leftFrontCurrent = modules[0].drawnCurrent
-        periodicIO.rightFrontCurrent = modules[1].drawnCurrent
-        periodicIO.rightBackCurrent = modules[2].drawnCurrent
-        periodicIO.leftBackCurrent = modules[3].drawnCurrent
-
-        periodicIO.leftFrontPosition = modules[0].drivePosition
-        periodicIO.rightFrontPosition = modules[1].drivePosition
-        periodicIO.rightBackPosition = modules[2].drivePosition
-        periodicIO.leftBackPosition = modules[3].drivePosition
-
-        periodicIO.leftFrontVelocity = modules[0].driveVelocity
-        periodicIO.rightFrontVelocity = modules[1].driveVelocity
-        periodicIO.rightBackVelocity = modules[2].driveVelocity
-        periodicIO.leftBackVelocity = modules[3].driveVelocity
+//        periodicIO.leftFrontVoltage = modules[0].voltageOutput
+//        periodicIO.rightFrontVoltage = modules[1].voltageOutput
+//        periodicIO.rightBackVoltage = modules[2].voltageOutput
+//        periodicIO.leftBackVoltage = modules[3].voltageOutput
+//
+//        periodicIO.leftFrontCurrent = modules[0].drawnCurrent
+//        periodicIO.rightFrontCurrent = modules[1].drawnCurrent
+//        periodicIO.rightBackCurrent = modules[2].drawnCurrent
+//        periodicIO.leftBackCurrent = modules[3].drawnCurrent
+//
+//        periodicIO.leftFrontPosition = modules[0].drivePosition
+//        periodicIO.rightFrontPosition = modules[1].drivePosition
+//        periodicIO.rightBackPosition = modules[2].drivePosition
+//        periodicIO.leftBackPosition = modules[3].drivePosition
+//
+//        periodicIO.leftFrontVelocity = modules[0].driveVelocity
+//        periodicIO.rightFrontVelocity = modules[1].driveVelocity
+//        periodicIO.rightBackVelocity = modules[2].driveVelocity
+//        periodicIO.leftBackVelocity = modules[3].driveVelocity
 
         periodicIO.gyro = gyro()
 
@@ -143,7 +128,7 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
         feedForwards[2] = periodicIO.rightBackFeedforward
         feedForwards[3] = periodicIO.leftBackFeedforward
 
-        periodicIO.positions = Array(4) { modules[it].swervePosition() }
+        periodicIO.positions = modules.positions.toTypedArray()
 
 
         val cameraOut = getEstimatedCameraPose(robotPosition)
@@ -152,30 +137,14 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
             poseEstimator.addVisionMeasurement(cameraEstimatedRobotPose, timeStamp)
         }
 
-        robotPosition = poseEstimator.update(gyro(), modules.positions.toTypedArray())
+        robotPosition = poseEstimator.update(periodicIO.gyro, periodicIO.positions)
 
 
-//        robotPosition = odometry.update(
-//            periodicIO.gyro, periodicIO.positions
-//        )
         poseBuffer[Timer.getFPGATimestamp().seconds] = robotPosition
 
         when (val desiredOutput = periodicIO.desiredOutput) {
             is Output.Nothing -> {
                 modules.forEach { it.setNeutral() }
-            }
-
-            is Output.Percent -> {
-                for (i in modules.indices) {
-                    modules[i].setControls(desiredOutput.speeds[i], desiredOutput.azimuths[i])
-                }
-            }
-
-            is Output.Positions -> {
-                for (i in modules.indices) {
-//                    modules[i].setState(states[i], feedForwards[i])
-                    modules[i].setPosition(desiredOutput.positions[i], feedForwards[i])
-                }
             }
 
             is Output.States -> {
@@ -214,7 +183,7 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
     }
 
 
-    @Deprecated("Pose Buffer is not consistent with the internally interpolated pose buffer in the poseEstimator", )
+    @Deprecated("Pose Buffer is not consistent with the internally interpolated pose buffer in the poseEstimator")
     fun getPose(timestamp: SIUnit<Second> = Timer.getFPGATimestamp().seconds): Pose2d {
         return poseBuffer[timestamp] ?: kotlin.run {
             DriverStation.reportError("[FalconSD] Pose Buffer is Empty!", false)
@@ -254,7 +223,7 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
     fun followTrajectory(trajectory: Source<Trajectory>) = SwerveTrajectoryTrackerCommand(this, trajectory)
 
     fun followTrajectoryWithCommands(trajectory: Source<PathPlannerTrajectory>, eventMap: HashMap<String, Command>) =
-        SwerveTrajectoryTrackerWithMarkerCommand(this, trajectory, eventMap)
+        SwerveTrajectoryTrackerWithMarkersCommand(this, trajectory, eventMap)
 
     protected class PeriodicIO {
         var leftFrontVoltage: SIUnit<Volt> = 0.volts
@@ -295,13 +264,6 @@ abstract class FalconSwerveDrivetrain<T : org.frc1778.lib.AbstractFalconSwerveMo
     protected sealed class Output {
         // No outputs
         object Nothing : Output()
-
-        // Percent Output
-        class Percent(
-            val speeds: DoubleArray, val azimuths: Array<org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d>
-        ) : Output()
-
-        class Positions(val positions: Array<SwerveModulePosition>) : Output()
 
         class States(val states: Array<SwerveModuleState>) : Output()
     }

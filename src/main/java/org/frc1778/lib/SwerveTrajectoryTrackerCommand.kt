@@ -17,8 +17,6 @@ import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
 import org.ghrobotics.lib.mathematics.units.inFeet
-import org.ghrobotics.lib.subsystems.drive.FalconWestCoastDrivetrain
-import org.ghrobotics.lib.subsystems.drive.WestCoastTrajectoryTrackerCommand
 import org.ghrobotics.lib.utils.Source
 
 class SwerveTrajectoryTrackerCommand(
@@ -44,7 +42,6 @@ class SwerveTrajectoryTrackerCommand(
     override fun execute() {
         elapsed = timer.get()
         val currentTrajectoryState = trajectory.sample(elapsed)
-        val accelerations = Array(4) { 0.0 }
 
         val chassisSpeeds = drivetrain.controller.calculate(
             drivetrain.robotPosition,

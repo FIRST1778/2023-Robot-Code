@@ -64,7 +64,7 @@ class SwerveModuleConstants {
     var kDrivePeakCurrentLimit = 50 // amps
     var kDrivePeakCurrentDuration = 200 // ms
     var kDriveEnableCurrentLimit = true
-    var kDriveMaxVoltage = 10.0 // volts
+    var kDriveMaxVoltage = 11.0 // volts
     var kDriveVoltageMeasurementFilter = 8 // # of samples in rolling average
 
     // drive measurement

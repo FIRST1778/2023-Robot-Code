@@ -1,24 +1,20 @@
 package org.frc1778
 
-import com.ctre.phoenix.sensors.CANCoder
 import com.pathplanner.lib.PathPlanner
 import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.networktables.NetworkTableInstance
-import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PneumaticsModuleType
-import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
-import org.frc1778.lib.FalconCanCoder
 import org.frc1778.lib.SwerveTrajectoryTrackerCommand
 import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.Lights
+import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
-import org.ghrobotics.lib.wrappers.FalconSolenoid
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
-import javax.naming.ldap.Control
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -35,8 +31,8 @@ object Robot : FalconTimedRobot() {
 
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
-    val trajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
-    lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
+    private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
+    private lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
     private var autonomousCommand: Command? = null
 
 //    val pcm = PneumaticHub(30)
@@ -50,6 +46,8 @@ object Robot : FalconTimedRobot() {
 //    )
     init {
         +Drive
+        +Lights
+        +Vision
     }
 
 
@@ -63,7 +61,6 @@ object Robot : FalconTimedRobot() {
         Drive.pigeon.yaw = 0.0
         field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
-
     }
 
 
@@ -113,21 +110,12 @@ object Robot : FalconTimedRobot() {
 //        Controls.operatorController.update()
 
     }
+    override fun simulationInit() {
+
+    }
+
+    override fun simulationPeriodic() {
+
+    }
 
 }
-
-//    override fun testInit()
-//    {
-//        // Cancels all running commands at the start of test mode.
-//        CommandScheduler.getInstance().cancelAll()
-//    }
-//
-//    override fun testPeriodic()
-//    {
-//
-//    }
-//
-//    override fun simulationInit()
-//    {
-//
-//   

@@ -1,15 +1,10 @@
-package org.frc1778.subsystems
+package org.frc1778.lib
 
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
-import org.frc1778.lib.AbstractFalconAbsoluteEncoder
-import org.frc1778.lib.AbstractFalconSwerveModule
-import org.frc1778.lib.FalconCanCoder
-import org.frc1778.lib.SwerveModuleConstants
-import org.ghrobotics.lib.mathematics.twodim.geometry.Rotation2d
 import org.ghrobotics.lib.mathematics.units.Ampere
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
@@ -30,6 +25,7 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
     private var resetIteration: Int = 0
     private var referenceAngle: Double = 0.0
     val name = swerveModuleConstants.kName
+    private val maxVoltage = swerveModuleConstants.kDriveMaxVoltage
 
     override var encoder: AbstractFalconAbsoluteEncoder<Radian> = FalconCanCoder(
         swerveModuleConstants.kCanCoderId,
@@ -79,14 +75,9 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
         }
     }
 
-
-    override fun setControls(speed: Double, azimuth: Rotation2d) {
-        TODO("Not yet implemented")
-    }
-
     override fun setState(state: SwerveModuleState, arbitraryFeedForward: SIUnit<Volt>) {
         var setAngle = state.angle.radians % (2 * Math.PI)
-        var voltage = (state.speedMetersPerSecond / swerveModuleConstants.kDriveMaxSpeed) * 12.0
+        var voltage = (state.speedMetersPerSecond / swerveModuleConstants.kDriveMaxSpeed) * maxVoltage
         if (setAngle < 0.0) setAngle += 2.0 * Math.PI
 
 
@@ -108,7 +99,6 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
         setVoltage(voltage)
         setAngle(setAngle)
 
-
     }
 
     private fun stateAngle(): Double {
@@ -118,27 +108,6 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
         return motorAngle
     }
 
-
-    override fun setPosition(position: SwerveModulePosition, arbitraryFeedForward: SIUnit<Volt>) {
-        TODO("Not yet implemented")
-    }
-
-    override fun resetAngle(angle: SIUnit<Radian>) {
-        TODO("Not yet implemented")
-    }
-
-    override fun resetDriveEncoder(position: SIUnit<Meter>) {
-        driveMotor.encoder.resetPosition(position)
-    }
-
-
-    override fun reset() {
-        TODO("Not yet implemented")
-    }
-
-    override fun state(): SwerveModuleState {
-        TODO("Not yet implemented")
-    }
 
     //Keep an eye on this function
     override fun swervePosition(): SwerveModulePosition = SwerveModulePosition(
@@ -204,7 +173,6 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
     override val drivePosition: SIUnit<Meter> get() = driveMotor.encoder.position
     override val driveVelocity: SIUnit<Velocity<Meter>> get () = driveMotor.encoder.velocity
     override val anglePosition: SIUnit<Radian> get() = encoder.position
-    val absoluteAngle: SIUnit<Radian> get() = encoder.absolutePosition
 
     companion object {
         private const val ENCODER_RESET_ITERATIONS = 500
