@@ -25,7 +25,7 @@ class ArmJointSim(initialJointAngle: Double){
     fun makeLogger(): PrintWriter {
         var file = File("logs.csv")
         var logger = PrintWriter(file)
-        logger.println("time, velocity at joint (rad/s), angle at joint (deg), voltage, current")
+        logger.println("time, velocity at joint (rad/s), angle at joint (deg), voltage, current, Ks")
         return logger
     }
     private var logger = makeLogger()
@@ -37,7 +37,7 @@ class ArmJointSim(initialJointAngle: Double){
         capVelocity(dt)
         joint_theta += velocityAtJoint() * dt
         val time: Double = Timer.getFPGATimestamp()
-        logger.printf("%s,%s,%s,%s,%s\n", time, velocityAtJoint(), Math.toDegrees(joint_theta), input, currentDraw)
+        logger.printf("%s,%s,%s,%s,%s,%s\n", time, velocityAtJoint(), Math.toDegrees(joint_theta), input, currentDraw, torquesToVoltage(arm_length)/Math.sin(joint_theta))
     }
     fun capVelocity(dt : Double){
         velocity += accel * dt
@@ -52,10 +52,18 @@ class ArmJointSim(initialJointAngle: Double){
         currentDraw = motor.getCurrent(velocity, input)
         val torqueAtMotor: Double = motor.getTorque(currentDraw)
         val inertia: Double = calculateInertia(arm_length)
-        val armTorqueGravity: Double = 9.81 * arm_mass * calculateCog(arm_length) * Math.sin(joint_theta)
-        val springTorque: Double = spring_constant * spring_spur_length * spring_h_length * Math.sin(joint_theta)
-        accel = Ng * (Ng * motor_count * torqueAtMotor + springTorque - armTorqueGravity) / inertia
+        accel = Ng * (Ng * motor_count * torqueAtMotor + springTorque() - armTorqueGravity(arm_length)) / inertia
     }
+    fun torquesToVoltage(arm_length: Double) : Double{
+        return (armTorqueGravity(arm_length) - springTorque()) * (motor.rOhms / (motor_count * Ng* motor.KtNMPerAmp))
+    }
+    fun armTorqueGravity(arm_length : Double): Double{
+        return 9.81 * arm_mass * calculateCog(arm_length) * Math.sin(joint_theta)
+    }
+    fun springTorque(): Double {
+        return spring_constant * spring_spur_length * spring_h_length * Math.sin(joint_theta)
+    }
+
     fun velocityAtJoint(): Double {
         return velocity / Ng
     }
@@ -72,6 +80,9 @@ class ArmJointSim(initialJointAngle: Double){
 
     fun getMinArmLength(): Double {
         return min_arm_length
+    }
+    fun getMaxArmLength(): Double {
+        return max_arm_length
     }
 
     fun angleAtJoint() : Double {

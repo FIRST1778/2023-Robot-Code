@@ -35,8 +35,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
 
     private val maxVoltage = 12.0
 
-
-
     private var motorOutputLimiterEntry: GenericEntry =
         Constants.DriveConstants.driveTab.add("Motor Percentage", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(

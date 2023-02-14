@@ -27,6 +27,8 @@ import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 import org.frc1778.lib.FalconTimedRobot
+import org.frc1778.subsystems.Arm
+import org.frc1778.subsystems.Vision
 import javax.naming.ldap.Control
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -44,38 +46,7 @@ object Robot : FalconTimedRobot() {
     val trajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
     lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
     private var autonomousCommand: Command? = null
-    var armJointSim = ArmJointSim(0.0)
 
-    var encoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
-    var encoderSim = EncoderSim(encoder)
-
-    var motor = PWMSparkMax(2)
-
-    var kA : Double = 0.03516
-    var kV : Double = 1.615
-    var plant = LinearSystemId.identifyPositionSystem(kV, kA)
-
-    var observer = KalmanFilter(
-            Nat.N2(),
-            Nat.N1(),
-            plant,
-            VecBuilder.fill(0.5, 0.5),
-            VecBuilder.fill(0.01),
-            0.02
-    )
-    var controller = LinearQuadraticRegulator(
-            plant,
-            VecBuilder.fill(8.0, 8.0),
-            VecBuilder.fill(12.0),
-            0.020
-    )
-    var loop = LinearSystemLoop(
-            plant,
-            controller,
-            observer,
-            12.0,
-            0.020
-    )
     //    val pcm = PneumaticHub(30)
 //    val compressor = pcm.makeCompressor()
 //
@@ -86,7 +57,10 @@ object Robot : FalconTimedRobot() {
 //        30
 //    )
     init {
+
+        +Vision
         +Drive
+        +Arm
     }
 
 
@@ -100,19 +74,10 @@ object Robot : FalconTimedRobot() {
         Drive.pigeon.yaw = 0.0
         field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
-
-        encoder.setSamplesToAverage(5)
-
-        encoder.setDistancePerPulse((2 * Math.PI) / 1024)
-
-        encoder.setMinRate(1.0)
-
-
     }
 
 
     override fun robotPeriodic() {
-        CommandScheduler.getInstance().run()
         field.robotPose = Drive.robotPosition
 
 //        SmartDashboard.updateValues()
@@ -154,21 +119,11 @@ object Robot : FalconTimedRobot() {
 
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {
-        var desiredAngle : Double = Math.toRadians(90.0)
-        loop.setNextR((VecBuilder.fill(desiredAngle, 0.0)))
-        loop.correct(VecBuilder.fill(encoder.distance))
-        loop.predict(0.020)
-        val nextVoltage = loop.getU(0)
-        motor.setVoltage(nextVoltage)
+
     }
 
     override fun simulationPeriodic() {
-        armJointSim.setInput(motor.get() * RobotController.getBatteryVoltage())
 
-        armJointSim.update(0.02, armJointSim.getMinArmLength())
-
-        encoderSim.distance = armJointSim.angleAtJoint()
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps()))
     }
 
 }
