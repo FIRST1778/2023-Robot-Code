@@ -1,6 +1,5 @@
 package org.frc1778
 
-import ArmJointSim
 import com.ctre.phoenix.sensors.CANCoder
 import com.pathplanner.lib.PathPlanner
 import com.pathplanner.lib.PathPlannerTrajectory
@@ -26,9 +25,11 @@ import org.frc1778.lib.SwerveTrajectoryTrackerCommand
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
+import org.frc1778.ArmJointSim
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Vision
+import org.frc1778.commands.ArmTrapezoidCommand
 import javax.naming.ldap.Control
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -45,6 +46,7 @@ object Robot : FalconTimedRobot() {
     private val fieldTab = Shuffleboard.getTab("Field")
     val trajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
     lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
+    lateinit var trapezoidCommand: ArmTrapezoidCommand
     private var autonomousCommand: Command? = null
 
     //    val pcm = PneumaticHub(30)
@@ -57,7 +59,6 @@ object Robot : FalconTimedRobot() {
 //        30
 //    )
     init {
-
         +Vision
         +Drive
         +Arm
@@ -109,6 +110,8 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         autonomousCommand?.cancel()
+        trapezoidCommand = ArmTrapezoidCommand()
+        trapezoidCommand.schedule()
         Drive.setPose(trajectory.initialHolonomicPose)
 //        compressor.enableAnalog(
 //            30.0,

@@ -1,6 +1,6 @@
 package org.frc1778.subsystems
 
-import ArmJointSim
+import org.frc1778.ArmJointSim
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.controller.LinearQuadraticRegulator
@@ -35,7 +35,9 @@ object Arm : FalconSubsystem() {
 
     val Ks : Double = 0.3851
 
-    var desiredAngle : Double = Math.toRadians(90.0)
+    // This is set in the ArmTrapezoidCommand to what the profile wants, so we
+    // initialize it to a dud value here to not immediately activate the arm.
+    var desiredAngle : Double = Math.toRadians(0.0)
 
     var angleControlEnabled : Boolean = true
 
@@ -68,7 +70,7 @@ object Arm : FalconSubsystem() {
         if(angleControlEnabled) {
             loop.setNextR((VecBuilder.fill(desiredAngle, 0.0)))
             loop.correct(VecBuilder.fill(getCurrentAngle().value))
-            loop.predict(0.020)
+            loop.predict(0.020) // 20 ms
 
             var nextVoltage = loop.getU(0)
             nextVoltage += Ks * Math.sin(getCurrentAngle().value)
@@ -102,6 +104,4 @@ object Arm : FalconSubsystem() {
         encoderSim.distance = armJointSim.angleAtJoint()
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps()))
     }
-
-
 }
