@@ -22,7 +22,7 @@ import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
 
 object Arm : FalconSubsystem() {
-    var armJointSim = ArmJointSim(0.0)
+    var armJointSim = ArmJointSim(Math.PI/4)
 
     var encoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
     var encoderSim = EncoderSim(encoder)
@@ -37,7 +37,7 @@ object Arm : FalconSubsystem() {
 
     // This is set in the ArmTrapezoidCommand to what the profile wants, so we
     // initialize it to a dud value here to not immediately activate the arm.
-    var desiredAngle : Double = Math.toRadians(0.0)
+    var desiredAngle : Double = Math.toRadians(45.0)
 
     var angleControlEnabled : Boolean = true
 
@@ -99,7 +99,7 @@ object Arm : FalconSubsystem() {
     override fun simulationPeriodic(){
         armJointSim.setInput(angleMotorMain.get() * RobotController.getBatteryVoltage())
 
-        armJointSim.update(0.02, armJointSim.getMaxArmLength())
+        armJointSim.update(0.02, armJointSim.getMinArmLength())
 
         encoderSim.distance = armJointSim.angleAtJoint()
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps()))

@@ -30,6 +30,8 @@ import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Vision
 import org.frc1778.commands.ArmTrapezoidCommand
+import org.frc1778.lib.DataLogger
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import javax.naming.ldap.Control
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -49,6 +51,7 @@ object Robot : FalconTimedRobot() {
     lateinit var trapezoidCommand: ArmTrapezoidCommand
     private var autonomousCommand: Command? = null
 
+    public var dataLogger = DataLogger("DataLogs")
     //    val pcm = PneumaticHub(30)
 //    val compressor = pcm.makeCompressor()
 //
@@ -110,7 +113,7 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         autonomousCommand?.cancel()
-        trapezoidCommand = ArmTrapezoidCommand()
+        trapezoidCommand = ArmTrapezoidCommand(90.0.degrees)
         trapezoidCommand.schedule()
         Drive.setPose(trajectory.initialHolonomicPose)
 //        compressor.enableAnalog(
@@ -122,7 +125,7 @@ object Robot : FalconTimedRobot() {
 
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {
-
+        dataLogger.log()
     }
 
     override fun simulationPeriodic() {

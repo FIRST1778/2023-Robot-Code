@@ -22,6 +22,8 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/PWMSparkMax[2]": "Motor Controller",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/Shuffleboard/Field/Field": "Field2d"
     }
   }
