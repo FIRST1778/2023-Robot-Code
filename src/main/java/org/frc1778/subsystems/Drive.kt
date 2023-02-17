@@ -2,6 +2,9 @@ package org.frc1778.subsystems
 
 import com.ctre.phoenix.sensors.Pigeon2
 import edu.wpi.first.math.VecBuilder
+import edu.wpi.first.math.controller.HolonomicDriveController
+import edu.wpi.first.math.controller.PIDController
+import edu.wpi.first.math.controller.ProfiledPIDController
 import edu.wpi.first.math.controller.RamseteController
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
@@ -11,6 +14,7 @@ import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
+import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.Constants
@@ -79,8 +83,29 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
         return null
     }
 
-    override val controller: RamseteController = RamseteController(
-        .5, .125
+    //TODO: Tune Holonomic Drive Controller
+    override val controller: HolonomicDriveController = HolonomicDriveController(
+        PIDController(
+            0.0,
+            0.0,
+            0.0
+        ),
+        PIDController(
+            0.0,
+            0.0,
+            0.0
+        ),
+        ProfiledPIDController(
+            0.0,
+            0.0,
+            0.0,
+            TrapezoidProfile.Constraints(
+                Constants.DriveConstants.maxSpeed.value,
+                Constants.DriveConstants.maxAngularSpeed.value
+            )
+
+        )
+
 
     )
 
