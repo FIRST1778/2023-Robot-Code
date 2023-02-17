@@ -1,3 +1,5 @@
+// TODO safety check: only let Arm move when in the right area.
+
 package org.frc1778.subsystems
 
 import org.frc1778.ArmJointSim
@@ -10,7 +12,7 @@ import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.CounterBase
 import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.RobotController
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax // TODO
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.EncoderSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
