@@ -4,8 +4,17 @@ import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.Timer
 import java.io.File
 import java.io.PrintWriter
+import org.frc1778.lib.DataLogger
 
 class ArmJointSim(initialJointAngle: Double){
+    private var logger = DataLogger("armjointsim")
+    init {
+        logger.add("velocity (rad/s)", { -> velocity })
+        logger.add("angle (deg)", { -> Math.toDegrees(joint_theta) })
+        logger.add("input voltage", { -> input })
+        logger.add("current (amps)", { -> currentDraw })
+    }
+
     private var velocity = 0.0
     private var accel = 0.0
     private var joint_theta = initialJointAngle
@@ -24,13 +33,6 @@ class ArmJointSim(initialJointAngle: Double){
     private var max_arm_inertia = 4.07 // m^2 kg
     private var min_arm_cog = 0.3 // m
     private var max_arm_cog = 0.6 // m
-    fun makeLogger(): PrintWriter {
-        var file = File("logs.csv")
-        var logger = PrintWriter(file)
-        logger.println("time, velocity at joint (rad/s), angle at joint (deg), voltage, current, Ks")
-        return logger
-    }
-    private var logger = makeLogger()
     fun setInput(voltage: Double){
         input = voltage
     }
@@ -39,7 +41,7 @@ class ArmJointSim(initialJointAngle: Double){
         capVelocity(dt)
         joint_theta += velocityAtJoint() * dt
         val time: Double = Timer.getFPGATimestamp()
-        logger.printf("%s,%s,%s,%s,%s,%s\n", time, velocityAtJoint(), Math.toDegrees(joint_theta), input, currentDraw, torquesToVoltage(arm_length)/Math.sin(joint_theta))
+        logger.log()
     }
     fun capVelocity(dt : Double){
         velocity += accel * dt
