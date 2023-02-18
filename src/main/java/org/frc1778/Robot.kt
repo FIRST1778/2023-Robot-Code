@@ -74,7 +74,6 @@ object Robot : FalconTimedRobot() {
         Drive.pigeon.yaw = 0.0
         field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
-        compressor.
     }
 
 
