@@ -31,6 +31,7 @@ import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Vision
 import org.frc1778.commands.ArmTrapezoidCommand
 import org.frc1778.lib.DataLogger
+import org.frc1778.subsystems.Intake
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import javax.naming.ldap.Control
 /**
@@ -51,16 +52,11 @@ object Robot : FalconTimedRobot() {
     lateinit var trapezoidCommand: ArmTrapezoidCommand
     private var autonomousCommand: Command? = null
 
+    val pcm = PneumaticHub(30)
+    val compressor = pcm.makeCompressor()
+
     public var dataLogger = DataLogger("DataLogs")
-    //    val pcm = PneumaticHub(30)
-//    val compressor = pcm.makeCompressor()
-//
-//    val sol = FalconDoubleSolenoid(
-//        1,
-//        0,
-//        PneumaticsModuleType.REV-PH,
-//        30
-//    )
+
     init {
         +Vision
         +Drive
@@ -78,6 +74,7 @@ object Robot : FalconTimedRobot() {
         Drive.pigeon.yaw = 0.0
         field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
+        compressor.
     }
 
 

@@ -104,4 +104,5 @@ object Arm : FalconSubsystem() {
         encoderSim.distance = armJointSim.angleAtJoint()
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps()))
     }
+    
 }
