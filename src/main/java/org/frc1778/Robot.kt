@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.frc1778.lib.SwerveTrajectoryTrackerCommand
 import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
@@ -46,7 +45,6 @@ object Robot : FalconTimedRobot() {
 //    )
     init {
         +Drive
-        +Lights
         +Vision
     }
 
