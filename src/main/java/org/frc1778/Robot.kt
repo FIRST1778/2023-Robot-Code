@@ -2,36 +2,20 @@ package org.frc1778
 
 import com.pathplanner.lib.PathPlanner
 import com.pathplanner.lib.PathPlannerTrajectory
-import edu.wpi.first.math.Nat
-import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.controller.LinearQuadraticRegulator
-import edu.wpi.first.math.estimator.KalmanFilter
-import edu.wpi.first.math.system.LinearSystemLoop
-import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.networktables.NetworkTableInstance
-import edu.wpi.first.wpilibj.*
-import edu.wpi.first.wpilibj.PneumaticsModuleType
+import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj.simulation.BatterySim
-import edu.wpi.first.wpilibj.simulation.EncoderSim
-import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import org.frc1778.lib.SwerveTrajectoryTrackerCommand
-import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Vision
-import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
-import org.ghrobotics.lib.wrappers.FalconSolenoid
-import org.frc1778.ArmJointSim
-import org.frc1778.lib.FalconTimedRobot
-import org.frc1778.subsystems.Arm
 import org.frc1778.commands.ArmTrapezoidCommand
 import org.frc1778.lib.DataLogger
-import org.frc1778.subsystems.Intake
+import org.frc1778.lib.FalconTimedRobot
+import org.frc1778.lib.SwerveTrajectoryTrackerCommand
+import org.frc1778.subsystems.Arm
+import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.mathematics.units.derived.degrees
-import javax.naming.ldap.Control
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -48,6 +32,7 @@ object Robot : FalconTimedRobot() {
     private val fieldTab = Shuffleboard.getTab("Field")
 
     lateinit var trapezoidCommand: ArmTrapezoidCommand
+
     private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
     private lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
     private var autonomousCommand: Command? = null

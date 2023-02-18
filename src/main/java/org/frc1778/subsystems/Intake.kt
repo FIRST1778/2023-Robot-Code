@@ -10,7 +10,7 @@ import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 object Intake : FalconSubsystem() {
-    var intakeMotor = CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless)
+    var intakeMotor = CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless)
 
 
     val intakeSol = FalconDoubleSolenoid(

@@ -2,6 +2,8 @@
 
 package org.frc1778.subsystems
 
+import com.revrobotics.CANSparkMax
+import com.revrobotics.CANSparkMaxLowLevel
 import org.frc1778.ArmJointSim
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.VecBuilder
@@ -16,20 +18,26 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax // TODO
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.EncoderSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
+import org.frc1778.ExtensionSim
 import org.ghrobotics.lib.commands.FalconSubsystem
+import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
-import org.ghrobotics.lib.mathematics.units.derived.degree
-import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
+import org.ghrobotics.lib.mathematics.units.meters
+import kotlin.math.sin
 
 object Arm : FalconSubsystem() {
-    var armJointSim = ArmJointSim(Math.PI/4)
+    var armJointSim = ArmJointSim(Math.toRadians(135.0))
+    var extensionSim = ExtensionSim(0.0.meters)
 
-    var encoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
-    var encoderSim = EncoderSim(encoder)
+    var armEncoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
+    var extensionEncoder = Encoder(3, 4, false, CounterBase.EncodingType.k4X)
+    var armEncoderSim = EncoderSim(armEncoder)
+    var extensionEncoderSim = EncoderSim(extensionEncoder)
 
-    var angleMotorMain = PWMSparkMax(2)
+    var angleMotorMain = PWMSparkMax(11)
+    var extensionMotor = PWMSparkMax(12)
 
     var kA : Double = 0.03516
     var kV : Double = 1.615
@@ -39,7 +47,8 @@ object Arm : FalconSubsystem() {
 
     // This is set in the ArmTrapezoidCommand to what the profile wants, so we
     // initialize it to a dud value here to not immediately activate the arm.
-    var desiredAngle : Double = Math.toRadians(45.0)
+    var desiredAngle : Double = Math.toRadians(135.0)
+    var desiredExtensionPosition : SIUnit<Meter> = 0.0.meters
 
     var angleControlEnabled : Boolean = true
 
@@ -75,7 +84,7 @@ object Arm : FalconSubsystem() {
             loop.predict(0.020) // 20 ms
 
             var nextVoltage = loop.getU(0)
-            nextVoltage += Ks * Math.sin(getCurrentAngle().value)
+            nextVoltage += Ks * sin(getCurrentAngle().value)
             if (nextVoltage > 12) {
                 nextVoltage = 12.0
             }
@@ -85,26 +94,38 @@ object Arm : FalconSubsystem() {
             angleMotorMain.setVoltage(0.0)
         }
     }
+    fun getCurrentExtensionPosition() : SIUnit<Meter>{
+        return extensionEncoder.distance.meters
+    }
+    fun setExtensionPosition(position : SIUnit<Meter>){
+        desiredExtensionPosition = position
+    }
     fun getCurrentAngle() : SIUnit<Radian>{
-        return encoder.distance.radians
+        return armEncoder.distance.radians
     }
     override fun lateInit() {
-        encoder.setSamplesToAverage(5)
+        armEncoder.setSamplesToAverage(5)
 
-        encoder.setDistancePerPulse((2 * Math.PI) / 1024)
+        armEncoder.setDistancePerPulse((2 * Math.PI) / 1024)
 
-        encoder.setMinRate(1.0)
+        armEncoder.setMinRate(1.0)
+
+        armEncoderSim.distance = armJointSim.angleAtJoint()
     }
     override fun periodic() {
         angleControl()
+        extensionMotor.setVoltage(5.0)
     }
-    override fun simulationPeriodic(){
+    override fun simulationPeriodic() {
+        extensionSim.setInput(extensionMotor.get() * RobotController.getBatteryVoltage())
         armJointSim.setInput(angleMotorMain.get() * RobotController.getBatteryVoltage())
 
+        extensionSim.update(0.02, armJointSim.angleAtJoint())
         armJointSim.update(0.02, armJointSim.getMinArmLength())
 
-        encoderSim.distance = armJointSim.angleAtJoint()
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps()))
+        extensionEncoderSim.distance = extensionSim.getCurrentArmPosition()
+        armEncoderSim.distance = armJointSim.angleAtJoint()
+
+        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps(), extensionSim.getCurrentDrawAmps()))
     }
-    
 }

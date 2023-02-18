@@ -1,29 +1,30 @@
 package org.frc1778.commands
 
-import org.frc1778.Constants
-import org.frc1778.Controls
-import org.frc1778.subsystems.Arm
-import org.ghrobotics.lib.commands.FalconCommand
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Robot
+import org.frc1778.subsystems.Arm
+import org.ghrobotics.lib.commands.FalconCommand
+import org.ghrobotics.lib.commands.FalconSubsystem
+import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
+import org.ghrobotics.lib.mathematics.units.meters
 import kotlin.math.PI
 
-class ArmTrapezoidCommand(endPosition : SIUnit<Radian>) : FalconCommand(Arm) {
+class ExtensionCommand : FalconCommand(Arm){
     companion object {
         // TODO: made up these numbers
-        const val MAX_VEL = 2.0  // rad/sec
+        const val MAX_VEL = 0.45  // m/s
 
-        const val MAX_ACCEL = 1.5  // rad/sec^2
+        const val MAX_ACCEL = 0.45  // m/s
 
         const val START_VEL = 0.0   // rad/sec
 
+        const val END_POS = 0.381   // m
         const val END_VEL = 0.0     // rad/sec
     }
-    val END_POS = Math.toRadians(135.0)  // rad
+
 
     var profile: TrapezoidProfile? = null
     var timer = Timer()
@@ -32,7 +33,7 @@ class ArmTrapezoidCommand(endPosition : SIUnit<Radian>) : FalconCommand(Arm) {
         timer.reset()
         timer.start()
 
-        var startPosition: SIUnit<Radian> = Arm.getCurrentAngle()
+        var startPosition: SIUnit<Meter> = Arm.getCurrentExtensionPosition()
 
 
         val constraints = TrapezoidProfile.Constraints(MAX_VEL, MAX_ACCEL)
@@ -40,14 +41,13 @@ class ArmTrapezoidCommand(endPosition : SIUnit<Radian>) : FalconCommand(Arm) {
         val endState = TrapezoidProfile.State(END_POS, END_VEL)
         profile = TrapezoidProfile(constraints, endState, startState)
         Robot.dataLogger.add("Time") {timer.get()}
-        Robot.dataLogger.add("Position") {Math.toDegrees(profile!!.calculate(timer.get()).position)}
-        Robot.dataLogger.add("CurrentAngle") {Math.toDegrees(Arm.getCurrentAngle().value)}
+        Robot.dataLogger.add("Extension Position") {profile!!.calculate(timer.get()).position}
 
     }
 
     override fun execute() {
         val state = profile!!.calculate(timer.get())
-        Arm.setAngle(state.position.radians)
+        Arm.setExtensionPosition(state.position.meters)
     }
 
     override fun isFinished(): Boolean {

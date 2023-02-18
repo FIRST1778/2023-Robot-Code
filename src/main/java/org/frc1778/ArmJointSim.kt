@@ -13,6 +13,7 @@ class ArmJointSim(initialJointAngle: Double){
         logger.add("angle (deg)", { -> Math.toDegrees(joint_theta) })
         logger.add("input voltage", { -> input })
         logger.add("current (amps)", { -> currentDraw })
+        logger.add("accel (rad/s^2)", { -> accel})
     }
 
     private var velocity = 0.0
