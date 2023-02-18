@@ -25,6 +25,4 @@ object Vision : FalconSubsystem() {
         return photonPoseEstimator.update()
     }
 
-
-
 }

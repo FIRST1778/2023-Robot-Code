@@ -13,10 +13,6 @@ import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitVelocity
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnitsPer100ms
-import org.ghrobotics.lib.motors.AbstractFalconEncoder
-import java.util.function.DoubleConsumer
-import java.util.function.DoubleSupplier
-import kotlin.math.roundToInt
 
 class FalconCanCoder<K : SIKey>(
     canId: Int,

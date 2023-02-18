@@ -48,6 +48,7 @@ def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 wpi.java.debugJni = false
 
 // Set this to true to enable desktop support
+
 def includeDesktopSupport = true
 
 repositories {
@@ -107,7 +108,7 @@ deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     // Configure string concat to always inline compile
     options.compilerArgs.add '-XDstringConcat=inline'
 }

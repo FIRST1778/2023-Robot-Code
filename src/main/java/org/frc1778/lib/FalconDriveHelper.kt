@@ -8,7 +8,6 @@
 
 package org.frc1778.lib
 
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import org.ghrobotics.lib.mathematics.max
 import kotlin.math.absoluteValue
@@ -145,15 +144,5 @@ class FalconDriveHelper {
     companion object {
         const val kQuickStopThreshold = 0.2
         const val kQuickStopAlpha = 0.1
-        private const val kHighAdjustmentPower = 1.75 + 0.4375
-        private const val kLowAdjustmentPower = 1.50
-        private const val kMaxSpeed = 1.0
-        private const val kHighPowerRotationScalar = 0.8
-        private const val kLowPowerScalar = 0.5
-        private const val kRotationExponent = 4.0
-        private const val kPoleThreshold = 0.0
-        private val kRobotRelativePoleThreshold = Math.toRadians(5.0)
-        private const val kDeadband = 0.25
-        private const val kRotationDeadband = 0.15
     }
 }

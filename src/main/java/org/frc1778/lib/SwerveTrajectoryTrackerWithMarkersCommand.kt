@@ -10,7 +10,7 @@ import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.utils.Source
 import java.util.*
 
-class SwerveTrajectoryTrackerWithMarkerCommand(
+class SwerveTrajectoryTrackerWithMarkersCommand(
     private val drivetrain: FalconSwerveDrivetrain<*>,
     private val trajectorySource: Source<PathPlannerTrajectory>,
     private val eventMap: HashMap<String, Command>
@@ -69,7 +69,7 @@ class SwerveTrajectoryTrackerWithMarkerCommand(
     override fun execute() {
         for ((command, runCommand) in currentCommands) {
             if (!runCommand) {
-                continue;
+                continue
             }
 
             command.execute()
@@ -93,10 +93,8 @@ class SwerveTrajectoryTrackerWithMarkerCommand(
 
                     for ((command, runCommand) in currentCommands) {
                         if (!runCommand) {
-                            continue;
+                            continue
                         }
-
-
                         if (!Collections.disjoint(
                                 command.requirements, eventCommand.requirements
                             )

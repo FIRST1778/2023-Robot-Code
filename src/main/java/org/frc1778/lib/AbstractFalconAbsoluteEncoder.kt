@@ -4,7 +4,6 @@ import edu.wpi.first.util.sendable.Sendable
 import org.ghrobotics.lib.mathematics.units.SIKey
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
-import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnit
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitModel
 import org.ghrobotics.lib.motors.AbstractFalconEncoder
 
