@@ -29,6 +29,9 @@ import org.ghrobotics.lib.utils.flatMapToSet
 import org.ghrobotics.lib.utils.mapNotNullToSet
 import org.ghrobotics.lib.utils.mapToSet
 import org.ghrobotics.lib.utils.plusToSet
+import java.io.BufferedReader
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 class PathFinder(
     private val robotSize: SIUnit<Meter>,
@@ -60,15 +63,39 @@ class PathFinder(
             *restrictedAreas
         ) ?: return null
 
+        FileOutputStream("src/main/out/path_nodes.csv").run {
+            val writer = bufferedWriter()
+            writer.write("""Index,X,Y""")
+            writer.newLine()
+            pathNodes.forEachIndexed {
+                    index:Int, node: Vector2D ->
+                writer.write("$index,${node.x},${node.y}")
+                writer.newLine()
+            }
+            writer.flush()
+        }
+
         val interpolator = SplineInterpolator()
 
-        val samples = 4
+        val samples = 100
 
         val distances = mutableListOf<Double>()
         distances.add(0.0)
 
         pathNodes.asSequence().zipWithNext().forEach { (a, b) ->
             distances += distances.last() + a.distance(b)
+        }
+
+        FileOutputStream("src/main/out/distances.csv").run {
+            val writer = bufferedWriter()
+            writer.write("""Index,Distance""")
+            writer.newLine()
+            distances.forEachIndexed {
+                    index:Int, distance ->
+                writer.write("$index,$distance")
+                writer.newLine()
+            }
+            writer.flush()
         }
 
         val distanceDelta = distances.last() / samples
@@ -93,11 +120,25 @@ class PathFinder(
             )
         }.toTypedArray()
 
+
+
         return listOf(
             start,
             *interpolatedNodes,
             end
-        )
+        ).also {
+            FileOutputStream("src/main/out/pose.csv").run {
+                val writer = bufferedWriter()
+                writer.write("""Index,X,Y,Heading""")
+                writer.newLine()
+                it.forEachIndexed {
+                        index:Int, pose2d: Pose2d ->
+                    writer.write("$index,${pose2d.x},${pose2d.y},${pose2d.rotation.radians}")
+                    writer.newLine()
+                }
+                writer.flush()
+            }
+        }
     }
 
     fun findPath(
@@ -107,6 +148,17 @@ class PathFinder(
     ): List<Vector2D>? {
         val effectiveRestrictedAreas = this.restrictedAreas.plusToSet(restrictedAreas)
         val worldNodes = createNodes(effectiveRestrictedAreas) + setOf(start, end)
+        FileOutputStream("src/main/out/nodes.csv").run {
+            val writer = bufferedWriter()
+            writer.write("""Index,X,Y""")
+            writer.newLine()
+            worldNodes.forEachIndexed {
+                    index:Int, node: Vector2D ->
+                writer.write("$index,${node.x},${node.y}")
+                writer.newLine()
+            }
+            writer.flush()
+        }
         return optimize(
             start,
             end,
