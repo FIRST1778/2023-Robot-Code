@@ -37,18 +37,12 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
     }
     fun capVelocity(dt : Double){
         velocityAtMotor += accelerationAtMotor * dt
-        if (velocityAtMotor > getMotorSpeed(0.0, input)){
-            velocityAtMotor =getMotorSpeed(0.0, input)
-        }
-        if(velocityAtMotor < -getMotorSpeed(0.0, input)){
-            velocityAtMotor = -getMotorSpeed(0.0, input)
-        }
+        var freeSpeed = motor.getSpeed(0.0, input)
+        velocityAtMotor = Math.min(velocityAtMotor, freeSpeed)
+        velocityAtMotor = Math.max(velocityAtMotor, -freeSpeed)
         linearVelocity = velocityAtMotor / (Ng / pulleyRadius)
     }
 
-    fun getMotorSpeed(torqueNm: Double, voltageInputVolts: Double): Double {
-        return voltageInputVolts * motor.KvRadPerSecPerVolt - 1.0 / motor.KtNMPerAmp * torqueNm * motor.rOhms * motor.KvRadPerSecPerVolt
-    }
     fun calculateAcceleration(jointTheta: Double){
         currentDraw = motor.getCurrent(velocityAtMotor, input)
         val torqueAtMotor: Double = motor.getTorque(currentDraw)
