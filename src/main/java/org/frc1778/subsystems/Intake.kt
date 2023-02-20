@@ -19,9 +19,7 @@ object Intake : FalconSubsystem() {
         PneumaticsModuleType.REVPH,
         30
     )
-    fun intakePosition(){
 
-    }
     fun open(){
         intakeSol.state = FalconSolenoid.State.Forward
     }

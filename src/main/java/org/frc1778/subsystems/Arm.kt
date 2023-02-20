@@ -39,6 +39,7 @@ object Arm : FalconSubsystem() {
     var angleMotorMain = PWMSparkMax(11)
     var extensionMotor = PWMSparkMax(12)
 
+
     var kA : Double = 0.03516
     var kV : Double = 1.615
     var plant = LinearSystemId.identifyPositionSystem(kV, kA)
@@ -51,8 +52,9 @@ object Arm : FalconSubsystem() {
     var desiredExtensionPosition : SIUnit<Meter> = 0.0.meters
 
     var angleControlEnabled : Boolean = true
+    var extensionControlEnabled : Boolean = true
 
-    var observer = KalmanFilter(
+    var angleObserver = KalmanFilter(
             Nat.N2(),
             Nat.N1(),
             plant,
@@ -60,30 +62,32 @@ object Arm : FalconSubsystem() {
             VecBuilder.fill(0.01),
             0.02
     )
-    var controller = LinearQuadraticRegulator(
+    var angleController = LinearQuadraticRegulator(
             plant,
             VecBuilder.fill(2.0, 16.0),
             VecBuilder.fill(24.0),
             0.020
     )
-    var loop = LinearSystemLoop(
+    var angleLoop = LinearSystemLoop(
             plant,
-            controller,
-            observer,
+            angleController,
+            angleObserver,
             12.0,
             0.020
     )
+
+
 
     fun setAngle( angle : SIUnit<Radian>) {
         desiredAngle = angle.value
     }
     fun angleControl(){
         if(angleControlEnabled) {
-            loop.setNextR((VecBuilder.fill(desiredAngle, 0.0)))
-            loop.correct(VecBuilder.fill(getCurrentAngle().value))
-            loop.predict(0.020) // 20 ms
+            angleLoop.setNextR(VecBuilder.fill(desiredAngle, 0.0))
+            angleLoop.correct(VecBuilder.fill(getCurrentAngle().value))
+            angleLoop.predict(0.020) // 20 ms
 
-            var nextVoltage = loop.getU(0)
+            var nextVoltage = angleLoop.getU(0)
             nextVoltage += Ks * sin(getCurrentAngle().value)
             if (nextVoltage > 12) {
                 nextVoltage = 12.0
@@ -92,6 +96,11 @@ object Arm : FalconSubsystem() {
             angleMotorMain.setVoltage(nextVoltage)
         }else{
             angleMotorMain.setVoltage(0.0)
+        }
+    }
+    fun extensionControl(){
+        if (extensionControlEnabled){
+
         }
     }
     fun getCurrentExtensionPosition() : SIUnit<Meter>{
@@ -128,4 +137,5 @@ object Arm : FalconSubsystem() {
 
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps(), extensionSim.getCurrentDrawAmps()))
     }
+
 }
