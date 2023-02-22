@@ -3,7 +3,7 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 plugins {
     id "java"
     id "org.jetbrains.kotlin.jvm" version "1.8.0"
-    id "edu.wpi.first.GradleRIO" version "2023.2.1"
+    id "edu.wpi.first.GradleRIO" version "2023.4.1"
     id "idea"
 }
 
@@ -47,8 +47,9 @@ def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 // Set to true to use debug for JNI.
 wpi.java.debugJni = false
 
-// Set this to true to enable desktop support.
-def includeDesktopSupport = false
+// Set this to true to enable desktop support
+
+def includeDesktopSupport = true
 
 repositories {
     maven {url "https://jitpack.io"}
@@ -60,6 +61,7 @@ dependencies {
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
+
 
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)

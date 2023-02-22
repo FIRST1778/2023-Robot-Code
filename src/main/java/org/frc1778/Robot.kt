@@ -3,18 +3,19 @@ package org.frc1778
 import com.pathplanner.lib.PathPlanner
 import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.networktables.NetworkTableInstance
-import edu.wpi.first.wpilibj.PneumaticsModuleType
+import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.CommandScheduler
+import org.frc1778.commands.ArmTrapezoidCommand
+import org.frc1778.lib.DataLogger
+import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.lib.SwerveTrajectoryTrackerCommand
+import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Vision
-import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
-import org.ghrobotics.lib.wrappers.FalconTimedRobot
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -27,27 +28,24 @@ import org.ghrobotics.lib.wrappers.FalconTimedRobot
  * object or package, it will get changed everywhere.)
  */
 object Robot : FalconTimedRobot() {
-
-
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
+
+    lateinit var trapezoidCommand: ArmTrapezoidCommand
+
     private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
     private lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
     private var autonomousCommand: Command? = null
 
-//    val pcm = PneumaticHub(30)
-//    val compressor = pcm.makeCompressor()
-//
-//    val sol = FalconDoubleSolenoid(
-//        1,
-//        0,
-//        PneumaticsModuleType.REVPH,
-//        30
-//    )
+    val pcm = PneumaticHub(30)
+    val compressor = pcm.makeCompressor()
+
+    public var dataLogger = DataLogger("DataLogs")
+
     init {
-        +Drive
-        +Lights
         +Vision
+        +Drive
+        +Arm
     }
 
 
@@ -56,7 +54,7 @@ object Robot : FalconTimedRobot() {
         // button bindings, and put our autonomous chooser on the dashboard.
         RobotContainer
         SmartDashboard.setNetworkTableInstance(
-            NetworkTableInstance.getDefault()
+                NetworkTableInstance.getDefault()
         )
         Drive.pigeon.yaw = 0.0
         field.getObject("traj").setTrajectory(trajectory)
@@ -65,10 +63,10 @@ object Robot : FalconTimedRobot() {
 
 
     override fun robotPeriodic() {
-        CommandScheduler.getInstance().run()
         field.robotPose = Drive.robotPosition
 
 //        SmartDashboard.updateValues()
+
 
     }
 
@@ -96,6 +94,8 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         autonomousCommand?.cancel()
+        trapezoidCommand = ArmTrapezoidCommand(90.0.degrees)
+        trapezoidCommand.schedule()
         Drive.setPose(trajectory.initialHolonomicPose)
 //        compressor.enableAnalog(
 //            30.0,
@@ -106,16 +106,16 @@ object Robot : FalconTimedRobot() {
 
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {
-//        println(compressor.pressure)
-//        Controls.operatorController.update()
+        dataLogger.log()
+    }
+
+    override fun simulationPeriodic() {
 
     }
     override fun simulationInit() {
 
     }
 
-    override fun simulationPeriodic() {
 
-    }
 
 }
