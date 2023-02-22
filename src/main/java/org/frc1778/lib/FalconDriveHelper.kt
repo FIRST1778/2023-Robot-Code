@@ -130,7 +130,6 @@ class FalconDriveHelper {
     }
 
 
-    private var lastChassisSpeeds = ChassisSpeeds()
     fun swerveDrive(
         drivetrain: FalconSwerveDrivetrain<*>,
         vx: Double,
@@ -139,25 +138,27 @@ class FalconDriveHelper {
         fieldRelative: Boolean = true,
         clampAcceleration: Boolean = false
     ): ChassisSpeeds {
+        //Get Current Robot Speed
+        val currentChassisSpeeds = drivetrain.kinematics.toChassisSpeeds(
+            *drivetrain.swerveModuleStates.toTypedArray()
+        )
         return ChassisSpeeds.fromFieldRelativeSpeeds(
-            if (clampAcceleration && abs(vx - lastChassisSpeeds.vxMetersPerSecond) > kMaxAcceleration)
-                    (lastChassisSpeeds.vxMetersPerSecond + kMaxAcceleration.withSign(
-                vx - lastChassisSpeeds.vxMetersPerSecond
+            if (clampAcceleration && abs(vx - currentChassisSpeeds.vxMetersPerSecond) > kMaxAcceleration)
+                    (currentChassisSpeeds.vxMetersPerSecond + kMaxAcceleration.withSign(
+                vx - currentChassisSpeeds.vxMetersPerSecond
             )) else vx,
-            if (clampAcceleration && abs(vy - lastChassisSpeeds.vyMetersPerSecond) > kMaxAcceleration)
-                    (lastChassisSpeeds.vyMetersPerSecond + kMaxAcceleration.withSign(
-                vy - lastChassisSpeeds.vyMetersPerSecond
+            if (clampAcceleration && abs(vy - currentChassisSpeeds.vyMetersPerSecond) > kMaxAcceleration)
+                    (currentChassisSpeeds.vyMetersPerSecond + kMaxAcceleration.withSign(
+                vy - currentChassisSpeeds.vyMetersPerSecond
             )) else vy,
             rotationInput,
             drivetrain.robotPosition.rotation
-        ).also {
-            lastChassisSpeeds = it
-        }
+        )
     }
 
     companion object {
         const val kQuickStopThreshold = 0.2
         const val kQuickStopAlpha = 0.1
-        const val kMaxAcceleration = 3.5
+        const val kMaxAcceleration = 3.5 / 50 // m/s scaled for periodic update rate
     }
 }
