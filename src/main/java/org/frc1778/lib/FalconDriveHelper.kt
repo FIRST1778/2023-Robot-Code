@@ -10,6 +10,7 @@ package org.frc1778.lib
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import org.ghrobotics.lib.mathematics.max
+import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.withSign
 
@@ -74,8 +75,7 @@ class FalconDriveHelper {
             if (linearPercent.absoluteValue < kQuickStopThreshold) {
                 quickStopAccumulator =
                     (1 - kQuickStopAlpha) * quickStopAccumulator + kQuickStopAlpha * curvaturePercent.coerceIn(
-                        -1.0,
-                        1.0
+                        -1.0, 1.0
                     ) * 2.0
             }
             overPower = true
@@ -129,20 +129,33 @@ class FalconDriveHelper {
         return Pair(leftMotorOutput, rightMotorOutput)
     }
 
+
+    private var lastChassisSpeeds = ChassisSpeeds()
     fun swerveDrive(
         drivetrain: FalconSwerveDrivetrain<*>,
-        forwardInput: Double,
-        strafeInput: Double,
+        vx: Double,
+        vy: Double,
         rotationInput: Double,
-        fieldRelative: Boolean
+        fieldRelative: Boolean = true,
+        clampAcceleration: Boolean = false
     ): ChassisSpeeds {
         return ChassisSpeeds.fromFieldRelativeSpeeds(
-            forwardInput, strafeInput, rotationInput, drivetrain.robotPosition.rotation //drivetrain.robotPosition.rotation
+            if (clampAcceleration && abs(vx - lastChassisSpeeds.vxMetersPerSecond) > kMaxAcceleration)
+                    (lastChassisSpeeds.vxMetersPerSecond + kMaxAcceleration.withSign(
+                vx - lastChassisSpeeds.vxMetersPerSecond
+            )) else vx,
+            if (clampAcceleration && abs(vy - lastChassisSpeeds.vyMetersPerSecond) > kMaxAcceleration)
+                    (lastChassisSpeeds.vyMetersPerSecond + kMaxAcceleration.withSign(
+                vy - lastChassisSpeeds.vyMetersPerSecond
+            )) else vy,
+            rotationInput,
+            drivetrain.robotPosition.rotation
         )
     }
 
     companion object {
         const val kQuickStopThreshold = 0.2
         const val kQuickStopAlpha = 0.1
+        const val kMaxAcceleration = 3.5
     }
 }
