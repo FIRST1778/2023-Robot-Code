@@ -25,6 +25,8 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.meters
+import java.security.cert.Extension
+import kotlin.math.cos
 import kotlin.math.sin
 
 object Arm : FalconSubsystem() {
@@ -39,17 +41,20 @@ object Arm : FalconSubsystem() {
     var angleMotorMain = PWMSparkMax(11)
     var extensionMotor = PWMSparkMax(12)
 
+    val angle_kS : Double = 0.3851
+    val angle_kA : Double = 0.03516
+    val angle_kV : Double = 1.615
+    val anglePlant = LinearSystemId.identifyPositionSystem(angle_kV, angle_kA)
 
-    var kA : Double = 0.03516
-    var kV : Double = 1.615
-    var plant = LinearSystemId.identifyPositionSystem(kV, kA)
-
-    val Ks : Double = 0.3851
+    val extension_kA : Double = 0.04607411898461538
+    val extension_kV : Double = 7.213374267914612
+    val extension_kS : Double = 0.0 // 0.4519871072390769
+    val extensionPlant = LinearSystemId.identifyPositionSystem(extension_kV, extension_kA)
 
     // This is set in the ArmTrapezoidCommand to what the profile wants, so we
     // initialize it to a dud value here to not immediately activate the arm.
     var desiredAngle : Double = Math.toRadians(135.0)
-    var desiredExtensionPosition : SIUnit<Meter> = 0.0.meters
+    var desiredExtension : SIUnit<Meter> = 0.3.meters
 
     var angleControlEnabled : Boolean = true
     var extensionControlEnabled : Boolean = true
@@ -57,30 +62,49 @@ object Arm : FalconSubsystem() {
     var angleObserver = KalmanFilter(
             Nat.N2(),
             Nat.N1(),
-            plant,
+            anglePlant,
             VecBuilder.fill(0.5, 0.5),
             VecBuilder.fill(0.01),
             0.02
     )
     var angleController = LinearQuadraticRegulator(
-            plant,
+            anglePlant,
             VecBuilder.fill(2.0, 16.0),
             VecBuilder.fill(24.0),
             0.020
     )
     var angleLoop = LinearSystemLoop(
-            plant,
+            anglePlant,
             angleController,
             angleObserver,
+            12.0,
+            0.020
+    )
+    var extensionObserver = KalmanFilter(
+            Nat.N2(),
+            Nat.N1(),
+            extensionPlant,
+            VecBuilder.fill(0.5, 0.5),
+            VecBuilder.fill(0.01),
+            0.02
+    )
+    var extensionController = LinearQuadraticRegulator(
+            extensionPlant,
+            VecBuilder.fill(2.0, 16.0),
+            VecBuilder.fill(24.0),
+            0.020
+    )
+    var extensionLoop = LinearSystemLoop(
+            extensionPlant,
+            extensionController,
+            extensionObserver,
             12.0,
             0.020
     )
 
 
 
-    fun setAngle( angle : SIUnit<Radian>) {
-        desiredAngle = angle.value
-    }
+
     fun angleControl(){
         if(angleControlEnabled) {
             angleLoop.setNextR(VecBuilder.fill(desiredAngle, 0.0))
@@ -88,7 +112,7 @@ object Arm : FalconSubsystem() {
             angleLoop.predict(0.020) // 20 ms
 
             var nextVoltage = angleLoop.getU(0)
-            nextVoltage += Ks * sin(getCurrentAngle().value)
+            nextVoltage += angle_kS * sin(getCurrentAngle().value)
             if (nextVoltage > 12) {
                 nextVoltage = 12.0
             }
@@ -98,39 +122,63 @@ object Arm : FalconSubsystem() {
             angleMotorMain.setVoltage(0.0)
         }
     }
-    fun extensionControl(){
-        if (extensionControlEnabled){
-
-        }
-    }
-    fun getCurrentExtensionPosition() : SIUnit<Meter>{
-        return extensionEncoder.distance.meters
-    }
-    fun setExtensionPosition(position : SIUnit<Meter>){
-        desiredExtensionPosition = position
+    fun setAngle( angle : SIUnit<Radian>) {
+        desiredAngle = angle.value
     }
     fun getCurrentAngle() : SIUnit<Radian>{
         return armEncoder.distance.radians
     }
+
+    fun extensionControl(){
+        if (extensionControlEnabled){
+            extensionLoop.setNextR(VecBuilder.fill(desiredExtension.value, 0.0))
+            extensionLoop.correct(VecBuilder.fill(getCurrentExtension().value))
+            extensionLoop.predict(0.020) // 20 ms
+
+            var nextVoltage = extensionLoop.getU(0)
+            nextVoltage += extension_kS * cos(getCurrentAngle().value)
+            if (nextVoltage > 12) {
+                nextVoltage = 12.0
+            }
+            if (nextVoltage < -12.0){
+                nextVoltage = -12.0
+            }
+
+            extensionMotor.setVoltage(nextVoltage)
+        }else{
+            extensionMotor.setVoltage(0.0)
+        }
+    }
+    fun setExtension(position : SIUnit<Meter>){
+        desiredExtension = position
+    }
+    fun getCurrentExtension() : SIUnit<Meter>{
+        return extensionEncoder.distance.meters
+    }
+
     override fun lateInit() {
-        armEncoder.setSamplesToAverage(5)
-
-        armEncoder.setDistancePerPulse((2 * Math.PI) / 1024)
-
+        armEncoder.samplesToAverage = 5
+        armEncoder.distancePerPulse = (2 * Math.PI) / 1024
         armEncoder.setMinRate(1.0)
-
         armEncoderSim.distance = armJointSim.angleAtJoint()
+
+        extensionEncoder.samplesToAverage = 5
+        extensionEncoder.distancePerPulse = ((0.0137541 / 5.0) * (2 * Math.PI)) / 42   // (pulleyRadius / Ng) * (2 PI Radians) / encoderResolution
+        extensionEncoder.setMinRate(1.0)
+        extensionEncoderSim.distance = extensionSim.getCurrentArmPosition()
     }
     override fun periodic() {
         angleControl()
-        extensionMotor.setVoltage(5.0)
+        extensionControl()
+        //extensionMotor.setVoltage(5.0)
     }
+
     override fun simulationPeriodic() {
         extensionSim.setInput(extensionMotor.get() * RobotController.getBatteryVoltage())
         armJointSim.setInput(angleMotorMain.get() * RobotController.getBatteryVoltage())
 
-        extensionSim.update(0.02, armJointSim.angleAtJoint())
-        armJointSim.update(0.02, armJointSim.getMinArmLength())
+        extensionSim.update(0.020, armJointSim.angleAtJoint())
+        armJointSim.update(0.020, armJointSim.getMinArmLength())
 
         extensionEncoderSim.distance = extensionSim.getCurrentArmPosition()
         armEncoderSim.distance = armJointSim.angleAtJoint()

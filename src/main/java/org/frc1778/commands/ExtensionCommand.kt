@@ -33,7 +33,7 @@ class ExtensionCommand : FalconCommand(Arm){
         timer.reset()
         timer.start()
 
-        var startPosition: SIUnit<Meter> = Arm.getCurrentExtensionPosition()
+        var startPosition: SIUnit<Meter> = Arm.getCurrentExtension()
 
 
         val constraints = TrapezoidProfile.Constraints(MAX_VEL, MAX_ACCEL)
@@ -47,7 +47,7 @@ class ExtensionCommand : FalconCommand(Arm){
 
     override fun execute() {
         val state = profile!!.calculate(timer.get())
-        Arm.setExtensionPosition(state.position.meters)
+        Arm.setExtension(state.position.meters)
     }
 
     override fun isFinished(): Boolean {
