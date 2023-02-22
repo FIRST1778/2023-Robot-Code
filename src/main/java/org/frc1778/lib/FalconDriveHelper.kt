@@ -150,7 +150,9 @@ class FalconDriveHelper {
             )) else vy,
             rotationInput,
             drivetrain.robotPosition.rotation
-        )
+        ).also {
+            lastChassisSpeeds = it
+        }
     }
 
     companion object {
