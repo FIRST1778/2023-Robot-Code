@@ -7,7 +7,6 @@ import com.pathplanner.lib.PathPoint
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.math.trajectory.constraint.SwerveDriveKinematicsConstraint
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
@@ -15,17 +14,14 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
+import org.frc1778.lib.PathFinder
 import org.frc1778.lib.SwerveTrajectoryTrackerCommand
 import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryConfig
-import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryGenerator
-import org.frc1778.lib.PathFinder
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.inches
-import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -61,7 +57,6 @@ object Robot : FalconTimedRobot() {
 //    )
     init {
         +Drive
-        +Lights
         +Vision
     }
 
@@ -93,6 +88,11 @@ object Robot : FalconTimedRobot() {
             Rectangle2d(
                 Translation2d(4.86, 1.52), Translation2d(2.87, 3.96)
             ),
+
+            //Blue Scoring Zone
+            Rectangle2d(
+                Translation2d(0.00, 5.50), Translation2d(1.40, 0.00)
+            )
         )
         val trajectoryConfig = FalconTrajectoryConfig(
             SIUnit(7.00), SIUnit(7.00)
@@ -116,8 +116,8 @@ object Robot : FalconTimedRobot() {
         )
         val trajectory = points?.let {
             infix fun Pose2d.headingTo(other: Pose2d): Rotation2d {
-                val relative = other.relativeTo(this)
-                return Rotation2d(relative.translation.x, relative.translation.y)
+                val translation = other.translation.minus(this.translation)
+                return Rotation2d(translation.x, translation.y)
             }
 
             infix fun Pose2d.distanceTo(other: Pose2d): Double =
@@ -139,7 +139,7 @@ object Robot : FalconTimedRobot() {
             )
             points.windowed(3).mapTo(pathPoints) { (prevPose, currPose, nextPose) ->
                 PathPoint(
-                    currPose.translation, prevPose headingTo currPose, currPose.rotation
+                    currPose.translation, currPose headingTo nextPose, currPose.rotation
                 ).withControlLengths(
                     sqrt(prevPose distanceTo currPose),
                     sqrt(currPose distanceTo  nextPose)

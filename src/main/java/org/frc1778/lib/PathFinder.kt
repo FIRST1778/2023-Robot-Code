@@ -34,8 +34,7 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 
 class PathFinder(
-    private val robotSize: SIUnit<Meter>,
-    vararg restrictedAreas: Rectangle2d
+    private val robotSize: SIUnit<Meter>, vararg restrictedAreas: Rectangle2d
 ) {
 
     private val robotSizeCorner = sqrt(robotSize.value.pow(2.0) / 2.0)
@@ -46,29 +45,23 @@ class PathFinder(
     private val robotTopLeftOffset = Translation2d((-robotSize / 2.0).value, (robotSize / 2.0).value)
     private val robotBottomRightOffset = Translation2d((robotSize / 2.0).value, (-robotSize / 2.0).value)
     private val fieldRectangleWithOffset = Rectangle2d(
-        kFieldRectangle.topLeft - robotTopLeftOffset,
-        kFieldRectangle.bottomRight - robotBottomRightOffset
+        kFieldRectangle.topLeft - robotTopLeftOffset, kFieldRectangle.bottomRight - robotBottomRightOffset
     )
     private val restrictedAreas = restrictedAreas.toList()
 
     @Suppress("SpreadOperator")
     fun findPath(
-        start: Pose2d,
-        end: Pose2d,
-        vararg restrictedAreas: Rectangle2d
+        start: Pose2d, end: Pose2d, vararg restrictedAreas: Rectangle2d
     ): List<Pose2d>? {
         val pathNodes = findPath(
-            start.translation.toVector2d(),
-            end.translation.toVector2d(),
-            *restrictedAreas
+            start.translation.toVector2d(), end.translation.toVector2d(), *restrictedAreas
         ) ?: return null
 
         FileOutputStream("src/main/out/path_nodes.csv").run {
             val writer = bufferedWriter()
             writer.write("""Index,X,Y""")
             writer.newLine()
-            pathNodes.forEachIndexed {
-                    index:Int, node: Vector2D ->
+            pathNodes.forEachIndexed { index: Int, node: Vector2D ->
                 writer.write("$index,${node.x},${node.y}")
                 writer.newLine()
             }
@@ -77,7 +70,7 @@ class PathFinder(
 
         val interpolator = SplineInterpolator()
 
-        val samples = 100
+        val samples = 25
 
         val distances = mutableListOf<Double>()
         distances.add(0.0)
@@ -90,8 +83,7 @@ class PathFinder(
             val writer = bufferedWriter()
             writer.write("""Index,Distance""")
             writer.newLine()
-            distances.forEachIndexed {
-                    index:Int, distance ->
+            distances.forEachIndexed { index: Int, distance ->
                 writer.write("$index,$distance")
                 writer.newLine()
             }
@@ -110,12 +102,9 @@ class PathFinder(
 
             Pose2d(
                 Translation2d(
-                    splineX.value(distanceTraveled).meters.value,
-                    splineY.value(distanceTraveled).meters.value
-                ),
-                Rotation2d(
-                    splineDx.value(distanceTraveled),
-                    splineDy.value(distanceTraveled)
+                    splineX.value(distanceTraveled).meters.value, splineY.value(distanceTraveled).meters.value
+                ), Rotation2d(
+                    splineDx.value(distanceTraveled), splineDy.value(distanceTraveled)
                 )
             )
         }.toTypedArray()
@@ -123,16 +112,13 @@ class PathFinder(
 
 
         return listOf(
-            start,
-            *interpolatedNodes,
-            end
+            start, *interpolatedNodes, end
         ).also {
             FileOutputStream("src/main/out/pose.csv").run {
                 val writer = bufferedWriter()
                 writer.write("""Index,X,Y,Heading""")
                 writer.newLine()
-                it.forEachIndexed {
-                        index:Int, pose2d: Pose2d ->
+                it.forEachIndexed { index: Int, pose2d: Pose2d ->
                     writer.write("$index,${pose2d.x},${pose2d.y},${pose2d.rotation.radians}")
                     writer.newLine()
                 }
@@ -142,9 +128,7 @@ class PathFinder(
     }
 
     fun findPath(
-        start: Vector2D,
-        end: Vector2D,
-        vararg restrictedAreas: Rectangle2d
+        start: Vector2D, end: Vector2D, vararg restrictedAreas: Rectangle2d
     ): List<Vector2D>? {
         val effectiveRestrictedAreas = this.restrictedAreas.plusToSet(restrictedAreas)
         val worldNodes = createNodes(effectiveRestrictedAreas) + setOf(start, end)
@@ -152,34 +136,25 @@ class PathFinder(
             val writer = bufferedWriter()
             writer.write("""Index,X,Y""")
             writer.newLine()
-            worldNodes.forEachIndexed {
-                    index:Int, node: Vector2D ->
+            worldNodes.forEachIndexed { index: Int, node: Vector2D ->
                 writer.write("$index,${node.x},${node.y}")
                 writer.newLine()
             }
             writer.flush()
         }
         return optimize(
-            start,
-            end,
-            worldNodes,
-            effectiveRestrictedAreas
+            start, end, worldNodes, effectiveRestrictedAreas
         )
     }
 
     // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
     @Suppress("NestedBlockDepth", "UnsafeCallOnNullableType")
     private fun optimize(
-        source: Vector2D,
-        target: Vector2D,
-        points: Set<Vector2D>,
-        effectiveRestrictedAreas: Set<Rectangle2d>
+        source: Vector2D, target: Vector2D, points: Set<Vector2D>, effectiveRestrictedAreas: Set<Rectangle2d>
     ): List<Vector2D>? {
         val Q = points.map {
             Node(
-                it,
-                Double.POSITIVE_INFINITY,
-                null
+                it, Double.POSITIVE_INFINITY, null
             )
         }.toMutableSet()
 
@@ -201,7 +176,8 @@ class PathFinder(
             val robotRectangle = u.point.toRobotRectangle()
             for (v in Q) {
                 val toTranslation = (v.point.subtract(u.point)).toTranslation2d()
-                if (effectiveRestrictedAreas.none { it.doesCollide(robotRectangle, toTranslation) }) {
+                if (effectiveRestrictedAreas.none { it.doesCollide(robotRectangle, toTranslation) }
+                    && (sqrt(toTranslation.x.pow(2) + toTranslation.y.pow(2))) < MAX_DISTANCE_BETWEEN_NODES) {
                     val alt = u.dist + u.point.distance(v.point)
                     if (alt < v.dist) {
                         v.dist = alt
@@ -216,22 +192,21 @@ class PathFinder(
 
     @Suppress("UseDataClass")
     private class Node(
-        val point: Vector2D,
-        var dist: Double,
-        var prev: Node?
+        val point: Vector2D, var dist: Double, var prev: Node?
     )
 
     private fun Vector2D.toRobotRectangle() = Rectangle2d(
-        (x - robotSize.value / 3).meters, (y - robotSize.value / 3).meters,
-        (robotSize.value / 3 * 2).meters, (robotSize.value / 3 * 2).meters
+        (x - robotSize.value / 3).meters,
+        (y - robotSize.value / 3).meters,
+        (robotSize.value / 3 * 2).meters,
+        (robotSize.value / 3 * 2).meters
     )
 
     private fun createNodes(restrictedAreas: Set<Rectangle2d>): Set<Vector2D> {
         val effectiveRestrictedAreasWithOffsets = restrictedAreas.mapToSet {
             Rectangle2d(it.topLeft + robotTopLeftOffset, it.bottomRight + robotBottomRightOffset)
         }
-        val result = createLines(effectiveRestrictedAreasWithOffsets)
-            .combinationPairs()
+        val result = createLines(effectiveRestrictedAreasWithOffsets).combinationPairs()
             .mapNotNullToSet { it.first.intersection(it.second) }
         val restrictedCorners = restrictedAreas.flatMapToSet(4) { rect ->
             arrayOf(
@@ -241,36 +216,26 @@ class PathFinder(
                 rect.bottomRight.toVector2d().add(robotCornerBottomRight)
             ).asList()
         }
-        return result.plusToSet(restrictedCorners)
-            .filterNotToSet { point ->
+        return result.plusToSet(restrictedCorners).filterNotToSet { point ->
                 val translation = point.toTranslation2d()
-                !fieldRectangleWithOffset.contains(translation) ||
-                        restrictedAreas.any { it.contains(translation) }
+                !fieldRectangleWithOffset.contains(translation) || restrictedAreas.any { it.contains(translation) }
             }
     }
 
     private fun createLines(restrictedAreas: Set<Rectangle2d>): Set<Line> {
-        val restrictedWallLines = (restrictedAreas + fieldRectangleWithOffset)
-            .flatMapToSet(4) { rect ->
+        val restrictedWallLines = (restrictedAreas + fieldRectangleWithOffset).flatMapToSet(4) { rect ->
                 val topLeft = rect.topLeft.toVector2d()
                 val topRight = rect.topRight.toVector2d()
                 val bottomLeft = rect.bottomLeft.toVector2d()
                 val bottomRight = rect.bottomRight.toVector2d()
                 arrayOf(
-                    topLeft to topRight,
-                    topLeft to bottomLeft,
-                    bottomRight to bottomLeft,
-                    bottomRight to topRight
+                    topLeft to topRight, topLeft to bottomLeft, bottomRight to bottomLeft, bottomRight to topRight
                 ).asList()
             }.mapToSet { pair ->
                 Triple(pair.first, pair.second, Line(pair.first, pair.second, kEpsilon))
             }
-        return restrictedWallLines
-            .combinationPairs()
-            .mapNotNullToSet { (line1, line2) ->
-                if (!line1.third.isParallelTo(line2.third) ||
-                    line1.third.getOffset(line2.third) < robotSize.value / 2.0
-                ) return@mapNotNullToSet null
+        return restrictedWallLines.combinationPairs().mapNotNullToSet { (line1, line2) ->
+                if (!line1.third.isParallelTo(line2.third) || line1.third.getOffset(line2.third) < robotSize.value / 2.0) return@mapNotNullToSet null
                 Line(
                     line1.first.add(line2.first).scalarMultiply(0.5),
                     line1.second.add(line2.second).scalarMultiply(0.5),
@@ -284,8 +249,8 @@ class PathFinder(
 
     companion object {
         private val kFieldRectangle = Rectangle2d(
-            Translation2d(),
-            Translation2d((54.feet + 3.5.inches).value, (26.feet + 3.25.inches).value)
+            Translation2d(), Translation2d((54.feet + 3.5.inches).value, (26.feet + 3.25.inches).value)
         )
+        private const val MAX_DISTANCE_BETWEEN_NODES = 4.25
     }
 }
