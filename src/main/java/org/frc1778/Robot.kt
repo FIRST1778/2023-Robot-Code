@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.ArmTrapezoidCommand
+import org.frc1778.commands.ExtensionCommand
+import org.frc1778.commands.ZeroExtensionCommand
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.lib.SwerveTrajectoryTrackerCommand
@@ -16,6 +18,7 @@ import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.meters
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -31,7 +34,9 @@ object Robot : FalconTimedRobot() {
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
 
-    lateinit var trapezoidCommand: ArmTrapezoidCommand
+    lateinit var angleCommand: ArmTrapezoidCommand
+    lateinit var zeroExtensionCommand: ZeroExtensionCommand
+    lateinit var extensionCommand : ExtensionCommand
 
     private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
     private lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
@@ -73,6 +78,7 @@ object Robot : FalconTimedRobot() {
     override fun disabledInit() {
 //        compressor.disable()
 
+
     }
 
     override fun disabledPeriodic() {
@@ -80,6 +86,10 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun autonomousInit() {
+        zeroExtensionCommand.schedule()
+        angleCommand = ArmTrapezoidCommand(0.0.degrees)
+        angleCommand.schedule()
+
         trajectoryCommand = Drive.followTrajectory(trajectory)
         Drive.setPose(trajectory.initialHolonomicPose)
         autonomousCommand = trajectoryCommand
@@ -94,8 +104,12 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         autonomousCommand?.cancel()
-        trapezoidCommand = ArmTrapezoidCommand(90.0.degrees)
-        trapezoidCommand.schedule()
+        angleCommand = ArmTrapezoidCommand(90.0.degrees)
+        angleCommand.schedule()
+
+        extensionCommand = ExtensionCommand(0.5.meters)
+        extensionCommand.schedule()
+
         Drive.setPose(trajectory.initialHolonomicPose)
 //        compressor.enableAnalog(
 //            30.0,
@@ -115,7 +129,4 @@ object Robot : FalconTimedRobot() {
     override fun simulationInit() {
 
     }
-
-
-
 }

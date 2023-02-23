@@ -12,12 +12,12 @@ import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.meters
 import kotlin.math.PI
 
-class ExtensionCommand : FalconCommand(Arm){
+class ExtensionCommand(endPosition : SIUnit<Meter>) : FalconCommand(Arm){
     companion object {
         // TODO: made up these numbers
         const val MAX_VEL = 0.45  // m/s
 
-        const val MAX_ACCEL = 0.45  // m/s
+        const val MAX_ACCEL = 1.0  // m/s^2
 
         const val START_VEL = 0.0   // rad/sec
 
