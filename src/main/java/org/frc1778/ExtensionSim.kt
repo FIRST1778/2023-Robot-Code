@@ -40,6 +40,7 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
 //        logger.add("Kv") { -> Kv() }
 //        logger.add("Ks") { -> forcesToVoltage(0.0) }
         logger.add("extension position") { -> Arm.getCurrentExtension().value }
+        logger.add("desired position", {-> calculateGravityForce(Arm.getCurrentAngle().value)})
     }
     fun setInput(voltage: Double){
         input = voltage
@@ -53,7 +54,7 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
     fun capVelocity(dt : Double, jointTheta: Double){
         velocityAtMotor += accelerationAtMotor * dt
         var gravityForce = calculateGravityForce(jointTheta)
-        var freeSpeed = motor.getSpeed(abs(gravityForce * (pulleyRadius / Ng)), input)
+        var freeSpeed = abs(motor.getSpeed(abs(gravityForce * (pulleyRadius / Ng)), input))
         velocityAtMotor = Math.min(velocityAtMotor, freeSpeed)
         velocityAtMotor = Math.max(velocityAtMotor, -freeSpeed)
         linearVelocity = velocityAtMotor / (Ng / pulleyRadius)

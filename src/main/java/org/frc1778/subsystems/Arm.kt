@@ -12,6 +12,8 @@ import edu.wpi.first.math.estimator.KalmanFilter
 import edu.wpi.first.math.system.LinearSystemLoop
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.CounterBase
+import edu.wpi.first.wpilibj.DigitalGlitchFilter
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax // TODO
@@ -33,6 +35,7 @@ object Arm : FalconSubsystem() {
     var armJointSim = ArmJointSim(Math.toRadians(135.0))
     var extensionSim = ExtensionSim(0.0.meters)
 
+    var limitSwitch = DigitalInput(14)
     var armEncoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
     var extensionEncoder = Encoder(3, 4, false, CounterBase.EncodingType.k4X)
     var armEncoderSim = EncoderSim(armEncoder)
@@ -48,16 +51,18 @@ object Arm : FalconSubsystem() {
 
     val extension_kA : Double = 0.04607411898461538
     val extension_kV : Double = 7.213374267914612
-    val extension_kS : Double = 0.0 // 0.4519871072390769
+    val extension_kS : Double = 0.4519871072390769 // 0.4519871072390769
     val extensionPlant = LinearSystemId.identifyPositionSystem(extension_kV, extension_kA)
 
     // This is set in the ArmTrapezoidCommand to what the profile wants, so we
     // initialize it to a dud value here to not immediately activate the arm.
     var desiredAngle : Double = Math.toRadians(135.0)
-    var desiredExtension : SIUnit<Meter> = 0.3.meters
+    var desiredExtension : SIUnit<Meter> = 0.0.meters
 
     var angleControlEnabled : Boolean = true
     var extensionControlEnabled : Boolean = true
+
+    var zeroed : Boolean = false
 
     var angleObserver = KalmanFilter(
             Nat.N2(),
@@ -102,9 +107,6 @@ object Arm : FalconSubsystem() {
             0.020
     )
 
-
-
-
     fun angleControl(){
         if(angleControlEnabled) {
             angleLoop.setNextR(VecBuilder.fill(desiredAngle, 0.0))
@@ -136,8 +138,8 @@ object Arm : FalconSubsystem() {
             extensionLoop.predict(0.020) // 20 ms
 
             var nextVoltage = extensionLoop.getU(0)
-            nextVoltage += extension_kS * cos(getCurrentAngle().value)
-            if (nextVoltage > 12) {
+            nextVoltage += -extension_kS * cos(getCurrentAngle().value)
+            if (nextVoltage > 12.0) {
                 nextVoltage = 12.0
             }
             if (nextVoltage < -12.0){
@@ -168,9 +170,10 @@ object Arm : FalconSubsystem() {
         extensionEncoderSim.distance = extensionSim.getCurrentArmPosition()
     }
     override fun periodic() {
-        angleControl()
-        extensionControl()
-        //extensionMotor.setVoltage(5.0)
+        if(zeroed) {
+            angleControl()
+            extensionControl()
+        }
     }
 
     override fun simulationPeriodic() {

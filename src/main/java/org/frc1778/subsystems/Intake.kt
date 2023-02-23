@@ -2,6 +2,7 @@ package org.frc1778.subsystems
 
 import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PneumaticsModuleType
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax
@@ -12,6 +13,9 @@ import org.ghrobotics.lib.wrappers.FalconSolenoid
 object Intake : FalconSubsystem() {
     var intakeMotor = CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless)
 
+    var intakeBeam = DigitalInput(15)
+
+    var intakeVoltage = 5.0
 
     val intakeSol = FalconDoubleSolenoid(
         1,
@@ -27,10 +31,13 @@ object Intake : FalconSubsystem() {
         intakeSol.state = FalconSolenoid.State.Reverse
     }
     fun suck(){
-        intakeMotor.setVoltage(-5.0)
+        if(intakeSol.state == FalconSolenoid.State.Reverse){
+            open()
+        }
+        intakeMotor.setVoltage(-intakeVoltage)
     }
     fun spit(){
-        intakeMotor.setVoltage(5.0)
+        intakeMotor.setVoltage(intakeVoltage)
     }
     fun stop(){
         intakeMotor.setVoltage(0.0)
