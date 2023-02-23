@@ -2,9 +2,12 @@ package org.frc1778
 
 import edu.wpi.first.math.system.plant.DCMotor
 import org.frc1778.lib.DataLogger
+import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import kotlin.math.cos
+import kotlin.math.abs
+
 
 class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
     private var linearArmPosition = initialArmPosition.value
@@ -20,24 +23,37 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
     private var logger = DataLogger("extensionsim")
     private val pulleyRadius = 0.0137541 // m
 
+    fun Ka(): Double {
+        return arm_mass * pulleyRadius * motor.rOhms / (motor.KtNMPerAmp * Ng)
+    }
+
+    fun Kv(): Double {
+        return Ng / pulleyRadius / motor.KvRadPerSecPerVolt // flipped from our Kw
+    }
+
     init {
-        logger.add("velocity (m/s)", { -> linearVelocity })
-        logger.add("input voltage", { -> input })
-        logger.add("current (amps)", { -> currentDraw })
-        logger.add("linear position (m)", { -> linearArmPosition})
+        logger.add("velocity (m/s)") { -> linearVelocity }
+        logger.add("input voltage") { -> input }
+        logger.add("current (amps)") { -> currentDraw }
+        logger.add("linear position (m)") { -> linearArmPosition }
+//        logger.add("Ka") { -> Ka() }
+//        logger.add("Kv") { -> Kv() }
+//        logger.add("Ks") { -> forcesToVoltage(0.0) }
+        logger.add("extension position") { -> Arm.getCurrentExtension().value }
     }
     fun setInput(voltage: Double){
         input = voltage
     }
     fun update(dt: Double, jointTheta : Double){
         calculateAcceleration(jointTheta)
-        capVelocity(dt)
+        capVelocity(dt, jointTheta)
         linearArmPosition += linearVelocity * dt
         logger.log()
     }
-    fun capVelocity(dt : Double){
+    fun capVelocity(dt : Double, jointTheta: Double){
         velocityAtMotor += accelerationAtMotor * dt
-        var freeSpeed = motor.getSpeed(0.0, input)
+        var gravityForce = calculateGravityForce(jointTheta)
+        var freeSpeed = motor.getSpeed(abs(gravityForce * (pulleyRadius / Ng)), input)
         velocityAtMotor = Math.min(velocityAtMotor, freeSpeed)
         velocityAtMotor = Math.max(velocityAtMotor, -freeSpeed)
         linearVelocity = velocityAtMotor / (Ng / pulleyRadius)
@@ -51,11 +67,12 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
         linearAccel = (motorForce + gravityForce) / arm_mass
         accelerationAtMotor = Ng * (linearAccel / pulleyRadius)
     }
+
     fun calculateGravityForce(jointTheta: Double) : Double{
         return arm_mass * 9.81 * cos(jointTheta)
     }
     fun forcesToVoltage(jointTheta: Double) : Double{
-        return (calculateGravityForce(jointTheta) * (motor.rOhms * pulleyRadius) / (Ng* motor.KtNMPerAmp))
+        return calculateGravityForce(jointTheta) * motor.rOhms * pulleyRadius / (Ng * motor.KtNMPerAmp)
     }
     fun calculateMotorForce(motorTorque : Double) : Double{
         return motorTorque / (pulleyRadius / Ng)

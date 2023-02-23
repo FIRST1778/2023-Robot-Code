@@ -98,6 +98,13 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
 
     abstract fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>?
 
+     val swerveModuleStates: List<SwerveModuleState>
+        get() = List(4) {
+            SwerveModuleState(
+                modules[it].driveVelocity.value, Rotation2d(modules[it].encoder.absolutePosition.value)
+            )
+        }
+
 
     override fun periodic() {
 //        periodicIO.leftFrontVoltage = modules[0].voltageOutput
@@ -274,5 +281,6 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
                 this[it].drivePosition.value, Rotation2d(this[it].encoder.absolutePosition.value)
             )
         }
+
 
 }
