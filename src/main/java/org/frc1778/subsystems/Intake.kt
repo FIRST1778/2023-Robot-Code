@@ -17,6 +17,8 @@ object Intake : FalconSubsystem() {
 
     var intakeVoltage = 5.0
 
+    lateinit var initialState : FalconSolenoid.State
+
     val intakeSol = FalconDoubleSolenoid(
         1,
         0,
@@ -24,15 +26,18 @@ object Intake : FalconSubsystem() {
         30
     )
 
-    fun open(){
+    fun extend(){
         intakeSol.state = FalconSolenoid.State.Forward
+    }
+    fun toggle(){
+
     }
     fun retract(){
         intakeSol.state = FalconSolenoid.State.Reverse
     }
     fun suck(){
         if(intakeSol.state == FalconSolenoid.State.Reverse){
-            open()
+            extend()
         }
         intakeMotor.setVoltage(-intakeVoltage)
     }

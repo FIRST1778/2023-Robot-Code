@@ -13,6 +13,7 @@ object Manipulator : FalconSubsystem() {
             31
     )
     var manipulatorOpen : Boolean = false
+    var manipulatorInitial = false
     fun toggle(){
         if(manipulatorOpen){
             close()
