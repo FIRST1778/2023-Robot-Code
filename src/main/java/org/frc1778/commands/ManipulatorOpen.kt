@@ -5,7 +5,9 @@ import org.ghrobotics.lib.commands.FalconCommand
 
 class ManipulatorOpen : FalconCommand(Manipulator) {
     override fun initialize() {
-        Manipulator.open()
+        if(!Manipulator.manipulatorOpen){
+            Manipulator.open()
+        }
     }
 
     override fun isFinished(): Boolean {

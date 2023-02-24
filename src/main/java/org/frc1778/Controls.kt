@@ -1,10 +1,9 @@
 package org.frc1778
 
 import edu.wpi.first.wpilibj.Joystick
-import org.frc1778.commands.ArmAngleCommand
-import org.frc1778.commands.ExtensionCommand
-import org.frc1778.commands.IntakeToggleCommand
-import org.frc1778.commands.ZeroExtensionCommand
+import org.frc1778.commands.*
+import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.Manipulator
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
@@ -41,12 +40,12 @@ object Controls {
         button(1) // station 2
         button(2) // station 3
         // Intake
-        button(3) // intake suck
-        button(4) // intake spit
+        button(3){change(IntakeSuckCommand())} // intake suck
+        button(4){change(IntakeSpitCommand())} // intake spit
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
-        button(0){ change(ZeroExtensionCommand()) } // reset extension
+        button(0){change(ZeroExtensionCommand()) } // reset extension
         button(1) // other
         button(2) // other
         // level of placement
@@ -54,16 +53,25 @@ object Controls {
         button(4) // middle
         button(5) // top
         // manipulator open/close toggle
-        button(6) // toggle manipulator
+        button(6) {change(
+            if (Manipulator.manipulatorOpen) {
+                ManipulatorClose()
+            } else {
+                ManipulatorOpen()
+            }
+        )}// toggle manipulator
         button(7) {change(sequential{
-            +IntakeToggleCommand(FalconSolenoid.State.Forward)
-            +ExtensionCommand(0.0.meters)
+            +IntakeToggleCommand(FalconSolenoid.State.Forward) // intake out
+            +ExtensionCommand(0.0.meters)// zero
             +ArmAngleCommand(50.0.degrees) // hopper angle
             +ExtensionCommand(0.0.meters) // hopper extension
         })} // manipulator to hopper
 
         // switches
-        button(10) // cone/cube
+        button(10){
+            whileOn{} // cone
+            whileOff{} // cube
+        } // cone/cube
         button(9) // balance
         axisButton(0, -1.0 ) // left/right (cone mode)
     }

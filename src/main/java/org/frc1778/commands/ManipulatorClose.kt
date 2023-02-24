@@ -5,8 +5,10 @@ import org.ghrobotics.lib.commands.FalconCommand
 
 class ManipulatorClose : FalconCommand(Manipulator) {
     override fun initialize() {
-        Manipulator.close()
-    }
+        if(Manipulator.manipulatorOpen) {
+                Manipulator.close()
+        }
+}
 
     override fun isFinished(): Boolean {
         return true
