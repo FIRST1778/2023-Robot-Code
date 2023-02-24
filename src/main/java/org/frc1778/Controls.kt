@@ -40,12 +40,18 @@ object Controls {
         button(1) // station 2
         button(2) // station 3
         // Intake
-        button(3){change(IntakeSuckCommand())} // intake suck
-        button(4){change(IntakeSpitCommand())} // intake spit
+        button(3){
+            whileOn{IntakeSuckCommand()}
+            whileOff{IntakeStopCommand()}
+        } // intake suck
+        button(4){
+            whileOn{IntakeSpitCommand()}
+            whileOff{IntakeStopCommand()}
+        } // intake spit
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
-        button(0){change(ZeroExtensionCommand()) } // reset extension
+        button(0){change(ZeroExtensionCommand())} // reset extension
         button(1) // other
         button(2) // other
         // level of placement
