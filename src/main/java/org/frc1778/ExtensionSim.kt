@@ -55,8 +55,7 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
         velocityAtMotor += accelerationAtMotor * dt
         var gravityForce = calculateGravityForce(jointTheta)
         var freeSpeed = abs(motor.getSpeed(abs(gravityForce * (pulleyRadius / Ng)), input))
-        velocityAtMotor = Math.min(velocityAtMotor, freeSpeed)
-        velocityAtMotor = Math.max(velocityAtMotor, -freeSpeed)
+        velocityAtMotor = velocityAtMotor.coerceIn(-freeSpeed, freeSpeed)
         linearVelocity = velocityAtMotor / (Ng / pulleyRadius)
     }
 

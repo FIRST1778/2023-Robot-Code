@@ -46,12 +46,8 @@ class ArmJointSim(initialJointAngle: Double){
     }
     fun capVelocity(dt : Double){
         velocity += accel * dt
-        if (velocity > motor.freeSpeedRadPerSec){
-            velocity = motor.freeSpeedRadPerSec
-        }
-        if(velocity < -motor.freeSpeedRadPerSec){
-            velocity = -motor.freeSpeedRadPerSec
-        }
+        var maxSpeed = motor.getSpeed(0.0, input)
+        velocity = velocity.coerceIn(-maxSpeed, maxSpeed)
     }
     fun calculateAcceleration(arm_length: Double){
         currentDraw = motor.getCurrent(velocity, input)
