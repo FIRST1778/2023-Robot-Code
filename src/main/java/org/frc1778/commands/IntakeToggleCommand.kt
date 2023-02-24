@@ -4,7 +4,7 @@ import org.frc1778.subsystems.Intake
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 
-class ToggleIntakeCommand : FalconCommand(Intake){
+class IntakeToggleCommand : FalconCommand(Intake){
     override fun initialize() {
         Intake.initialState = Intake.intakeSol.state
     }
