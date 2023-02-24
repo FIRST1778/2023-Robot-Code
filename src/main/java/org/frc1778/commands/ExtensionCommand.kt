@@ -5,23 +5,13 @@ import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Robot
 import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.commands.FalconCommand
-import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.meters
-import kotlin.math.PI
 
-class ExtensionCommand(endPosition : SIUnit<Meter>) : FalconCommand(Arm){
+class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 1.0, maxVelocity : Double = 0.45) : FalconCommand(Arm){
     companion object {
-        // TODO: made up these numbers
-        const val MAX_VEL = 0.45  // m/s
-
-        const val MAX_ACCEL = 1.0  // m/s^2
-
         const val START_VEL = 0.0   // rad/sec
-
-        const val END_POS = 0.381   // m
         const val END_VEL = 0.0     // rad/sec
     }
 
@@ -29,6 +19,9 @@ class ExtensionCommand(endPosition : SIUnit<Meter>) : FalconCommand(Arm){
     var profile: TrapezoidProfile? = null
     var timer = Timer()
 
+    var endPos = endPosition
+    var maxAccel = maxAcceleration
+    var maxVel = maxVelocity
     override fun initialize() {
         timer.reset()
         timer.start()
@@ -36,9 +29,9 @@ class ExtensionCommand(endPosition : SIUnit<Meter>) : FalconCommand(Arm){
         var startPosition: SIUnit<Meter> = Arm.getCurrentExtension()
 
 
-        val constraints = TrapezoidProfile.Constraints(MAX_VEL, MAX_ACCEL)
+        val constraints = TrapezoidProfile.Constraints(maxVel, maxAccel)
         val startState = TrapezoidProfile.State(startPosition.value, START_VEL)
-        val endState = TrapezoidProfile.State(END_POS, END_VEL)
+        val endState = TrapezoidProfile.State(endPos.value, END_VEL)
         profile = TrapezoidProfile(constraints, endState, startState)
         Robot.dataLogger.add("Time") {timer.get()}
         Robot.dataLogger.add("Extension Position") {profile!!.calculate(timer.get()).position}
@@ -47,6 +40,7 @@ class ExtensionCommand(endPosition : SIUnit<Meter>) : FalconCommand(Arm){
 
     override fun execute() {
         val state = profile!!.calculate(timer.get())
+        Arm.setExtensionVelocity(state.velocity)
         Arm.setExtension(state.position.meters)
     }
 

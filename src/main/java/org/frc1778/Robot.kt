@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.commands.ArmTrapezoidCommand
+import org.frc1778.commands.ArmAngleCommand
 import org.frc1778.commands.ExtensionCommand
 import org.frc1778.commands.ZeroExtensionCommand
 import org.frc1778.lib.DataLogger
@@ -34,7 +34,7 @@ object Robot : FalconTimedRobot() {
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
 
-    lateinit var angleCommand: ArmTrapezoidCommand
+    lateinit var angleCommand: ArmAngleCommand
     lateinit var zeroExtensionCommand: ZeroExtensionCommand
     lateinit var extensionCommand : ExtensionCommand
 
@@ -87,7 +87,7 @@ object Robot : FalconTimedRobot() {
 
     override fun autonomousInit() {
         zeroExtensionCommand.schedule()
-        angleCommand = ArmTrapezoidCommand(0.0.degrees)
+        angleCommand = ArmAngleCommand(0.0.degrees)
         angleCommand.schedule()
 
         trajectoryCommand = Drive.followTrajectory(trajectory)
@@ -104,7 +104,7 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         autonomousCommand?.cancel()
-        angleCommand = ArmTrapezoidCommand(90.0.degrees)
+        angleCommand = ArmAngleCommand(90.0.degrees)
         angleCommand.schedule()
 
         extensionCommand = ExtensionCommand(0.5.meters)

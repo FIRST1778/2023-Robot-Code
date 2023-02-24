@@ -4,7 +4,10 @@ import org.frc1778.subsystems.Intake
 import org.ghrobotics.lib.commands.FalconCommand
 
 class IntakeSuckCommand : FalconCommand(Intake) {
-    override fun execute() {
+    override fun initialize() {
         Intake.suck()
+    }
+    override fun isFinished(): Boolean {
+        return true
     }
 }

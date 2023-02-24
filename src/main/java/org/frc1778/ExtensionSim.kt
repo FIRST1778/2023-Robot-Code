@@ -32,15 +32,15 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
     }
 
     init {
-        logger.add("velocity (m/s)") { -> linearVelocity }
-        logger.add("input voltage") { -> input }
-        logger.add("current (amps)") { -> currentDraw }
+//        logger.add("velocity (m/s)") { -> linearVelocity }
+//        logger.add("input voltage") { -> input }
+//        logger.add("current (amps)") { -> currentDraw }
         logger.add("linear position (m)") { -> linearArmPosition }
 //        logger.add("Ka") { -> Ka() }
 //        logger.add("Kv") { -> Kv() }
 //        logger.add("Ks") { -> forcesToVoltage(0.0) }
-        logger.add("extension position") { -> Arm.getCurrentExtension().value }
-        logger.add("desired position", {-> calculateGravityForce(Arm.getCurrentAngle().value)})
+//        logger.add("extension position") { -> Arm.getCurrentExtension().value }
+        logger.add("desired position", {-> Arm.desiredExtension.value})
     }
     fun setInput(voltage: Double){
         input = voltage

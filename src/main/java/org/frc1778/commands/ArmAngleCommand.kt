@@ -1,7 +1,5 @@
 package org.frc1778.commands
 
-import org.frc1778.Constants
-import org.frc1778.Controls
 import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.commands.FalconCommand
 import edu.wpi.first.math.trajectory.TrapezoidProfile
@@ -10,24 +8,19 @@ import org.frc1778.Robot
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
-import kotlin.math.PI
 
-class ArmTrapezoidCommand(endPosition : SIUnit<Radian>) : FalconCommand(Arm) {
+class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = 1.5, maxVelocity: Double = 2.0) : FalconCommand(Arm) {
     companion object {
-        // TODO: made up these numbers
-        const val MAX_VEL = 2.0  // rad/sec
-
-        const val MAX_ACCEL = 1.5  // rad/sec^2
-
         const val START_VEL = 0.0   // rad/sec
-
         const val END_VEL = 0.0     // rad/sec
     }
-    val END_POS = Math.toRadians(135.0)  // rad
 
     var profile: TrapezoidProfile? = null
     var timer = Timer()
 
+    var maxAccel = maxAcceleration
+    var endPos = endPosition
+    var maxVel = maxVelocity
     override fun initialize() {
         timer.reset()
         timer.start()
@@ -35,9 +28,9 @@ class ArmTrapezoidCommand(endPosition : SIUnit<Radian>) : FalconCommand(Arm) {
         var startPosition: SIUnit<Radian> = Arm.getCurrentAngle()
 
 
-        val constraints = TrapezoidProfile.Constraints(MAX_VEL, MAX_ACCEL)
+        val constraints = TrapezoidProfile.Constraints(maxVel, maxAccel)
         val startState = TrapezoidProfile.State(startPosition.value, START_VEL)
-        val endState = TrapezoidProfile.State(END_POS, END_VEL)
+        val endState = TrapezoidProfile.State(endPos.value, END_VEL)
         profile = TrapezoidProfile(constraints, endState, startState)
         Robot.dataLogger.add("Time") {timer.get()}
         Robot.dataLogger.add("Position") {Math.toDegrees(profile!!.calculate(timer.get()).position)}
@@ -47,6 +40,7 @@ class ArmTrapezoidCommand(endPosition : SIUnit<Radian>) : FalconCommand(Arm) {
 
     override fun execute() {
         val state = profile!!.calculate(timer.get())
+        Arm.setAngleVelocity(state.velocity)
         Arm.setAngle(state.position.radians)
     }
 

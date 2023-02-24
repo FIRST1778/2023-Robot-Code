@@ -6,7 +6,7 @@ import org.ghrobotics.lib.mathematics.units.meters
 
 class ZeroExtensionCommand : FalconCommand(Arm){
     override fun initialize(){
-
+        Arm.zeroed = false
     }
     override fun execute(){
         Arm.extensionMotor.setVoltage(-0.5)

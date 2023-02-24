@@ -22,11 +22,9 @@ import edu.wpi.first.wpilibj.simulation.EncoderSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import org.frc1778.ExtensionSim
 import org.ghrobotics.lib.commands.FalconSubsystem
-import org.ghrobotics.lib.mathematics.units.Meter
-import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
-import org.ghrobotics.lib.mathematics.units.meters
 import java.security.cert.Extension
 import kotlin.math.cos
 import kotlin.math.sin
@@ -58,11 +56,13 @@ object Arm : FalconSubsystem() {
     // initialize it to a dud value here to not immediately activate the arm.
     var desiredAngle : Double = Math.toRadians(135.0)
     var desiredExtension : SIUnit<Meter> = 0.0.meters
+    var desiredExtensionVelocity : Double = 0.0 // m/s
+    var desiredAngleVelocity : Double = 0.0 // rad/s
 
     var angleControlEnabled : Boolean = true
     var extensionControlEnabled : Boolean = true
 
-    var zeroed : Boolean = false
+    var zeroed : Boolean = true
 
     var angleObserver = KalmanFilter(
             Nat.N2(),
@@ -109,7 +109,7 @@ object Arm : FalconSubsystem() {
 
     fun angleControl(){
         if(angleControlEnabled) {
-            angleLoop.setNextR(VecBuilder.fill(desiredAngle, 0.0))
+            angleLoop.setNextR(VecBuilder.fill(desiredAngle, desiredAngleVelocity))
             angleLoop.correct(VecBuilder.fill(getCurrentAngle().value))
             angleLoop.predict(0.020) // 20 ms
 
@@ -124,6 +124,9 @@ object Arm : FalconSubsystem() {
             angleMotorMain.setVoltage(0.0)
         }
     }
+    fun setAngleVelocity( angle : Double){
+        desiredAngleVelocity = angle
+    }
     fun setAngle( angle : SIUnit<Radian>) {
         desiredAngle = angle.value
     }
@@ -133,7 +136,7 @@ object Arm : FalconSubsystem() {
 
     fun extensionControl(){
         if (extensionControlEnabled){
-            extensionLoop.setNextR(VecBuilder.fill(desiredExtension.value, 0.0))
+            extensionLoop.setNextR(VecBuilder.fill(desiredExtension.value, desiredExtensionVelocity))
             extensionLoop.correct(VecBuilder.fill(getCurrentExtension().value))
             extensionLoop.predict(0.020) // 20 ms
 
@@ -150,6 +153,9 @@ object Arm : FalconSubsystem() {
         }else{
             extensionMotor.setVoltage(0.0)
         }
+    }
+    fun setExtensionVelocity(velocity : Double){
+        desiredExtensionVelocity = velocity
     }
     fun setExtension(position : SIUnit<Meter>){
         desiredExtension = position
