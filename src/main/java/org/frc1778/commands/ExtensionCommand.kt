@@ -33,9 +33,6 @@ class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 1
         val startState = TrapezoidProfile.State(startPosition.value, START_VEL)
         val endState = TrapezoidProfile.State(endPos.value, END_VEL)
         profile = TrapezoidProfile(constraints, endState, startState)
-        Robot.dataLogger.add("Time") {timer.get()}
-        Robot.dataLogger.add("Extension Position") {profile!!.calculate(timer.get()).position}
-
     }
 
     override fun execute() {

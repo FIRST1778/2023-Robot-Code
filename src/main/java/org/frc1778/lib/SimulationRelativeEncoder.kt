@@ -4,28 +4,28 @@ import com.revrobotics.REVLibError
 import com.revrobotics.RelativeEncoder
 
 class SimulationRelativeEncoder : RelativeEncoder{
-    var inverted = false;
-    var position = 0.0;
-    var velocity = 0.0;
+    var simulationInverted = false;
+    var simulationPosition = 0.0;
+    var simulationVelocity = 0.0;
     override fun setInverted(inverted: Boolean): REVLibError {
-        this.inverted = inverted;
+        this.simulationInverted = inverted;
         return REVLibError.kOk
     }
 
     override fun getInverted(): Boolean {
-        return inverted;
+        return simulationInverted;
     }
 
     override fun getPosition(): Double {
-        return position;
+        return simulationPosition;
     }
 
     override fun getVelocity(): Double {
-        return velocity;
+        return simulationVelocity;
     }
 
     override fun setPosition(position: Double): REVLibError {
-        this.position = position
+        this.simulationPosition = position
         return REVLibError.kOk
     }
 

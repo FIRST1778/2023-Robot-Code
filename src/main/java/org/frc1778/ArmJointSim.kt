@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer
 import java.io.File
 import java.io.PrintWriter
 import org.frc1778.lib.DataLogger
+import java.lang.Math.abs
 
 class ArmJointSim(initialJointAngle: Double){
     private var logger = DataLogger("armjointsim")
@@ -46,7 +47,7 @@ class ArmJointSim(initialJointAngle: Double){
     }
     fun capVelocity(dt : Double){
         velocity += accel * dt
-        var maxSpeed = motor.getSpeed(0.0, input)
+        var maxSpeed = abs(motor.getSpeed(0.0, input))
         velocity = velocity.coerceIn(-maxSpeed, maxSpeed)
     }
     fun calculateAcceleration(arm_length: Double){

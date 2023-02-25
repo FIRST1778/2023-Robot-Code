@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.ArmAngleCommand
 import org.frc1778.commands.ExtensionCommand
+import org.frc1778.commands.IntakeToggleCommand
 import org.frc1778.commands.ZeroExtensionCommand
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconTimedRobot
@@ -17,8 +18,10 @@ import org.frc1778.lib.SwerveTrajectoryTrackerCommand
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Vision
+import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.meters
+import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -86,9 +89,10 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun autonomousInit() {
+        zeroExtensionCommand = ZeroExtensionCommand()
         zeroExtensionCommand.schedule()
-        angleCommand = ArmAngleCommand(0.0.degrees)
-        angleCommand.schedule()
+        //angleCommand = ArmAngleCommand(0.0.degrees)
+        //angleCommand.schedule()
 
         trajectoryCommand = Drive.followTrajectory(trajectory)
         Drive.setPose(trajectory.initialHolonomicPose)
@@ -104,11 +108,18 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         autonomousCommand?.cancel()
-        angleCommand = ArmAngleCommand(90.0.degrees)
-        angleCommand.schedule()
+        //angleCommand = ArmAngleCommand(90.0.degrees)
+        //angleCommand.schedule()
 
-        extensionCommand = ExtensionCommand(0.5.meters)
-        extensionCommand.schedule()
+        //extensionCommand = ExtensionCommand(0.5.meters)
+        //extensionCommand.schedule()
+        var command = sequential{
+            +ZeroExtensionCommand()
+            +ExtensionCommand(0.0.meters)
+            +ArmAngleCommand(50.0.degrees) // hopper angle
+            +ExtensionCommand(0.3.meters) // hopper extension
+        }
+        command.schedule()
 
         Drive.setPose(trajectory.initialHolonomicPose)
 //        compressor.enableAnalog(

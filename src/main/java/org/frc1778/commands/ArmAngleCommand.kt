@@ -32,10 +32,6 @@ class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = 1
         val startState = TrapezoidProfile.State(startPosition.value, START_VEL)
         val endState = TrapezoidProfile.State(endPos.value, END_VEL)
         profile = TrapezoidProfile(constraints, endState, startState)
-        Robot.dataLogger.add("Time") {timer.get()}
-        Robot.dataLogger.add("Position") {Math.toDegrees(profile!!.calculate(timer.get()).position)}
-        Robot.dataLogger.add("CurrentAngle") {Math.toDegrees(Arm.getCurrentAngle().value)}
-
     }
 
     override fun execute() {

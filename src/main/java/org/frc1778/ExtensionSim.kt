@@ -1,10 +1,13 @@
 package org.frc1778
 
 import edu.wpi.first.math.system.plant.DCMotor
+import edu.wpi.first.wpilibj.simulation.DIOSim
 import org.frc1778.lib.DataLogger
+import org.frc1778.lib.SimulationRelativeEncoder
 import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.meters
 import kotlin.math.cos
 import kotlin.math.abs
 
@@ -22,6 +25,8 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
     private var currentDraw = 0.0
     private var logger = DataLogger("extensionsim")
     private val pulleyRadius = 0.0137541 // m
+    private val limitSwitchTriggerPosition = 0.0
+    val maxArmPosition = 0.381.meters
 
     fun Ka(): Double {
         return arm_mass * pulleyRadius * motor.rOhms / (motor.KtNMPerAmp * Ng)
@@ -33,25 +38,32 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
 
     init {
 //        logger.add("velocity (m/s)") { -> linearVelocity }
-//        logger.add("input voltage") { -> input }
-//        logger.add("current (amps)") { -> currentDraw }
+        logger.add("input voltage") { -> input }
+        //logger.add("current (amps)") { -> currentDraw }
         logger.add("linear position (m)") { -> linearArmPosition }
 //        logger.add("Ka") { -> Ka() }
 //        logger.add("Kv") { -> Kv() }
 //        logger.add("Ks") { -> forcesToVoltage(0.0) }
 //        logger.add("extension position") { -> Arm.getCurrentExtension().value }
-        logger.add("desired position", {-> Arm.desiredExtension.value})
+        logger.add("desired position") { -> Arm.desiredExtension.value }
+        logger.add("reported position") { -> Arm.getCurrentExtension().value }
+        logger.add("limit switch") { -> if (Arm.limitSwitch.get()) 1.0 else 0.0 }
     }
-    fun setInput(voltage: Double){
+
+    fun setInput(voltage: Double) {
         input = voltage
     }
-    fun update(dt: Double, jointTheta : Double){
+
+    fun update(dt: Double, jointTheta: Double, encoder: SimulationRelativeEncoder, limitSwitch: DIOSim) {
         calculateAcceleration(jointTheta)
         capVelocity(dt, jointTheta)
         linearArmPosition += linearVelocity * dt
+        limitSwitch.value = (linearArmPosition < limitSwitchTriggerPosition)
+        encoder.setPosition(encoder.getPosition() + linearVelocity * dt)
         logger.log()
     }
-    fun capVelocity(dt : Double, jointTheta: Double){
+
+    fun capVelocity(dt: Double, jointTheta: Double) {
         velocityAtMotor += accelerationAtMotor * dt
         var gravityForce = calculateGravityForce(jointTheta)
         var freeSpeed = abs(motor.getSpeed(abs(gravityForce * (pulleyRadius / Ng)), input))
@@ -59,33 +71,45 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
         linearVelocity = velocityAtMotor / (Ng / pulleyRadius)
     }
 
-    fun calculateAcceleration(jointTheta: Double){
+    fun calculateAcceleration(jointTheta: Double) {
         currentDraw = motor.getCurrent(velocityAtMotor, input)
         val torqueAtMotor: Double = motor.getTorque(currentDraw)
         var motorForce = calculateMotorForce(torqueAtMotor)
         var gravityForce = calculateGravityForce(jointTheta)
-        linearAccel = (motorForce + gravityForce) / arm_mass
+        var hardStopForce = calculateHardStopForce()
+        linearAccel = (motorForce + gravityForce + hardStopForce) / arm_mass
         accelerationAtMotor = Ng * (linearAccel / pulleyRadius)
     }
 
-    fun calculateGravityForce(jointTheta: Double) : Double{
+    fun calculateGravityForce(jointTheta: Double): Double {
         return arm_mass * 9.81 * cos(jointTheta)
     }
-    fun forcesToVoltage(jointTheta: Double) : Double{
+
+    fun calculateHardStopForce(): Double {
+        var k = 100/ 0.01 // 1000 N/ 1 cm
+        if(linearArmPosition < -0.002) {
+            return k * (0 - linearArmPosition)
+        }else if(linearArmPosition > maxArmPosition.value) {
+            return k * (maxArmPosition.value - linearArmPosition)
+        }
+        return 0.0
+    }
+
+    fun forcesToVoltage(jointTheta: Double): Double {
         return calculateGravityForce(jointTheta) * motor.rOhms * pulleyRadius / (Ng * motor.KtNMPerAmp)
     }
-    fun calculateMotorForce(motorTorque : Double) : Double{
+
+    fun calculateMotorForce(motorTorque: Double): Double {
         return motorTorque / (pulleyRadius / Ng)
     }
 
-    fun getCurrentArmPosition() : Double{
+    fun getCurrentArmPosition(): Double {
         return linearArmPosition
     }
 
     fun getCurrentDrawAmps(): Double {
         return currentDraw
     }
-
 
 
 }

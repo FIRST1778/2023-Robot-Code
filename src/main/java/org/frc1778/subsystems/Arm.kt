@@ -2,7 +2,6 @@
 
 package org.frc1778.subsystems
 
-import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import org.frc1778.ArmJointSim
 import edu.wpi.first.math.Nat
@@ -12,35 +11,34 @@ import edu.wpi.first.math.estimator.KalmanFilter
 import edu.wpi.first.math.system.LinearSystemLoop
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.CounterBase
-import edu.wpi.first.wpilibj.DigitalGlitchFilter
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax // TODO
 import edu.wpi.first.wpilibj.simulation.BatterySim
+import edu.wpi.first.wpilibj.simulation.DIOSim
 import edu.wpi.first.wpilibj.simulation.EncoderSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import org.frc1778.ExtensionSim
+import org.frc1778.lib.SimulatableCANSparkMax
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
-import java.security.cert.Extension
 import kotlin.math.cos
 import kotlin.math.sin
 
 object Arm : FalconSubsystem() {
-    var armJointSim = ArmJointSim(Math.toRadians(135.0))
-    var extensionSim = ExtensionSim(0.0.meters)
+    var armJointSim = ArmJointSim(Math.toRadians(0.0))
+    var extensionSim = ExtensionSim(0.1.meters)
 
     var limitSwitch = DigitalInput(14)
+    var limitSwitchSim = DIOSim(limitSwitch)
     var armEncoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
-    var extensionEncoder = Encoder(3, 4, false, CounterBase.EncodingType.k4X)
     var armEncoderSim = EncoderSim(armEncoder)
-    var extensionEncoderSim = EncoderSim(extensionEncoder)
 
     var angleMotorMain = PWMSparkMax(11)
-    var extensionMotor = PWMSparkMax(12)
+    var extensionMotor = SimulatableCANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless)
 
     val angle_kS : Double = 0.3851
     val angle_kA : Double = 0.03516
@@ -54,7 +52,7 @@ object Arm : FalconSubsystem() {
 
     // This is set in the ArmTrapezoidCommand to what the profile wants, so we
     // initialize it to a dud value here to not immediately activate the arm.
-    var desiredAngle : Double = Math.toRadians(135.0)
+    var desiredAngle : Double = Math.toRadians(0.0)
     var desiredExtension : SIUnit<Meter> = 0.0.meters
     var desiredExtensionVelocity : Double = 0.0 // m/s
     var desiredAngleVelocity : Double = 0.0 // rad/s
@@ -62,7 +60,7 @@ object Arm : FalconSubsystem() {
     var angleControlEnabled : Boolean = true
     var extensionControlEnabled : Boolean = true
 
-    var zeroed : Boolean = true
+    var zeroed : Boolean = false
 
     var angleObserver = KalmanFilter(
             Nat.N2(),
@@ -161,7 +159,23 @@ object Arm : FalconSubsystem() {
         desiredExtension = position
     }
     fun getCurrentExtension() : SIUnit<Meter>{
-        return extensionEncoder.distance.meters
+        return extensionMotor.encoder.position.meters
+    }
+
+    fun resetIsZeroed() {
+        zeroed = false
+    }
+    fun limitSwitchHit(): Boolean {
+        return limitSwitch.get()
+    }
+    fun doExtensionZeroingMovement() {
+        extensionMotor.setVoltage(-5.0)
+    }
+    fun zeroExtension() {
+        extensionMotor.encoder.position = 0.0
+        zeroed = true
+        desiredExtension = 0.0.meters
+        extensionMotor.setVoltage(0.0)
     }
 
     override fun lateInit() {
@@ -169,11 +183,6 @@ object Arm : FalconSubsystem() {
         armEncoder.distancePerPulse = (2 * Math.PI) / 1024
         armEncoder.setMinRate(1.0)
         armEncoderSim.distance = armJointSim.angleAtJoint()
-
-        extensionEncoder.samplesToAverage = 5
-        extensionEncoder.distancePerPulse = ((0.0137541 / 5.0) * (2 * Math.PI)) / 42   // (pulleyRadius / Ng) * (2 PI Radians) / encoderResolution
-        extensionEncoder.setMinRate(1.0)
-        extensionEncoderSim.distance = extensionSim.getCurrentArmPosition()
     }
     override fun periodic() {
         if(zeroed) {
@@ -186,10 +195,9 @@ object Arm : FalconSubsystem() {
         extensionSim.setInput(extensionMotor.get() * RobotController.getBatteryVoltage())
         armJointSim.setInput(angleMotorMain.get() * RobotController.getBatteryVoltage())
 
-        extensionSim.update(0.020, armJointSim.angleAtJoint())
+        extensionSim.update(0.020, armJointSim.angleAtJoint(), extensionMotor.simulationEncoder, limitSwitchSim)
         armJointSim.update(0.020, armJointSim.getMinArmLength())
 
-        extensionEncoderSim.distance = extensionSim.getCurrentArmPosition()
         armEncoderSim.distance = armJointSim.angleAtJoint()
 
         RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps(), extensionSim.getCurrentDrawAmps()))
