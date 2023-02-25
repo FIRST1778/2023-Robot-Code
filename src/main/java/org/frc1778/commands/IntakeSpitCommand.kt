@@ -6,7 +6,7 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
 import org.ghrobotics.lib.mathematics.units.seconds
 
-class IntakeSpitCommand(val duration : SIUnit<Second> = 0.0.seconds) : WaitCommand(duration.value) {
+class IntakeSpitCommand(private val duration : SIUnit<Second> = 0.0.seconds) : WaitCommand(duration.value) {
     init{
         addRequirements(Intake)
     }
