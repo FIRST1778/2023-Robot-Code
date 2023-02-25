@@ -2,6 +2,7 @@
 
 package org.frc1778.subsystems
 
+import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
 import org.frc1778.ArmJointSim
 import edu.wpi.first.math.Nat
@@ -14,7 +15,6 @@ import edu.wpi.first.wpilibj.CounterBase
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.RobotController
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax // TODO
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.DIOSim
 import edu.wpi.first.wpilibj.simulation.EncoderSim
@@ -37,7 +37,7 @@ object Arm : FalconSubsystem() {
     var armEncoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
     var armEncoderSim = EncoderSim(armEncoder)
 
-    var angleMotorMain = PWMSparkMax(11)
+    var angleMotorMain = SimulatableCANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless)
     var extensionMotor = SimulatableCANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless)
 
     val angle_kS : Double = 0.3851
@@ -47,7 +47,7 @@ object Arm : FalconSubsystem() {
 
     val extension_kA : Double = 0.04607411898461538
     val extension_kV : Double = 7.213374267914612
-    val extension_kS : Double = 0.4519871072390769 // 0.4519871072390769
+    val extension_kS : Double = 0.4519871072390769
     val extensionPlant = LinearSystemId.identifyPositionSystem(extension_kV, extension_kA)
 
     // This is set in the ArmTrapezoidCommand to what the profile wants, so we
