@@ -14,14 +14,7 @@ object Manipulator : FalconSubsystem() {
     )
     var manipulatorOpen : Boolean = false
     var manipulatorInitial = false
-    fun toggle(){
-        if(manipulatorOpen){
-            close()
-        }
-        else{
-            open()
-        }
-    }
+
     fun open(){
         manipulatorSol.state = FalconSolenoid.State.Forward
         manipulatorOpen = true

@@ -6,17 +6,11 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
 import org.ghrobotics.lib.mathematics.units.seconds
 
-class IntakeSuckCommand(private val duration : SIUnit<Second> = 0.0.seconds) : WaitCommand(duration.value) {
+class IntakeStopCommand(private val duration : SIUnit<Second> = 0.0.seconds) : WaitCommand(duration.value) {
     init{
         addRequirements(Intake)
     }
     override fun initialize() {
-        Intake.suck()
-    }
-
-    override fun end(interrupted: Boolean) {
-        if(duration.value > 0.0){
-            Intake.stop()
-        }
+        Intake.stop()
     }
 }

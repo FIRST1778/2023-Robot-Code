@@ -16,12 +16,12 @@ class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 1
     }
 
 
-    var profile: TrapezoidProfile? = null
-    var timer = Timer()
+    private var profile: TrapezoidProfile? = null
+    private var timer = Timer()
 
-    var endPos = endPosition
-    var maxAccel = maxAcceleration
-    var maxVel = maxVelocity
+    private var endPos = endPosition
+    private var maxAccel = maxAcceleration
+    private var maxVel = maxVelocity
     override fun initialize() {
         timer.reset()
         timer.start()
