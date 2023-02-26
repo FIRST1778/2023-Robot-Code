@@ -1,5 +1,6 @@
 package org.frc1778.lib
 
+import org.frc1778.Constants
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Acceleration
 import org.ghrobotics.lib.mathematics.units.derived.Radian
@@ -57,7 +58,8 @@ class SwerveModuleConstants {
     var kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
     var kDriveNativeUnitModel = NativeUnitLengthModel(4096.nativeUnits, kWheelDiameter.inches)
     var kDriveDeadband = 0.01
-    var kDriveMaxSpeed = 10.0
+    // var kDriveMaxSpeed = 10.0
+    var kDriveMaxSpeed = Constants.DriveConstants.maxSpeed.value
 
     // drive current/voltage
     var kDriveContinuousCurrentLimit = 30 // amps

@@ -64,9 +64,6 @@ object Constants {
             kDriveNativeUnitModel =
                 NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveDeadband = 0.01
-            kDriveMaxSpeed = maxSpeed.value
-
-
         }
         val topRightSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Right Swerve"
@@ -100,7 +97,6 @@ object Constants {
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
                 NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
-            kDriveMaxSpeed = maxSpeed.value
         }
         val bottomRightSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Bottom Right Swerve"
@@ -135,9 +131,6 @@ object Constants {
             kDriveNativeUnitModel =
                 NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveDeadband = 0.01
-            kDriveMaxSpeed = maxSpeed.value
-
-
         }
         val bottomLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Bottom Left Swerve"
@@ -172,9 +165,6 @@ object Constants {
             kDriveNativeUnitModel =
                 NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveDeadband = 0.01
-            kDriveMaxSpeed = maxSpeed.value
-
-
         }
 
 
