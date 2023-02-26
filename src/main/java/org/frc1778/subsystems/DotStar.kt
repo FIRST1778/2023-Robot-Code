@@ -39,11 +39,11 @@ object DotStar : FalconSubsystem() {
         val startFrame = ByteArray(4) { 0x00.toByte() }
         spi.write(startFrame, startFrame.size)
 
+        val ledFrame: ByteArray = when (color) {
+            Color.Yellow -> makeLedFrame(0xFF, 0xFF, 0x00)
+            Color.Blue -> makeLedFrame(0x00, 0x00, 0xFF)
+        }
         for (i in 1..NUM_LEDS) {
-            val ledFrame: ByteArray = when (color) {
-                Color.Yellow -> makeLedFrame(0xFF, 0xFF, 0x00)
-                Color.Blue -> makeLedFrame(0x00, 0x00, 0xFF)
-            }
             spi.write(ledFrame, ledFrame.size)
         }
 
