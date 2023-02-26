@@ -38,7 +38,8 @@ object Arm : FalconSubsystem() {
     var armEncoderSim = EncoderSim(armEncoder)
 
     var angleMotorMain = SimulatableCANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless)
-    var extensionMotor = SimulatableCANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless)
+    var angleMotorOther = SimulatableCANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless)
+    var extensionMotor = SimulatableCANSparkMax(13, CANSparkMaxLowLevel.MotorType.kBrushless)
 
     val angle_kS : Double = 0.3851
     val angle_kA : Double = 0.03516

@@ -37,9 +37,7 @@ object Robot : FalconTimedRobot() {
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
 
-    lateinit var angleCommand: ArmAngleCommand
     lateinit var zeroExtensionCommand: ZeroExtensionCommand
-    lateinit var extensionCommand : ExtensionCommand
 
     private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
     private lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
@@ -67,6 +65,9 @@ object Robot : FalconTimedRobot() {
         Drive.pigeon.yaw = 0.0
         field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
+
+        Arm.extensionControlEnabled = false
+        Arm.angleControlEnabled = false
     }
 
 
@@ -89,15 +90,13 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun autonomousInit() {
-        zeroExtensionCommand = ZeroExtensionCommand()
-        zeroExtensionCommand.schedule()
-        //angleCommand = ArmAngleCommand(0.0.degrees)
-        //angleCommand.schedule()
+        //zeroExtensionCommand = ZeroExtensionCommand()
+        //zeroExtensionCommand.schedule()
 
-        trajectoryCommand = Drive.followTrajectory(trajectory)
-        Drive.setPose(trajectory.initialHolonomicPose)
-        autonomousCommand = trajectoryCommand
-        autonomousCommand?.schedule()
+        //trajectoryCommand = Drive.followTrajectory(trajectory)
+        //Drive.setPose(trajectory.initialHolonomicPose)
+        //autonomousCommand = trajectoryCommand
+        //autonomousCommand?.schedule()
 //        trajectoryCommand.schedule()
 
     }
@@ -107,26 +106,9 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun teleopInit() {
-        autonomousCommand?.cancel()
-        //angleCommand = ArmAngleCommand(90.0.degrees)
-        //angleCommand.schedule()
+        //autonomousCommand?.cancel()
 
-        //extensionCommand = ExtensionCommand(0.5.meters)
-        //extensionCommand.schedule()
-        var command = sequential{
-            +ZeroExtensionCommand()
-            +ExtensionCommand(0.0.meters)
-            +ArmAngleCommand(50.0.degrees) // hopper angle
-            +ExtensionCommand(0.3.meters) // hopper extension
-        }
-        command.schedule()
-
-        Drive.setPose(trajectory.initialHolonomicPose)
-//        compressor.enableAnalog(
-//            30.0,
-//            40.0
-//        )
-
+        //Drive.setPose(trajectory.initialHolonomicPose)
     }
 
     /** This method is called periodically during operator control.  */
