@@ -51,26 +51,26 @@ class PathFinder(
 
     @Suppress("SpreadOperator")
     fun findPath(
-        start: Pose2d, end: Pose2d, vararg restrictedAreas: Rectangle2d
+        start: Pose2d, end: Pose2d, vararg restrictedAreas: Rectangle2d, samples: Int = 25
     ): List<Pose2d>? {
         val pathNodes = findPath(
             start.translation.toVector2d(), end.translation.toVector2d(), *restrictedAreas
         ) ?: return null
 
-        FileOutputStream("src/main/out/path_nodes.csv").run {
-            val writer = bufferedWriter()
-            writer.write("""Index,X,Y""")
-            writer.newLine()
-            pathNodes.forEachIndexed { index: Int, node: Vector2D ->
-                writer.write("$index,${node.x},${node.y}")
-                writer.newLine()
-            }
-            writer.flush()
-        }
+//        FileOutputStream("src/main/out/path_nodes.csv").run {
+//            val writer = bufferedWriter()
+//            writer.write("""Index,X,Y""")
+//            writer.newLine()
+//            pathNodes.forEachIndexed { index: Int, node: Vector2D ->
+//                writer.write("$index,${node.x},${node.y}")
+//                writer.newLine()
+//            }
+//            writer.flush()
+//        }
 
+        if(pathNodes.size <= 2) return listOf(start, end)
         val interpolator = SplineInterpolator()
 
-        val samples = 25
 
         val distances = mutableListOf<Double>()
         distances.add(0.0)
@@ -79,16 +79,16 @@ class PathFinder(
             distances += distances.last() + a.distance(b)
         }
 
-        FileOutputStream("src/main/out/distances.csv").run {
-            val writer = bufferedWriter()
-            writer.write("""Index,Distance""")
-            writer.newLine()
-            distances.forEachIndexed { index: Int, distance ->
-                writer.write("$index,$distance")
-                writer.newLine()
-            }
-            writer.flush()
-        }
+//        FileOutputStream("src/main/out/distances.csv").run {
+//            val writer = bufferedWriter()
+//            writer.write("""Index,Distance""")
+//            writer.newLine()
+//            distances.forEachIndexed { index: Int, distance ->
+//                writer.write("$index,$distance")
+//                writer.newLine()
+//            }
+//            writer.flush()
+//        }
 
         val distanceDelta = distances.last() / samples
 
@@ -113,18 +113,19 @@ class PathFinder(
 
         return listOf(
             start, *interpolatedNodes, end
-        ).also {
-            FileOutputStream("src/main/out/pose.csv").run {
-                val writer = bufferedWriter()
-                writer.write("""Index,X,Y,Heading""")
-                writer.newLine()
-                it.forEachIndexed { index: Int, pose2d: Pose2d ->
-                    writer.write("$index,${pose2d.x},${pose2d.y},${pose2d.rotation.radians}")
-                    writer.newLine()
-                }
-                writer.flush()
-            }
-        }
+        )
+//            .also {
+//            FileOutputStream("src/main/out/pose.csv").run {
+//                val writer = bufferedWriter()
+//                writer.write("""Index,X,Y,Heading""")
+//                writer.newLine()
+//                it.forEachIndexed { index: Int, pose2d: Pose2d ->
+//                    writer.write("$index,${pose2d.x},${pose2d.y},${pose2d.rotation.radians}")
+//                    writer.newLine()
+//                }
+//                writer.flush()
+//            }
+//        }
     }
 
     fun findPath(
@@ -132,16 +133,16 @@ class PathFinder(
     ): List<Vector2D>? {
         val effectiveRestrictedAreas = this.restrictedAreas.plusToSet(restrictedAreas)
         val worldNodes = createNodes(effectiveRestrictedAreas) + setOf(start, end)
-        FileOutputStream("src/main/out/nodes.csv").run {
-            val writer = bufferedWriter()
-            writer.write("""Index,X,Y""")
-            writer.newLine()
-            worldNodes.forEachIndexed { index: Int, node: Vector2D ->
-                writer.write("$index,${node.x},${node.y}")
-                writer.newLine()
-            }
-            writer.flush()
-        }
+//        FileOutputStream("src/main/out/nodes.csv").run {
+//            val writer = bufferedWriter()
+//            writer.write("""Index,X,Y""")
+//            writer.newLine()
+//            worldNodes.forEachIndexed { index: Int, node: Vector2D ->
+//                writer.write("$index,${node.x},${node.y}")
+//                writer.newLine()
+//            }
+//            writer.flush()
+//        }
         return optimize(
             start, end, worldNodes, effectiveRestrictedAreas
         )

@@ -23,8 +23,10 @@ import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryConfig
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.wrappers.FalconTimedRobot
+import java.io.File
 import kotlin.math.pow
 import kotlin.math.sqrt
+import kotlin.system.measureTimeMillis
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -69,7 +71,6 @@ object Robot : FalconTimedRobot() {
             NetworkTableInstance.getDefault()
         )
         Drive.pigeon.yaw = 0.0
-        //<editor-fold desc=" Path Gen Stuff">
         val pf = PathFinder(
             (36.25).inches,
 //            .25.meters,
@@ -102,73 +103,66 @@ object Robot : FalconTimedRobot() {
             )
         )
         val points = pf.findPath(
-            Pose2d(
-                Translation2d(2.25, 2.75), Rotation2d(
-                    Math.toRadians(0.0)
-                )
-            ),
-            Pose2d(
-                Translation2d(15.00, 6.75), Rotation2d(
-                    Math.toRadians(0.0)
-                )
+                Pose2d(
+                    Translation2d(2.11, 1.53), Rotation2d(
+                        Math.toRadians(0.0)
+                    )
+                ),
+                Pose2d(
+                    Translation2d(15.00, 6.75), Rotation2d(
+                        Math.toRadians(0.0)
+                    )
 //                Translation2d(9.00, 4.50), Rotation2d(0.0)
-            ),
-        )
-        val trajectory = points?.let {
-            infix fun Pose2d.headingTo(other: Pose2d): Rotation2d {
-                val translation = other.translation.minus(this.translation)
-                return Rotation2d(translation.x, translation.y)
-            }
-
-            infix fun Pose2d.distanceTo(other: Pose2d): Double =
-                sqrt((this.x - other.x).pow(2) + (this.y - other.y).pow(2))
-
-
-            val pathPoints: MutableList<PathPoint> = mutableListOf()
-            pathPoints.add(
-                points.take(2).let {
-                        (firstPose, nextPose) ->
-                    PathPoint(
-                        firstPose.translation,
-                        firstPose headingTo nextPose,
-                        firstPose.rotation
-                    ).withPrevControlLength(
-                        sqrt(firstPose distanceTo nextPose)
-                    )
-                }
+                ),
+                samples = 25
             )
-            points.windowed(3).mapTo(pathPoints) { (prevPose, currPose, nextPose) ->
-                PathPoint(
-                    currPose.translation, currPose headingTo nextPose, currPose.rotation
-                ).withControlLengths(
-                    sqrt(prevPose distanceTo currPose),
-                    sqrt(currPose distanceTo  nextPose)
+            val trajectory = points?.let {
+                infix fun Pose2d.headingTo(other: Pose2d): Rotation2d {
+                    val translation = other.translation.minus(this.translation)
+                    return Rotation2d(translation.x, translation.y)
+                }
+
+                infix fun Pose2d.distanceTo(other: Pose2d): Double =
+                    sqrt((this.x - other.x).pow(2) + (this.y - other.y).pow(2))
+
+
+                val pathPoints: MutableList<PathPoint> = mutableListOf()
+                pathPoints.add(
+                    points.take(2).let { (firstPose, nextPose) ->
+                        PathPoint(
+                            firstPose.translation,
+                            firstPose headingTo nextPose,
+                            firstPose.rotation
+                        ).withNextControlLength(
+                            sqrt(firstPose distanceTo nextPose) / 10
+                        )
+                    }
                 )
-            }
-            pathPoints.add(
-                points.takeLast(2).let {
-                    (prevPose, lastPose) ->
+                points.windowed(3).mapTo(pathPoints) { (prevPose, currPose, nextPose) ->
                     PathPoint(
-                        lastPose.translation,
-                        prevPose headingTo lastPose,
-                        lastPose.rotation
-                    ).withPrevControlLength(
-                        sqrt(prevPose distanceTo lastPose)
+                        currPose.translation, (prevPose headingTo currPose), currPose.rotation
+                    ).withControlLengths(
+                        sqrt(prevPose distanceTo currPose) / 10,
+                        sqrt(currPose distanceTo nextPose) / 10
                     )
                 }
-            )
+                pathPoints.add(
+                    points.takeLast(2).let { (prevPose, lastPose) ->
+                        PathPoint(
+                            lastPose.translation,
+                            prevPose headingTo lastPose,
+                            lastPose.rotation
+                        ).withPrevControlLength(
+                            sqrt(prevPose distanceTo lastPose) / 10
+                        )
+                    }
+                )
 
 
-            PathPlanner.generatePath(
-                PathConstraints(7.00, 7.00), pathPoints
-            )
-        } ?: PathPlannerTrajectory()
-//        val trajectory = points?.let {
-//            FalconTrajectoryGenerator.generateTrajectory(
-//                it, trajectoryConfig
-//            )
-//        } ?: Trajectory()
-        //</editor-fold>
+                PathPlanner.generatePath(
+                    PathConstraints(7.00, 7.00), pathPoints
+                )
+            } ?: PathPlannerTrajectory()
         field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
         Drive.robotPosition = trajectory.initialPose
@@ -229,5 +223,6 @@ object Robot : FalconTimedRobot() {
     override fun simulationPeriodic() {
 
     }
+
 
 }
