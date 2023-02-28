@@ -3,6 +3,7 @@ package org.frc1778
 import com.pathplanner.lib.PathPlanner
 import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.networktables.NetworkTableInstance
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.ArmAngleCommand
 import org.frc1778.commands.ExtensionCommand
 import org.frc1778.commands.IntakeToggleCommand
+import org.frc1778.commands.PlaceGameObjectCommand
 import org.frc1778.commands.ZeroExtensionCommand
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconTimedRobot
@@ -22,6 +24,7 @@ import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.FalconSolenoid
+import kotlin.properties.Delegates
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -34,6 +37,7 @@ import org.ghrobotics.lib.wrappers.FalconSolenoid
  * object or package, it will get changed everywhere.)
  */
 object Robot : FalconTimedRobot() {
+    val alliance: DriverStation.Alliance = DriverStation.getAlliance()
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
 
@@ -46,7 +50,43 @@ object Robot : FalconTimedRobot() {
     val pcm = PneumaticHub(30)
     val compressor = pcm.makeCompressor()
 
-    public var dataLogger = DataLogger("DataLogs")
+    var dataLogger = DataLogger("DataLogs")
+
+
+    var scoringLevel by Delegates.observable(Level.Top) { _, oldValue, newValue ->
+        if (oldValue != newValue) {
+            placeGameObjectCommand.level = newValue
+        }
+    }
+
+    //TODO: We will probably need to perform more actions on this state Change
+    var gamePiece: GamePiece by Delegates.observable(GamePiece.Cone) { _, oldValue, newValue ->
+        if(oldValue != newValue) {
+            placeGameObjectCommand = PlaceGameObjectCommand(scoringLevel, newValue, scoringStation, scoringSide)
+        }
+    }
+
+    var scoringStation: Station by Delegates.observable(
+        when (DriverStation.getLocation()) {
+            1 -> Station.Left
+            2 -> Station.Center
+            3 -> Station.Right
+            else -> Station.Center
+        }
+    ) { _, oldValue, newValue ->
+        if(oldValue != newValue) {
+            placeGameObjectCommand = PlaceGameObjectCommand(scoringLevel, gamePiece, newValue, scoringSide)
+        }
+    }
+
+    var scoringSide: Side by Delegates.observable(Side.Right) { _, oldValue, newValue ->
+        if(oldValue != newValue) {
+            placeGameObjectCommand = PlaceGameObjectCommand(scoringLevel, gamePiece, scoringStation, newValue)
+        }
+    }
+
+    var placeGameObjectCommand: PlaceGameObjectCommand =
+        PlaceGameObjectCommand(scoringLevel, gamePiece, scoringStation, scoringSide)
 
     init {
         +Vision
@@ -60,7 +100,7 @@ object Robot : FalconTimedRobot() {
         // button bindings, and put our autonomous chooser on the dashboard.
         RobotContainer
         SmartDashboard.setNetworkTableInstance(
-                NetworkTableInstance.getDefault()
+            NetworkTableInstance.getDefault()
         )
         Drive.pigeon.yaw = 0.0
         field.getObject("traj").setTrajectory(trajectory)
@@ -119,6 +159,7 @@ object Robot : FalconTimedRobot() {
     override fun simulationPeriodic() {
 
     }
+
     override fun simulationInit() {
 
     }

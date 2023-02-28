@@ -1,6 +1,10 @@
 package org.frc1778.subsystems
 
 import com.ctre.phoenix.sensors.Pigeon2
+import com.pathplanner.lib.PathConstraints
+import com.pathplanner.lib.PathPlanner
+import com.pathplanner.lib.PathPlannerTrajectory
+import com.pathplanner.lib.PathPoint
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.controller.HolonomicDriveController
 import edu.wpi.first.math.controller.PIDController
@@ -9,10 +13,12 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Transform2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
+import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
@@ -26,6 +32,8 @@ import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.utils.Source
 
 object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
+    var scoringPose: Pose2d? = null
+
     val pigeon = Pigeon2(Constants.DriveConstants.pigeonCanID)
 
     private const val maxVoltage = 12.0
@@ -153,6 +161,23 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     }
 
 
+    //TODO: Possibly use Pathfinding to generate a trajectory to our goal
+    fun trajectoryToGoal(): Trajectory? {
+        if(scoringPose == null) return null
+        return PathPlanner.generatePath(
+            PathConstraints(maxSpeed.value, 3.0),
+            PathPoint(
+                robotPosition.translation,
+                Transform2d(robotPosition, scoringPose).translation.angle,
+                robotPosition.rotation
+            ),
+            PathPoint(
+                scoringPose!!.translation,
+                Transform2d(scoringPose, robotPosition).translation.angle,
+                robotPosition.rotation
+            )
+        )
+    }
 
 
 }

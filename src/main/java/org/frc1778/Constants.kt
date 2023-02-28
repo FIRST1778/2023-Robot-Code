@@ -2,6 +2,7 @@ package org.frc1778
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
+import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
@@ -171,7 +172,8 @@ object Constants {
     }
 
     object ArmConstants {
-        
+
+        val AORTransform: Transform3d = Transform3d()
     }
     object VisionConstants {
         const val cameraName = "The Eye of Sauron"
@@ -185,4 +187,22 @@ object Constants {
     object LightConstants {
         const val numLights = 100
     }
+
+
 }
+
+enum class Level(val transform: Transform3d) {
+        Top(Transform3d()), Middle(Transform3d()), Bottom(Transform3d())
+    }
+
+    enum class GamePiece(val heightOffset: Double) {
+        Cube(0.0), Cone(0.0)
+    }
+
+    enum class Station(val redPose: Pose3d, val bluePose: Pose3d) {
+        Left(Pose3d(), Pose3d()), Center(Pose3d(), Pose3d()), Right(Pose3d(), Pose3d())
+    }
+
+    enum class Side(val transform: Transform3d) {
+        Left(Transform3d()), Right(Transform3d())
+    }
