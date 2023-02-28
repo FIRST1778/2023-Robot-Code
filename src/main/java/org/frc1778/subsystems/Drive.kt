@@ -23,13 +23,16 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.networktables.GenericEntry
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.Constants
+import org.frc1778.commands.PlaceGameObjectDriveCommand
 import org.frc1778.commands.TeleOpDriveCommand
 import org.frc1778.lib.FalconNeoSwerveModule
 import org.frc1778.lib.FalconSwerveDrivetrain
+import org.frc1778.lib.SwerveTrajectoryTrackerCommand
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.utils.Source
+import kotlin.math.hypot
 
 object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     var scoringPose: Pose2d? = null
@@ -78,6 +81,9 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     override val motorCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
     override val gyro: Source<Rotation2d> = { Rotation2d.fromDegrees(pigeon.yaw) }
+
+    var gamePiecePlacementTrajectoryFollowCommand: PlaceGameObjectDriveCommand? = null
+
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
         val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
         if (result != null) {
@@ -163,13 +169,15 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
 
     //TODO: Possibly use Pathfinding to generate a trajectory to our goal
     fun trajectoryToGoal(): Trajectory? {
+        val currChassisSpeeds = kinematics.toChassisSpeeds(*swerveModuleStates().toTypedArray())
         if(scoringPose == null) return null
         return PathPlanner.generatePath(
             PathConstraints(maxSpeed.value, 3.0),
             PathPoint(
                 robotPosition.translation,
                 Transform2d(robotPosition, scoringPose).translation.angle,
-                robotPosition.rotation
+                robotPosition.rotation,
+                hypot(currChassisSpeeds.vxMetersPerSecond, currChassisSpeeds.vyMetersPerSecond)
             ),
             PathPoint(
                 scoringPose!!.translation,
@@ -178,6 +186,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
             )
         )
     }
+
 
 
 }

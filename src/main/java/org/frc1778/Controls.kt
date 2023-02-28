@@ -3,6 +3,7 @@ package org.frc1778
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.frc1778.commands.*
+import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
 import org.ghrobotics.lib.commands.sequential
@@ -27,7 +28,12 @@ object Controls {
     val driverController = driverControllerGenericHID.mapControls {
         //TODO: Find Correct Button ID
         button(1) {
-            change(PlaceGameObjectDriveCommand())
+            whileOn {
+                Drive.gamePiecePlacementTrajectoryFollowCommand?.schedule()
+            }
+            changeOff {
+                Drive.gamePiecePlacementTrajectoryFollowCommand?.cancel()
+            }
         }
     }
 

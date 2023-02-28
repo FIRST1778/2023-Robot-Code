@@ -140,7 +140,7 @@ class FalconDriveHelper {
     ): ChassisSpeeds {
         //Get Current Robot Speed
         val currentChassisSpeeds = drivetrain.kinematics.toChassisSpeeds(
-            *drivetrain.swerveModuleStates.toTypedArray()
+            *drivetrain.swerveModuleStates().toTypedArray()
         )
         return ChassisSpeeds.fromFieldRelativeSpeeds(
             if (clampAcceleration && abs(vx - currentChassisSpeeds.vxMetersPerSecond) > kMaxAcceleration)

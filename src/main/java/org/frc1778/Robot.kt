@@ -88,6 +88,7 @@ object Robot : FalconTimedRobot() {
     var placeGameObjectCommand: PlaceGameObjectCommand =
         PlaceGameObjectCommand(scoringLevel, gamePiece, scoringStation, scoringSide)
 
+
     init {
         +Vision
         +Drive

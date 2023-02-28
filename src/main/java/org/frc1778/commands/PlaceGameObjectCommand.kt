@@ -42,6 +42,7 @@ class PlaceGameObjectCommand(
     init {
         if (gamePiece == GamePiece.Cone) robotPose.transformBy(side.transform)
         Drive.scoringPose = robotPose.toPose2d()
+        Drive.gamePiecePlacementTrajectoryFollowCommand = PlaceGameObjectDriveCommand()
     }
 
     override fun initialize() {
