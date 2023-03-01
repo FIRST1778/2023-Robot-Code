@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import org.frc1778.lib.SwerveModuleConstants
@@ -200,7 +201,13 @@ enum class GamePiece(val heightOffset: Double) {
 }
 
 enum class Station(val redPose: Pose3d, val bluePose: Pose3d) {
-    Left(Pose3d(), Pose3d()), Center(Pose3d(), Pose3d()), Right(Pose3d(), Pose3d())
+    Left(Pose3d(), Pose3d()), Center(Pose3d(), Pose3d()), Right(Pose3d(), Pose3d());
+    fun ours(): Pose3d {
+        if (Robot.alliance == DriverStation.Alliance.Red)
+            return redPose
+        else
+            return bluePose
+    }
 }
 
 enum class Side(val transform: Transform3d) {

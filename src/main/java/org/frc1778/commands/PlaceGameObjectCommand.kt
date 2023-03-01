@@ -34,10 +34,7 @@ class PlaceGameObjectCommand(
 
     lateinit var command: Command
 
-    private val robotPose: Pose3d = when (Robot.alliance) {
-        DriverStation.Alliance.Red -> station.bluePose
-        else -> station.bluePose
-    }
+    private val robotPose: Pose3d = station.ours()
 
     init {
         if (gamePiece == GamePiece.Cone) robotPose.transformBy(side.transform)
@@ -46,14 +43,12 @@ class PlaceGameObjectCommand(
     }
 
     override fun initialize() {
-        val goalPose: Pose3d = when (Robot.alliance) {
-            DriverStation.Alliance.Red -> station.redPose
-            else -> station.bluePose
-        }.transformBy(
-            level.transform + Transform3d(
-                Translation3d(0.0, 0.0, gamePiece.heightOffset), Rotation3d()
+        val goalPose: Pose3d = station.ours()
+            .transformBy(
+                level.transform + Transform3d(
+                    Translation3d(0.0, 0.0, gamePiece.heightOffset), Rotation3d()
+                )
             )
-        )
         val armTranslation3d = Transform3d(
             robotPose.transformBy(Constants.ArmConstants.AORTransform), goalPose
         ).translation
