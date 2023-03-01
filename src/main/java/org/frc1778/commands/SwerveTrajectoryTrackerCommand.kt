@@ -6,8 +6,9 @@
  * Copyright 2019, Green Hope Falcons
  */
 
-package org.frc1778.lib
+package org.frc1778.commands
 
+import org.frc1778.lib.FalconSwerveDrivetrain
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.DriverStation

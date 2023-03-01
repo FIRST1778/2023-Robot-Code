@@ -2,7 +2,7 @@ package org.frc1778.commands
 
 import edu.wpi.first.math.geometry.Pose2d
 import org.frc1778.Robot
-import org.frc1778.lib.SwerveTrajectoryTrackerCommand
+import org.frc1778.commands.SwerveTrajectoryTrackerCommand
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.commands.FalconCommand
 

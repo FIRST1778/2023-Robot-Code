@@ -18,7 +18,7 @@ import org.frc1778.Level
 import org.frc1778.Robot
 import org.frc1778.Side
 import org.frc1778.Station
-import org.frc1778.lib.SwerveTrajectoryTrackerCommand
+import org.frc1778.commands.SwerveTrajectoryTrackerCommand
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.commands.FalconCommand
