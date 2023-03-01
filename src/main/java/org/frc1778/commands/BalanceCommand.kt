@@ -32,7 +32,7 @@ class BalanceCommand: FalconCommand() {
     override fun execute() {
         val pitch = Drive.pigeon.pitch
         val yaw = Drive.robotPosition.rotation.radians
-        var x = Math.cos(yaw) * Math.cos(pitch))
+        var x = Math.cos(yaw) * Math.cos(pitch)
         val z = Math.sin(pitch)
         val dx = Math.signum(x) * Math.signum(z)
         Drive.swerveDrive(dx * BALANCE_VELOCITY, 0.0, 0.0, true)
