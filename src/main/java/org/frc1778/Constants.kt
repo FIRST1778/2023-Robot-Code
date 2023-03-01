@@ -192,17 +192,17 @@ object Constants {
 }
 
 enum class Level(val transform: Transform3d) {
-        Top(Transform3d()), Middle(Transform3d()), Bottom(Transform3d())
-    }
+    Top(Transform3d()), Middle(Transform3d()), Bottom(Transform3d())
+}
 
-    enum class GamePiece(val heightOffset: Double) {
-        Cube(0.0), Cone(0.0)
-    }
+enum class GamePiece(val heightOffset: Double) {
+    Cube(0.0), Cone(0.0)
+}
 
-    enum class Station(val redPose: Pose3d, val bluePose: Pose3d) {
-        Left(Pose3d(), Pose3d()), Center(Pose3d(), Pose3d()), Right(Pose3d(), Pose3d())
-    }
+enum class Station(val redPose: Pose3d, val bluePose: Pose3d) {
+    Left(Pose3d(), Pose3d()), Center(Pose3d(), Pose3d()), Right(Pose3d(), Pose3d())
+}
 
-    enum class Side(val transform: Transform3d) {
-        Left(Transform3d()), Right(Transform3d())
-    }
+enum class Side(val transform: Transform3d) {
+    Left(Transform3d()), Right(Transform3d())
+}
