@@ -12,5 +12,4 @@ abstract class AbstractFalconAbsoluteEncoder<K : SIKey>(model: NativeUnitModel<K
 
     abstract val absolutePosition: SIUnit<Radian>
 
-
 }
