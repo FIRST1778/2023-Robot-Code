@@ -174,6 +174,13 @@ object Constants {
 
     object ArmConstants {
 
+        val EXTENSION_MOTOR_UNIT_MODEL: NativeUnitLengthModel = NativeUnitLengthModel(2048.nativeUnits, 24.milli.meters) //TODO
+        const val ANGLE_MOTOR_OTHER_ID: Int = 12
+        const val EXTENSION_MOTOR_ID: Int = 13
+        const val ROTATION_ENCODER_CPR: Int = 2048 //TODO
+        const val ANGLE_MOTOR_MAIN_ID: Int = 11
+        val ANGLE_MOTOR_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(2048.nativeUnits) //TODO
+        const val ZEROED_EXTENSION_DISTANCE_READING: Double = 0.0
         val AORTransform: Transform3d = Transform3d()
     }
     object VisionConstants {

@@ -13,18 +13,24 @@ import edu.wpi.first.math.system.LinearSystemLoop
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.wpilibj.CounterBase
 import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.DigitalOutput
 import edu.wpi.first.wpilibj.Encoder
 import edu.wpi.first.wpilibj.RobotController
+import edu.wpi.first.wpilibj.Ultrasonic
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.DIOSim
 import edu.wpi.first.wpilibj.simulation.EncoderSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
+import org.frc1778.Constants
 import org.frc1778.ExtensionSim
 import org.frc1778.lib.SimulatableCANSparkMax
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
+import org.ghrobotics.lib.mathematics.units.derived.volt
+import org.ghrobotics.lib.mathematics.units.derived.volts
+import org.ghrobotics.lib.motors.rev.falconMAX
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -32,14 +38,42 @@ object Arm : FalconSubsystem() {
     var armJointSim = ArmJointSim(Math.toRadians(0.0))
     var extensionSim = ExtensionSim(0.1.meters)
 
+    val distanceSensor = Ultrasonic( DigitalOutput(8), DigitalInput(7),)
+
     var limitSwitch = DigitalInput(14)
     var limitSwitchSim = DIOSim(limitSwitch)
     var armEncoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
     var armEncoderSim = EncoderSim(armEncoder)
 
-    var angleMotorMain = SimulatableCANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless)
-    var angleMotorOther = SimulatableCANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless)
-    var extensionMotor = SimulatableCANSparkMax(13, CANSparkMaxLowLevel.MotorType.kBrushless)
+//    var angleMotorMain = SimulatableCANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless)
+//    var angleMotorOther = SimulatableCANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless)
+//    var extensionMotor = SimulatableCANSparkMax(13, CANSparkMaxLowLevel.MotorType.kBrushless)
+
+    val angleMotorMain = falconMAX(
+        Constants.ArmConstants.ANGLE_MOTOR_MAIN_ID,
+        CANSparkMaxLowLevel.MotorType.kBrushless,
+        Constants.ArmConstants.ANGLE_MOTOR_UNIT_MODEL,
+        useAlternateEncoder = true,
+        alternateEncoderCPR = Constants.ArmConstants.ROTATION_ENCODER_CPR,
+    ) {
+        brakeMode = true
+    }
+    val angleMotorOther = falconMAX(
+        Constants.ArmConstants.ANGLE_MOTOR_OTHER_ID,
+        CANSparkMaxLowLevel.MotorType.kBrushless,
+        Constants.ArmConstants.ANGLE_MOTOR_UNIT_MODEL,
+    ) {
+        brakeMode = true
+        follow(angleMotorMain)
+    }
+
+    val extensionMotor = falconMAX(
+        Constants.ArmConstants.EXTENSION_MOTOR_ID,
+        CANSparkMaxLowLevel.MotorType.kBrushless,
+        Constants.ArmConstants.EXTENSION_MOTOR_UNIT_MODEL
+    ) {
+        brakeMode = true
+    }
 
     val angle_kS : Double = 0.3851
     val angle_kA : Double = 0.03516
@@ -118,9 +152,9 @@ object Arm : FalconSubsystem() {
                 nextVoltage = 12.0
             }
 
-            angleMotorMain.setVoltage(nextVoltage)
+            angleMotorMain.setVoltage(nextVoltage.volts)
         }else{
-            angleMotorMain.setVoltage(0.0)
+            angleMotorMain.setVoltage(0.0.volts)
         }
     }
     fun setAngleVelocity( angle : Double){
@@ -148,9 +182,9 @@ object Arm : FalconSubsystem() {
                 nextVoltage = -12.0
             }
 
-            extensionMotor.setVoltage(nextVoltage)
+            extensionMotor.setVoltage(nextVoltage.volts)
         }else{
-            extensionMotor.setVoltage(0.0)
+            extensionMotor.setVoltage(0.0.volts)
         }
     }
     fun setExtensionVelocity(velocity : Double){
@@ -160,23 +194,23 @@ object Arm : FalconSubsystem() {
         desiredExtension = position
     }
     fun getCurrentExtension() : SIUnit<Meter>{
-        return extensionMotor.encoder.position.meters
+        return extensionMotor.encoder.position
     }
 
     fun resetIsZeroed() {
         zeroed = false
     }
     fun limitSwitchHit(): Boolean {
-        return limitSwitch.get()
+        return distanceSensor.rangeInches <= Constants.ArmConstants.ZEROED_EXTENSION_DISTANCE_READING
     }
     fun doExtensionZeroingMovement() {
-        extensionMotor.setVoltage(-5.0)
+        extensionMotor.setVoltage((-5.0).volts)
     }
     fun zeroExtension() {
-        extensionMotor.encoder.position = 0.0
+        extensionMotor.encoder.resetPosition(0.0.meters)
         zeroed = true
         desiredExtension = 0.0.meters
-        extensionMotor.setVoltage(0.0)
+        extensionMotor.setVoltage(0.0.volts)
     }
 
     override fun lateInit() {
@@ -193,15 +227,15 @@ object Arm : FalconSubsystem() {
     }
 
     override fun simulationPeriodic() {
-        extensionSim.setInput(extensionMotor.get() * RobotController.getBatteryVoltage())
-        armJointSim.setInput(angleMotorMain.get() * RobotController.getBatteryVoltage())
-
-        extensionSim.update(0.020, armJointSim.angleAtJoint(), extensionMotor.simulationEncoder, limitSwitchSim)
-        armJointSim.update(0.020, armJointSim.getMinArmLength())
-
-        armEncoderSim.distance = armJointSim.angleAtJoint()
-
-        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps(), extensionSim.getCurrentDrawAmps()))
+//        extensionSim.setInput(extensionMotor.get() * RobotController.getBatteryVoltage())
+//        armJointSim.setInput(angleMotorMain.get() * RobotController.getBatteryVoltage())
+//
+//        extensionSim.update(0.020, armJointSim.angleAtJoint(), extensionMotor.simulationEncoder, limitSwitchSim)
+//        armJointSim.update(0.020, armJointSim.getMinArmLength())
+//
+//        armEncoderSim.distance = armJointSim.angleAtJoint()
+//
+//        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps(), extensionSim.getCurrentDrawAmps()))
     }
 
 }
