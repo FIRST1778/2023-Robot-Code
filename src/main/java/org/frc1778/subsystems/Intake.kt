@@ -19,8 +19,8 @@ object Intake : FalconSubsystem() {
     lateinit var initialState : FalconSolenoid.State
 
     val intakeSol = FalconDoubleSolenoid(
-        1,
-        0,
+        3,
+        5,
         PneumaticsModuleType.REVPH,
         30
     )

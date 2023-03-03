@@ -5,6 +5,7 @@ import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PneumaticHub
+import edu.wpi.first.wpilibj.Solenoid
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -20,6 +21,7 @@ import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.*
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.derived.inDegrees
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 import kotlin.properties.Delegates
@@ -110,21 +112,28 @@ object Robot : FalconTimedRobot() {
 
         Arm.extensionControlEnabled = false
         Arm.angleControlEnabled = false
+        compressor.enableAnalog(30.0, 50.0)
     }
 
 
     override fun robotPeriodic() {
         field.robotPose = Drive.robotPosition
-
-//        SmartDashboard.updateValues()
-
-
+        Arm.distanceSensor.ping()
+        if (Arm.distanceSensor.rangeInches != 0.0)
+            Arm.lastNonZeroDistance = Arm.distanceSensor.rangeInches
+        SmartDashboard.putNumber("Angle", Arm.getCurrentAngle().inDegrees())
+        SmartDashboard.putNumber("Angle Native Units", Arm.armEncoderReal.rawPosition.value)
+        SmartDashboard.putNumber("Extension Distance", Arm.getCurrentExtension().value)
+        SmartDashboard.putData("Ultrasonic", Arm.distanceSensor)
+        SmartDashboard.putNumber("Ultrasonic Distance (with cache)", Arm.lastNonZeroDistance)
+        SmartDashboard.updateValues()
+        Controls.driverController.update()
+        Controls.operatorControllerRed.update()
+        Controls.operatorControllerBlue.update()
     }
 
     override fun disabledInit() {
 //        compressor.disable()
-
-
     }
 
     override fun disabledPeriodic() {

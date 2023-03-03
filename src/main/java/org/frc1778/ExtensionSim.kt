@@ -47,7 +47,6 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
 //        logger.add("extension position") { -> Arm.getCurrentExtension().value }
         logger.add("desired position") { -> Arm.desiredExtension.value }
         logger.add("reported position") { -> Arm.getCurrentExtension().value }
-        logger.add("limit switch") { -> if (Arm.limitSwitch.get()) 1.0 else 0.0 }
     }
 
     fun setInput(voltage: Double) {

@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.DIOSim
 import edu.wpi.first.wpilibj.simulation.EncoderSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.frc1778.Constants
 import org.frc1778.ExtensionSim
 import org.frc1778.lib.FalconMAXAbsoluteEncoder
@@ -38,19 +39,12 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 object Arm : FalconSubsystem() {
-    var armJointSim = ArmJointSim(Math.toRadians(0.0))
-    var extensionSim = ExtensionSim(0.1.meters)
+    var lastNonZeroDistance: Double = 0.0 // inches
+    val distanceSensor = Ultrasonic(DigitalOutput(7), DigitalInput(8)).also {
+        it.isEnabled = true
+    }
 
-    val distanceSensor = Ultrasonic(DigitalOutput(8), DigitalInput(7))
-
-    var limitSwitch = DigitalInput(14)
-    var limitSwitchSim = DIOSim(limitSwitch)
     var armEncoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
-    var armEncoderSim = EncoderSim(armEncoder)
-
-//    var angleMotorMain = SimulatableCANSparkMax(11, CANSparkMaxLowLevel.MotorType.kBrushless)
-//    var angleMotorOther = SimulatableCANSparkMax(12, CANSparkMaxLowLevel.MotorType.kBrushless)
-//    var extensionMotor = SimulatableCANSparkMax(13, CANSparkMaxLowLevel.MotorType.kBrushless)
 
 
     val angleMotorMain = falconMAX(
@@ -78,7 +72,7 @@ object Arm : FalconSubsystem() {
     }
 
     var armEncoderReal = FalconMAXAbsoluteEncoder(
-        extensionMotor.canSparkMax,
+        angleMotorOther.canSparkMax,
         SparkMaxAbsoluteEncoder.Type.kDutyCycle,
         Constants.ArmConstants.ANGLE_ENCODER_UNIT_MODEL
     )
@@ -151,7 +145,7 @@ object Arm : FalconSubsystem() {
     }
 
     fun getCurrentAngle(): SIUnit<Radian> {
-        return armEncoder.distance.radians
+        return armEncoderReal.absolutePosition
     }
 
     fun extensionControl() {
@@ -192,7 +186,7 @@ object Arm : FalconSubsystem() {
     }
 
     fun limitSwitchHit(): Boolean {
-        return distanceSensor.rangeInches <= Constants.ArmConstants.ZEROED_EXTENSION_DISTANCE_READING
+        return lastNonZeroDistance <= Constants.ArmConstants.ZEROED_EXTENSION_DISTANCE_READING
     }
 
     fun doExtensionZeroingMovement() {
@@ -210,7 +204,7 @@ object Arm : FalconSubsystem() {
         armEncoder.samplesToAverage = 5
         armEncoder.distancePerPulse = (2 * Math.PI) / 1024
         armEncoder.setMinRate(1.0)
-        armEncoderSim.distance = armJointSim.angleAtJoint()
+
     }
 
     override fun periodic() {

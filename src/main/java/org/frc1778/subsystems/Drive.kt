@@ -66,7 +66,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
         modules.forEach {
             it.setAngle(0.0)
         }
-        defaultCommand = TeleOpDriveCommand()
+        //defaultCommand = TeleOpDriveCommand()
     }
 
     override val wheelbase: Double = Constants.DriveConstants.wheelBase

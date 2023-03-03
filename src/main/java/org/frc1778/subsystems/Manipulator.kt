@@ -7,10 +7,10 @@ import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 object Manipulator : FalconSubsystem() {
     val manipulatorSol = FalconDoubleSolenoid(
-            2,
-            3,
+            0,
+            1,
             PneumaticsModuleType.REVPH,
-            31
+            30
     )
     var manipulatorOpen : Boolean = false
     var manipulatorInitial = false

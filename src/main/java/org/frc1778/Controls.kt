@@ -41,18 +41,18 @@ object Controls {
     val operatorControllerRed = operatorControllerGenericHID1.mapControls {
         //TODO: Confirm these are the correct
         //charging station selection
-        button(0) {
+        button(1) {
             changeOn {
                 Robot.scoringStation = Station.Left
             }
         }// station 1
 
-        button(1) {
+        button(2) {
            changeOn {
                 Robot.scoringStation = Station.Center
             }
         }// station 2
-        button(2) {
+        button(3) {
             changeOn {
                 Robot.scoringStation = Station.Right
             }
@@ -62,7 +62,7 @@ object Controls {
         //TODO: Change these two to Standard Commands
         // The functionality you are looking for in this command could be housed in a standard FalconCommand
         // That has the same init behavior but with the changeOff in the cancel portion of the command
-        button(3) {
+        button(4) {
             whileOn { IntakeSuckCommand() }
             changeOff {
                 sequential {
@@ -71,36 +71,36 @@ object Controls {
                 }
             } // intake suck
         }
-        button(4) {
+        button(5) {
             whileOn { IntakeSpitCommand() }
             changeOff { IntakeStopCommand() }
         } // intake spit
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
-        button(0) { change(ZeroExtensionCommand()) } // reset extension
-        button(1) {
+        button(1) { change(ZeroExtensionCommand()) } // reset extension
+        button(2) {
             changeOn(Robot.placeGameObjectCommand)
         }
-        button(2) // other
+        button(3) // other
         // level of placement
-        button(3) {
+        button(4) {
             changeOn {
                 Robot.scoringLevel = Level.Bottom
             }
         }// bottom
-        button(4) {
+        button(5) {
             changeOn {
                 Robot.scoringLevel = Level.Middle
             }
         }// middle
-        button(5) {
+        button(6) {
             changeOn {
                 Robot.scoringLevel = Level.Top
             }
         }// top
         // manipulator open/close toggle
-        button(6) {
+        button(7) {
             change(
                 if (Manipulator.manipulatorOpen) {
                     ManipulatorCloseCommand()
@@ -109,7 +109,7 @@ object Controls {
                 }
             )
         } // toggle manipulator
-        button(7) {
+        button(8) {
             change(sequential {
                 +IntakeToggleCommand(FalconSolenoid.State.Forward) // intake out
                 +ExtensionCommand(0.0.meters)// zero
@@ -119,21 +119,22 @@ object Controls {
         } // manipulator to hopper
 
         // switches
-        button(10) {
-            changeOn {
+        button(11) {
+            changeOn(
                 sequential {
                     DotStar.display(DotStar.Color.Yellow)
                     Robot.gamePiece = GamePiece.Cone
                 }
-            } // cone
-            changeOff {
+            ) // cone
+            changeOff(
                 sequential {
                     DotStar.display(DotStar.Color.Purple)
                     Robot.gamePiece = GamePiece.Cube
                 }
-            } // cube
+            )
+            // cube
         } // cone/cube
-        button(9) // balance
+        button(10) // balance
         //TODO: Confirm these
         axisButton(0, -1.0) {
             changeOn {
