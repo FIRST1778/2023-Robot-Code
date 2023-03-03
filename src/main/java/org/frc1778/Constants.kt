@@ -14,6 +14,7 @@ import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
+import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import kotlin.math.PI
@@ -174,6 +175,7 @@ object Constants {
 
     object ArmConstants {
 
+        val ANGLE_ENCODER_UNIT_MODEL: NativeUnitModel<Radian> = NativeUnitRotationModel(2048.nativeUnits) //TODO
         val EXTENSION_MOTOR_UNIT_MODEL: NativeUnitLengthModel = NativeUnitLengthModel(2048.nativeUnits, 24.milli.meters) //TODO
         const val ANGLE_MOTOR_OTHER_ID: Int = 12
         const val EXTENSION_MOTOR_ID: Int = 13
