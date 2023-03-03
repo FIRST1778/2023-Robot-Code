@@ -5,7 +5,7 @@ import org.ghrobotics.lib.commands.FalconSubsystem
 
 object DotStar : FalconSubsystem() {
     // Adafruit DotStars are addressable LEDs controlled via an SPI
-    // interface.  We use them to display blue or yellow lights so that the
+    // interface.  We use them to display purple or yellow lights so that the
     // human player knows which item they should give to the robot.
     //
     // The DotStars are powered by SK9822 LEDs according to this PDF:
@@ -15,7 +15,7 @@ object DotStar : FalconSubsystem() {
     // A helpful blog post which seems more factually correct (and has better
     // English) than the datasheets:
     //     https://cpldcpu.wordpress.com/2014/11/30/understanding-the-apa102-superled/
-    enum class Color { Yellow, Blue }
+    enum class Color { Yellow, Purple }
 
     private const val NUM_LEDS = 10 // ???
 
@@ -41,7 +41,7 @@ object DotStar : FalconSubsystem() {
 
         val ledFrame: ByteArray = when (color) {
             Color.Yellow -> makeLedFrame(0xFF, 0xFF, 0x00)
-            Color.Blue -> makeLedFrame(0x00, 0x00, 0xFF)
+            Color.Purple -> makeLedFrame(0xFF, 0x00, 0xFF)
         }
         for (i in 1..NUM_LEDS) {
             spi.write(ledFrame, ledFrame.size)
