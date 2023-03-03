@@ -6,6 +6,7 @@ import org.frc1778.commands.*
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
+import org.frc1778.subsystems.DotStar
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.meters
@@ -120,10 +121,16 @@ object Controls {
         // switches
         button(10) {
             changeOn {
-                Robot.gamePiece = GamePiece.Cone
+                sequential {
+                    DotStar.display(DotStar.Color.Yellow)
+                    Robot.gamePiece = GamePiece.Cone
+                }
             } // cone
             changeOff {
-                Robot.gamePiece = GamePiece.Cube
+                sequential {
+                    DotStar.display(DotStar.Color.Purple)
+                    Robot.gamePiece = GamePiece.Cube
+                }
             } // cube
         } // cone/cube
         button(9) // balance
