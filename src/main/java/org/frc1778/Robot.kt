@@ -17,9 +17,7 @@ import org.frc1778.commands.SwerveTrajectoryTrackerCommand
 import org.frc1778.commands.ZeroExtensionCommand
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconTimedRobot
-import org.frc1778.subsystems.Arm
-import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Vision
+import org.frc1778.subsystems.*
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.meters
@@ -93,6 +91,9 @@ object Robot : FalconTimedRobot() {
         +Vision
         +Drive
         +Arm
+        +Manipulator
+        +DotStar
+        +Intake
     }
 
 

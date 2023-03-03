@@ -11,9 +11,8 @@ import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 object Intake : FalconSubsystem() {
-    var intakeMotor = CANSparkMax(10, CANSparkMaxLowLevel.MotorType.kBrushless)
-
-    var intakeBeam = DigitalInput(15)
+    var intakeMotor = CANSparkMax(14, CANSparkMaxLowLevel.MotorType.kBrushless)
+    var intakeMotor2 = CANSparkMax(15, CANSparkMaxLowLevel.MotorType.kBrushless)
 
     var intakeVoltage = 5.0
 
@@ -39,12 +38,15 @@ object Intake : FalconSubsystem() {
         if(intakeSol.state == FalconSolenoid.State.Reverse){
             extend()
         }
+        intakeMotor2.setVoltage(intakeVoltage)
         intakeMotor.setVoltage(-intakeVoltage)
     }
     fun spit(){
         intakeMotor.setVoltage(intakeVoltage)
+        intakeMotor2.setVoltage(-intakeVoltage)
     }
     fun stop(){
         intakeMotor.setVoltage(0.0)
+        intakeMotor2.setVoltage(0.0)
     }
 }
