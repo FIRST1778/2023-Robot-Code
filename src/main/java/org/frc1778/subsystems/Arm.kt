@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.frc1778.Constants
 import org.frc1778.ExtensionSim
+import org.frc1778.lib.FalconCTREAbsoluteEncoder
 import org.frc1778.lib.FalconMAXAbsoluteEncoder
 import org.frc1778.lib.SimulatableCANSparkMax
 import org.ghrobotics.lib.commands.FalconSubsystem
@@ -71,9 +72,9 @@ object Arm : FalconSubsystem() {
         brakeMode = true
     }
 
-    var armEncoderReal = FalconMAXAbsoluteEncoder(
-        angleMotorOther.canSparkMax,
-        SparkMaxAbsoluteEncoder.Type.kDutyCycle,
+
+    var armEncoderReal = FalconCTREAbsoluteEncoder(
+        Constants.ArmConstants.ANGLE_ENCODER_ID,
         Constants.ArmConstants.ANGLE_ENCODER_UNIT_MODEL
     )
 

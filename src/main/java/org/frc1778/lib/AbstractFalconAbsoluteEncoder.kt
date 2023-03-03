@@ -10,6 +10,6 @@ import org.ghrobotics.lib.motors.AbstractFalconEncoder
 abstract class AbstractFalconAbsoluteEncoder<K : SIKey>(model: NativeUnitModel<K>) : AbstractFalconEncoder<K>(model),
     Sendable {
 
-    abstract val absolutePosition: SIUnit<Radian>
+    abstract val absolutePosition: SIUnit<K>
 
 }
