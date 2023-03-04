@@ -37,16 +37,20 @@ class PlaceGameObjectCommand(
     private val robotPose: Pose3d = station.ours()
 
     init {
-        if (gamePiece == GamePiece.Cone) robotPose.transformBy(side.transform)
+        if (gamePiece == GamePiece.Cone || level == Level.Bottom) robotPose.transformBy(side.transform)
         Drive.scoringPose = robotPose.toPose2d()
         Drive.gamePiecePlacementTrajectoryFollowCommand = PlaceGameObjectDriveCommand()
     }
 
     override fun initialize() {
-        val goalPose: Pose3d = station.ours()
-            .transformBy(
+        val goalPose: Pose3d = station.ours().transformBy(
                 level.transform + Transform3d(
-                    Translation3d(0.0, 0.0, gamePiece.heightOffset), Rotation3d()
+                    Translation3d(
+                        when (Robot.alliance) {
+                            DriverStation.Alliance.Red -> -Constants.ArmConstants.AllianceXOffset
+                            else -> Constants.ArmConstants.AllianceXOffset
+                        }, 0.0, gamePiece.heightOffset
+                    ), Rotation3d()
                 )
             )
         val armTranslation3d = Transform3d(
@@ -54,7 +58,7 @@ class PlaceGameObjectCommand(
         ).translation
         val armTranslation2d = Translation2d(armTranslation3d.y, armTranslation3d.z)
         val armRotation = 90.degrees + armTranslation2d.angle.radians.radians
-        val armExtension = hypot(armTranslation2d.x, armTranslation2d.y).meters
+        val armExtension = hypot(armTranslation2d.x, armTranslation2d.y).meters - Constants.ArmConstants.ARM_EXTENSION_OFFSET
         command = sequential {
             +ArmAngleCommand(armRotation)
             +ExtensionCommand(armExtension)

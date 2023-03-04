@@ -186,20 +186,28 @@ object Constants {
         val armShuffleboardTab = Shuffleboard.getTab("Arm")
         const val ANGLE_ENCODER_ID: Int = 23
         val ANGLE_ENCODER_UNIT_MODEL: NativeUnitModel<Radian> = NativeUnitRotationModel(4096.nativeUnits) //TODO
-        val EXTENSION_MOTOR_UNIT_MODEL: NativeUnitLengthModel = NativeUnitLengthModel((42 / 5).nativeUnits, (1.128 * 2).inches) //TODO
+        val EXTENSION_MOTOR_UNIT_MODEL: NativeUnitLengthModel =
+            NativeUnitLengthModel((42 / 5).nativeUnits, (1.128 * 2).inches) //TODO
         const val ANGLE_MOTOR_OTHER_ID: Int = 12
         const val EXTENSION_MOTOR_ID: Int = 13
         const val ANGLE_MOTOR_MAIN_ID: Int = 11
         val ANGLE_ENCODER_OFFSET = (-700).degrees
         val ANGLE_MOTOR_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(2048.nativeUnits) //TODO
         val ZEROED_EXTENSION_DISTANCE_READING: SIUnit<Meter> = 7.75.inches
-        val AORTransform: Transform3d = Transform3d()
+        val AORTransform: Transform3d = Transform3d(
+            Translation3d((-10.5).inches.value, 0.0, 49.5.inches.value),
+            Rotation3d()
+        )
+        val ARM_EXTENSION_OFFSET = 36.5.inches
+        val AllianceXOffset = 18.inches.value
     }
+
     object VisionConstants {
         const val cameraName = "The Eye of Sauron"
-        val APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile)!!
+        val APRIL_TAG_FIELD_LAYOUT =
+            AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile)!!
         val CAMERA_ROBOT_TRANSFORM = Transform3d(
-            Translation3d((-10).inches.value, 9.0.inches.value, 43.inches.value),
+            Translation3d((-10).inches.value, 9.0.inches.value, 42.inches.value),
             Rotation3d(0.0, 0.0, 0.0)
         )
     }
@@ -212,23 +220,72 @@ object Constants {
 }
 
 enum class Level(val transform: Transform3d) {
-    Top(Transform3d()), Middle(Transform3d()), Bottom(Transform3d())
+    Top(
+        Transform3d(
+            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value),
+            Rotation3d()
+        )
+    ),
+    Middle(
+        Transform3d(
+            Translation3d((22.7.inches).value,0.0 , 34.0.inches.value),
+            Rotation3d()
+        )
+    ),
+    Bottom(
+        Transform3d(
+            Translation3d(),
+            Rotation3d()
+        )
+    );
+
+
 }
 
 enum class GamePiece(val heightOffset: Double) {
-    Cube(0.0), Cone(0.0)
+    Cube(-6.00.inches.value), Cone(5.0.inches.value)
 }
 
-enum class Station(val redPose: Pose3d, val bluePose: Pose3d) {
-    Left(Pose3d(), Pose3d()), Center(Pose3d(), Pose3d()), Right(Pose3d(), Pose3d());
+//18" away from edge
+enum class Station(private val redPose: Pose3d, private val bluePose: Pose3d) {
+    Left(Pose3d(
+        Translation3d(),
+        Rotation3d()
+    ), Pose3d(
+        Translation3d(),
+        Rotation3d()
+    )), Center(Pose3d(
+        Translation3d(),
+        Rotation3d()
+    ), Pose3d(
+        Translation3d(),
+        Rotation3d()
+    )), Right(Pose3d(
+        Translation3d(),
+        Rotation3d()
+    ), Pose3d(
+        Translation3d(),
+        Rotation3d()
+    ));
+
     fun ours(): Pose3d {
-        if (Robot.alliance == DriverStation.Alliance.Red)
-            return redPose
+        return if (Robot.alliance == DriverStation.Alliance.Red)
+            redPose
         else
-            return bluePose
+            bluePose
     }
 }
 
 enum class Side(val transform: Transform3d) {
-    Left(Transform3d()), Right(Transform3d())
+    Left(Transform3d(
+        Translation3d(
+            0.0, 22.0.inches.value, 0.0
+        ),
+        Rotation3d()
+    )), Right(Transform3d(
+        Translation3d(
+            0.0, -22.inches.value, 0.0
+        ),
+        Rotation3d()
+    ))
 }

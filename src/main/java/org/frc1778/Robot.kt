@@ -129,6 +129,9 @@ object Robot : FalconTimedRobot() {
         SmartDashboard.putData("Ultrasonic (inches)", Arm.distanceSensor)
         SmartDashboard.putNumber("Cached Ultrasonic (inches)", Arm.lastNonZeroDistance.inInches())
         SmartDashboard.updateValues()
+        Constants.DriveConstants.driveTab.run {
+
+        }
         Controls.driverController.update()
         Controls.operatorControllerRed.update()
         Controls.operatorControllerBlue.update()
@@ -144,7 +147,9 @@ object Robot : FalconTimedRobot() {
 
     override fun autonomousInit() {
         Arm.resetIsZeroed() // DO NOT REMOVE
-
+        Drive.resetPosition(Pose2d(1.85, 2.80, Rotation2d.fromDegrees(0.0)), Drive.modules.positions.toTypedArray())
+        Intake.retract()
+        Arm.resetIsZeroed()
         //zeroExtensionCommand = ZeroExtensionCommand()
         //zeroExtensionCommand.schedule()
 
@@ -161,10 +166,8 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun teleopInit() {
-//        ZeroExtensionCommand().schedule()
-        Drive.resetPosition(Pose2d(8.75, 3.00, Rotation2d.fromDegrees(0.0)), Drive.modules.positions.toTypedArray())
-        Intake.retract()
-        Arm.resetIsZeroed() // DO NOT REMOVE
+//
+         // DO NOT REMOVE
 
     }
 
