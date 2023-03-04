@@ -2,21 +2,21 @@ package org.frc1778.commands
 
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.frc1778.subsystems.Intake
+import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
 import org.ghrobotics.lib.mathematics.units.seconds
 
-class IntakeSuckCommand(private val duration : SIUnit<Second> = 0.0.seconds) : WaitCommand(duration.value) {
-    init{
-        addRequirements(Intake)
-    }
+class IntakeSuckCommand() : FalconCommand(Intake) {
     override fun initialize() {
         Intake.suck()
+        Intake.extend()
     }
 
-    override fun end(interrupted: Boolean) {
-        if(duration.value > 0.0){
-            Intake.stop()
-        }
+    override fun cancel() {
+        super.cancel()
+        Intake.retract()
+        Intake.stop()
+
     }
 }

@@ -14,9 +14,8 @@ object Intake : FalconSubsystem() {
     var intakeMotor = CANSparkMax(14, CANSparkMaxLowLevel.MotorType.kBrushless)
     var intakeMotor2 = CANSparkMax(15, CANSparkMaxLowLevel.MotorType.kBrushless)
 
-    var intakeVoltage = 5.0
+    var intakeVoltage = 6.0
 
-    lateinit var initialState : FalconSolenoid.State
 
     val intakeSol = FalconDoubleSolenoid(
         3,
@@ -35,15 +34,15 @@ object Intake : FalconSubsystem() {
         intakeSol.state = FalconSolenoid.State.Reverse
     }
     fun suck(){
-        if(intakeSol.state == FalconSolenoid.State.Reverse){
+        if(intakeSol.state == FalconSolenoid.State.Reverse || intakeSol.state == FalconSolenoid.State.Off){
             extend()
         }
-        intakeMotor2.setVoltage(intakeVoltage)
-        intakeMotor.setVoltage(-intakeVoltage)
+        intakeMotor2.setVoltage(-intakeVoltage/6)
+        intakeMotor.setVoltage(-intakeVoltage * 0.75)
     }
     fun spit(){
-        intakeMotor.setVoltage(intakeVoltage)
-        intakeMotor2.setVoltage(-intakeVoltage)
+        intakeMotor.setVoltage(intakeVoltage/2)
+        intakeMotor2.setVoltage(intakeVoltage/4)
     }
     fun stop(){
         intakeMotor.setVoltage(0.0)

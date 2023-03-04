@@ -10,12 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.commands.ArmAngleCommand
-import org.frc1778.commands.ExtensionCommand
-import org.frc1778.commands.IntakeToggleCommand
-import org.frc1778.commands.PlaceGameObjectCommand
-import org.frc1778.commands.SwerveTrajectoryTrackerCommand
-import org.frc1778.commands.ZeroExtensionCommand
+import org.frc1778.commands.*
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.*
@@ -23,6 +18,7 @@ import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.inDegrees
 import org.ghrobotics.lib.mathematics.units.meters
+import org.ghrobotics.lib.mathematics.units.seconds
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 import kotlin.properties.Delegates
 
@@ -112,7 +108,7 @@ object Robot : FalconTimedRobot() {
 
         Arm.extensionControlEnabled = false
         Arm.angleControlEnabled = false
-        compressor.enableAnalog(30.0, 50.0)
+        compressor.enableAnalog(80.0, 115.0)
     }
 
 
@@ -121,9 +117,10 @@ object Robot : FalconTimedRobot() {
         Arm.distanceSensor.ping()
         if (Arm.distanceSensor.rangeInches != 0.0)
             Arm.lastNonZeroDistance = Arm.distanceSensor.rangeInches
-        SmartDashboard.putNumber("Angle", Arm.getCurrentAngle().inDegrees())
+        SmartDashboard.putString("Manipulator State", Manipulator.manipulatorSol.state.name)
         SmartDashboard.putNumber("Angle Native Units", Arm.armEncoderReal.rawPosition.value)
         SmartDashboard.putNumber("Extension Distance", Arm.getCurrentExtension().value)
+        SmartDashboard.putData("Ultrasonic", Arm.distanceSensor)
         SmartDashboard.putData("Ultrasonic", Arm.distanceSensor)
         SmartDashboard.putNumber("Ultrasonic Distance (with cache)", Arm.lastNonZeroDistance)
         SmartDashboard.updateValues()

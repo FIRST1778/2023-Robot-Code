@@ -11,6 +11,7 @@ import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.FalconSolenoid
+import org.ghrobotics.lib.wrappers.hid.HIDControlListener
 import org.ghrobotics.lib.wrappers.hid.mapControls
 import kotlin.math.abs
 import kotlin.math.withSign
@@ -63,17 +64,11 @@ object Controls {
         // The functionality you are looking for in this command could be housed in a standard FalconCommand
         // That has the same init behavior but with the changeOff in the cancel portion of the command
         button(4) {
-            whileOn { IntakeSuckCommand() }
-            changeOff {
-                sequential {
-                    IntakeStopCommand()
-                    IntakeToggleCommand(FalconSolenoid.State.Reverse)
-                }
-            } // intake suck
+            change(IntakeSuckCommand())
+             // intake suck
         }
         button(5) {
-            whileOn { IntakeSpitCommand() }
-            changeOff { IntakeStopCommand() }
+            change(IntakeSpitCommand())
         } // intake spit
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
@@ -85,8 +80,9 @@ object Controls {
         button(3) // other
         // level of placement
         button(4) {
-            changeOn {
-                Robot.scoringLevel = Level.Bottom
+            changeOn{
+//                Robot.scoringLevel = Level.Bottom
+                ArmAngleCommand(90.0.degrees)
             }
         }// bottom
         button(5) {
@@ -96,19 +92,17 @@ object Controls {
         }// middle
         button(6) {
             changeOn {
-                Robot.scoringLevel = Level.Top
+               Robot.scoringLevel = Level.Top
             }
         }// top
         // manipulator open/close toggle
         button(7) {
-            change(
-                if (Manipulator.manipulatorOpen) {
-                    ManipulatorCloseCommand()
-                } else {
-                    ManipulatorOpenCommand()
-                }
-            )
-        } // toggle manipulator
+            changeOn(InstantCommand({
+                Manipulator.toggleState()
+            }))
+        }
+
+         // toggle manipulator
         button(8) {
             change(sequential {
                 +IntakeToggleCommand(FalconSolenoid.State.Forward) // intake out

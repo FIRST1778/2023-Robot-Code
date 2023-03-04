@@ -1,22 +1,17 @@
 package org.frc1778.commands
 
-import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.frc1778.subsystems.Intake
-import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.Second
-import org.ghrobotics.lib.mathematics.units.seconds
+import org.ghrobotics.lib.commands.FalconCommand
 
-class IntakeSpitCommand(private val duration : SIUnit<Second> = 0.0.seconds) : WaitCommand(duration.value) {
-    init{
-        addRequirements(Intake)
-    }
+
+class IntakeSpitCommand() : FalconCommand(Intake) {
     override fun initialize() {
+        Intake.retract()
         Intake.spit()
     }
 
-    override fun end(interrupted: Boolean) {
-        if(duration.value > 0.0){
-            Intake.stop()
-        }
+    override fun cancel() {
+        super.cancel()
+        Intake.stop()
     }
 }
