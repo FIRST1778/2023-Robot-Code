@@ -3,12 +3,14 @@ package org.frc1778
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.frc1778.commands.*
+import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
 import org.frc1778.subsystems.DotStar
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 import org.ghrobotics.lib.wrappers.hid.HIDControlListener
@@ -73,26 +75,30 @@ object Controls {
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
-        button(1) { change(ZeroExtensionCommand()) } // reset extension
+        button(1) { changeOn(ZeroExtensionCommand()) } // reset extension
         button(2) {
-            changeOn(Robot.placeGameObjectCommand)
+//            changeOn(Robot.placeGameObjectCommand)
+            changeOn(ExtensionCommand(25.inches))
         }
         button(3) // other
         // level of placement
         button(4) {
-            changeOn{
+            changeOn {
 //                Robot.scoringLevel = Level.Bottom
-                ArmAngleCommand(90.0.degrees)
+                ArmAngleCommand(60.0.degrees).schedule()
             }
         }// bottom
         button(5) {
             changeOn {
-                Robot.scoringLevel = Level.Middle
+//                Robot.scoringLevel = Level.Middle
+                ArmAngleCommand(75.0.degrees).schedule()
             }
         }// middle
         button(6) {
             changeOn {
-               Robot.scoringLevel = Level.Top
+//               Robot.scoringLevel = Level.Top
+                ArmAngleCommand(90.0.degrees).schedule()
+
             }
         }// top
         // manipulator open/close toggle

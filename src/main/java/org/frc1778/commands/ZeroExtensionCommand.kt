@@ -15,6 +15,6 @@ class ZeroExtensionCommand : FalconCommand(Arm){
     }
 
     override fun end(interrupted: Boolean) {
-        Arm.zeroExtension();
+        Arm.zeroExtension()
     }
 }

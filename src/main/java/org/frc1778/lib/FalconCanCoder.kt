@@ -15,33 +15,29 @@ import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnitsPer100ms
 
 class FalconCanCoder<K : SIKey>(
-    canId: Int,
-    model: NativeUnitModel<K>,
-    offsetAngle: Double = 0.0
+    canId: Int, model: NativeUnitModel<K>, offsetAngle: Double = 0.0
 ) : AbstractFalconAbsoluteEncoder<K>(model) {
 
     private val canCoder = CANCoder(canId).apply {
         configMagnetOffset(Math.toDegrees(offsetAngle))
-        configSensorDirection( false)
+        configSensorDirection(false)
         setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100)
     }
     override val rawPosition: SIUnit<NativeUnit> = canCoder.position.nativeUnits
     override val rawVelocity: SIUnit<NativeUnitVelocity> = canCoder.velocity.nativeUnitsPer100ms
     override val absolutePosition: SIUnit<Radian> get() = canCoder.absolutePosition.degrees
 
+
     override fun resetPositionRaw(newPosition: SIUnit<NativeUnit>) {
         canCoder.position = newPosition.value
     }
 
     override fun initSendable(builder: SendableBuilder?) {
-        builder?.addDoubleProperty(
-            "Absolute Position",
-            {
-                absolutePosition.inDegrees()
-            },
-            {  }
+        builder?.addDoubleProperty("Absolute Position", {
+            absolutePosition.inDegrees()
+        }, { }
 
         )
     }
-
 }
+

@@ -13,6 +13,8 @@ import edu.wpi.first.math.controller.LinearQuadraticRegulator
 import edu.wpi.first.math.estimator.KalmanFilter
 import edu.wpi.first.math.system.LinearSystemLoop
 import edu.wpi.first.math.system.plant.LinearSystemId
+import edu.wpi.first.util.sendable.Sendable
+import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.CounterBase
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.DigitalOutput
@@ -32,6 +34,7 @@ import org.frc1778.lib.SimulatableCANSparkMax
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.Radian
+import org.ghrobotics.lib.mathematics.units.derived.inDegrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.derived.volt
 import org.ghrobotics.lib.mathematics.units.derived.volts
@@ -39,16 +42,20 @@ import org.ghrobotics.lib.motors.rev.falconMAX
 import kotlin.math.cos
 import kotlin.math.sin
 
-object Arm : FalconSubsystem() {
-    var lastNonZeroDistance: Double = 0.0 // inches
+object Arm : FalconSubsystem(), Sendable {
+    var lastNonZeroDistance: SIUnit<Meter> = Double.POSITIVE_INFINITY.meters
     val distanceSensor = Ultrasonic(DigitalOutput(7), DigitalInput(8)).also {
         it.isEnabled = true
     }
 
-    var armEncoder = Encoder(1, 2, false, CounterBase.EncodingType.k4X)
+    var armEncoder = FalconCTREAbsoluteEncoder(
+        Constants.ArmConstants.ANGLE_ENCODER_ID, Constants.ArmConstants.ANGLE_ENCODER_UNIT_MODEL
+    ).apply {
+        resetPosition(Constants.ArmConstants.ANGLE_ENCODER_OFFSET)
+    }
 
 
-    val angleMotorMain = falconMAX(
+    private val angleMotorMain = falconMAX(
         Constants.ArmConstants.ANGLE_MOTOR_MAIN_ID,
         CANSparkMaxLowLevel.MotorType.kBrushless,
         Constants.ArmConstants.ANGLE_MOTOR_UNIT_MODEL,
@@ -60,11 +67,12 @@ object Arm : FalconSubsystem() {
         CANSparkMaxLowLevel.MotorType.kBrushless,
         Constants.ArmConstants.ANGLE_MOTOR_UNIT_MODEL,
     ) {
+        outputInverted = true
         brakeMode = true
         follow(angleMotorMain)
     }
 
-    val extensionMotor = falconMAX(
+    private val extensionMotor = falconMAX(
         Constants.ArmConstants.EXTENSION_MOTOR_ID,
         CANSparkMaxLowLevel.MotorType.kBrushless,
         Constants.ArmConstants.EXTENSION_MOTOR_UNIT_MODEL
@@ -73,49 +81,44 @@ object Arm : FalconSubsystem() {
     }
 
 
-    var armEncoderReal = FalconCTREAbsoluteEncoder(
-        Constants.ArmConstants.ANGLE_ENCODER_ID,
-        Constants.ArmConstants.ANGLE_ENCODER_UNIT_MODEL
-    )
+    private const val angle_kS: Double = 0.3851
+    private const val angle_kA: Double = 0.03516
+    private const val angle_kV: Double = 1.615
+    private val anglePlant = LinearSystemId.identifyPositionSystem(angle_kV, angle_kA)
 
-    val angle_kS: Double = 0.3851
-    val angle_kA: Double = 0.03516
-    val angle_kV: Double = 1.615
-    val anglePlant = LinearSystemId.identifyPositionSystem(angle_kV, angle_kA)
-
-    val extension_kA: Double = 0.04607411898461538
-    val extension_kV: Double = 7.213374267914612
-    val extension_kS: Double = 0.4519871072390769
-    val extensionPlant = LinearSystemId.identifyPositionSystem(extension_kV, extension_kA)
+    private const val extension_kA: Double = 0.04607411898461538
+    private const val extension_kV: Double = 7.213374267914612
+    private const val extension_kS: Double = 0.4519871072390769
+    private val extensionPlant = LinearSystemId.identifyPositionSystem(extension_kV, extension_kA)
 
     // This is set in the ArmTrapezoidCommand to what the profile wants, so we
     // initialize it to a dud value here to not immediately activate the arm.
-    var desiredAngle: Double = Math.toRadians(0.0)
+    private var desiredAngle: Double = Math.toRadians(0.0)
     var desiredExtension: SIUnit<Meter> = 0.0.meters
-    var desiredExtensionVelocity: Double = 0.0 // m/s
-    var desiredAngleVelocity: Double = 0.0 // rad/s
+    private var desiredExtensionVelocity: Double = 0.0 // m/s
+    private var desiredAngleVelocity: Double = 0.0 // rad/s
 
     var angleControlEnabled: Boolean = true
     var extensionControlEnabled: Boolean = true
 
     var zeroed: Boolean = false
 
-    var angleObserver = KalmanFilter(
+    private val angleObserver = KalmanFilter(
         Nat.N2(), Nat.N1(), anglePlant, VecBuilder.fill(0.5, 0.5), VecBuilder.fill(0.01), 0.02
     )
-    var angleController = LinearQuadraticRegulator(
+    private val angleController = LinearQuadraticRegulator(
         anglePlant, VecBuilder.fill(2.0, 16.0), VecBuilder.fill(24.0), 0.020
     )
-    var angleLoop = LinearSystemLoop(
+    private val angleLoop = LinearSystemLoop(
         anglePlant, angleController, angleObserver, 12.0, 0.020
     )
-    var extensionObserver = KalmanFilter(
+    private val extensionObserver = KalmanFilter(
         Nat.N2(), Nat.N1(), extensionPlant, VecBuilder.fill(0.5, 0.5), VecBuilder.fill(0.01), 0.02
     )
-    var extensionController = LinearQuadraticRegulator(
+    private val extensionController = LinearQuadraticRegulator(
         extensionPlant, VecBuilder.fill(2.0, 16.0), VecBuilder.fill(24.0), 0.020
     )
-    var extensionLoop = LinearSystemLoop(
+    private val extensionLoop = LinearSystemLoop(
         extensionPlant, extensionController, extensionObserver, 12.0, 0.020
     )
 
@@ -146,7 +149,7 @@ object Arm : FalconSubsystem() {
     }
 
     fun getCurrentAngle(): SIUnit<Radian> {
-        return armEncoderReal.absolutePosition
+        return armEncoder.absolutePosition
     }
 
     fun extensionControl() {
@@ -183,6 +186,9 @@ object Arm : FalconSubsystem() {
     }
 
     fun resetIsZeroed() {
+        lastNonZeroDistance = Double.MAX_VALUE.meters
+        extensionControlEnabled = false
+        angleControlEnabled = false
         zeroed = false
     }
 
@@ -191,7 +197,7 @@ object Arm : FalconSubsystem() {
     }
 
     fun doExtensionZeroingMovement() {
-        extensionMotor.setVoltage((-5.0).volts)
+        extensionMotor.setVoltage((-2.0).volts)
     }
 
     fun zeroExtension() {
@@ -199,20 +205,42 @@ object Arm : FalconSubsystem() {
         zeroed = true
         desiredExtension = 0.0.meters
         extensionMotor.setVoltage(0.0.volts)
+        extensionControlEnabled = true
+        angleControlEnabled = true
+        desiredAngle = armEncoder.absolutePosition.value
     }
 
     override fun lateInit() {
-        armEncoder.samplesToAverage = 5
-        armEncoder.distancePerPulse = (2 * Math.PI) / 1024
-        armEncoder.setMinRate(1.0)
+        Constants.ArmConstants.armShuffleboardTab.add(
+            this
+        ).withSize(3, 4)
 
     }
 
     override fun periodic() {
+
         if (zeroed) {
             angleControl()
             extensionControl()
         }
+        if (distanceSensor.rangeInches != 0.0) lastNonZeroDistance = distanceSensor.rangeInches.inches
+        distanceSensor.ping()
+    }
+
+    override fun initSendable(builder: SendableBuilder?) {
+        builder!!.addDoubleProperty("Arm Extension Voltage", {
+            extensionMotor.voltageOutput.value
+        }, {})
+        builder.addDoubleProperty("Arm Extension Position", {
+            extensionMotor.encoder.position.inInches()
+        }, {})
+        builder.addBooleanProperty("Is Zeroed?", {
+            zeroed
+        }, {})
+        builder.addDoubleProperty("Rotation Encoder", { armEncoder.absolutePosition.inDegrees() }, {})
+        builder.addDoubleProperty("Arm Rotation Voltage", {
+            angleMotorMain.voltageOutput.value
+        }, {})
     }
 
     override fun simulationPeriodic() {

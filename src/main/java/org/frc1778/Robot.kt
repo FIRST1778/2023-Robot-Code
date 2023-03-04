@@ -2,6 +2,8 @@ package org.frc1778
 
 import com.pathplanner.lib.PathPlanner
 import com.pathplanner.lib.PathPlannerTrajectory
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.PneumaticHub
@@ -14,9 +16,12 @@ import org.frc1778.commands.*
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.*
+import org.frc1778.subsystems.Drive.positions
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.inDegrees
+import org.ghrobotics.lib.mathematics.units.inInches
+import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.mathematics.units.seconds
 import org.ghrobotics.lib.wrappers.FalconSolenoid
@@ -57,7 +62,7 @@ object Robot : FalconTimedRobot() {
 
     //TODO: We will probably need to perform more actions on this state Change
     var gamePiece: GamePiece by Delegates.observable(GamePiece.Cone) { _, oldValue, newValue ->
-        if(oldValue != newValue) {
+        if (oldValue != newValue) {
             placeGameObjectCommand = PlaceGameObjectCommand(scoringLevel, newValue, scoringStation, scoringSide)
         }
     }
@@ -70,13 +75,13 @@ object Robot : FalconTimedRobot() {
             else -> Station.Center
         }
     ) { _, oldValue, newValue ->
-        if(oldValue != newValue) {
+        if (oldValue != newValue) {
             placeGameObjectCommand = PlaceGameObjectCommand(scoringLevel, gamePiece, newValue, scoringSide)
         }
     }
 
     var scoringSide: Side by Delegates.observable(Side.Right) { _, oldValue, newValue ->
-        if(oldValue != newValue) {
+        if (oldValue != newValue) {
             placeGameObjectCommand = PlaceGameObjectCommand(scoringLevel, gamePiece, scoringStation, newValue)
         }
     }
@@ -102,6 +107,8 @@ object Robot : FalconTimedRobot() {
         SmartDashboard.setNetworkTableInstance(
             NetworkTableInstance.getDefault()
         )
+
+
         Drive.pigeon.yaw = 0.0
         field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
@@ -109,20 +116,18 @@ object Robot : FalconTimedRobot() {
         Arm.extensionControlEnabled = false
         Arm.angleControlEnabled = false
         compressor.enableAnalog(80.0, 115.0)
+
     }
 
 
     override fun robotPeriodic() {
         field.robotPose = Drive.robotPosition
-        Arm.distanceSensor.ping()
-        if (Arm.distanceSensor.rangeInches != 0.0)
-            Arm.lastNonZeroDistance = Arm.distanceSensor.rangeInches
+
         SmartDashboard.putString("Manipulator State", Manipulator.manipulatorSol.state.name)
-        SmartDashboard.putNumber("Angle Native Units", Arm.armEncoderReal.rawPosition.value)
+        SmartDashboard.putNumber("Angle Native Units", Arm.armEncoder.rawPosition.value)
         SmartDashboard.putNumber("Extension Distance", Arm.getCurrentExtension().value)
-        SmartDashboard.putData("Ultrasonic", Arm.distanceSensor)
-        SmartDashboard.putData("Ultrasonic", Arm.distanceSensor)
-        SmartDashboard.putNumber("Ultrasonic Distance (with cache)", Arm.lastNonZeroDistance)
+        SmartDashboard.putData("Ultrasonic (inches)", Arm.distanceSensor)
+        SmartDashboard.putNumber("Cached Ultrasonic (inches)", Arm.lastNonZeroDistance.inInches())
         SmartDashboard.updateValues()
         Controls.driverController.update()
         Controls.operatorControllerRed.update()
@@ -138,6 +143,8 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun autonomousInit() {
+        Arm.resetIsZeroed() // DO NOT REMOVE
+
         //zeroExtensionCommand = ZeroExtensionCommand()
         //zeroExtensionCommand.schedule()
 
@@ -154,9 +161,11 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun teleopInit() {
-        //autonomousCommand?.cancel()
+//        ZeroExtensionCommand().schedule()
+        Drive.resetPosition(Pose2d(8.75, 3.00, Rotation2d.fromDegrees(0.0)), Drive.modules.positions.toTypedArray())
+        Intake.retract()
+        Arm.resetIsZeroed() // DO NOT REMOVE
 
-        //Drive.setPose(trajectory.initialHolonomicPose)
     }
 
     /** This method is called periodically during operator control.  */

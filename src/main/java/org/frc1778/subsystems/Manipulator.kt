@@ -11,8 +11,8 @@ import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 object Manipulator : FalconSubsystem() {
     val manipulatorSol = FalconDoubleSolenoid(
-            14,
             15,
+            14,
             PneumaticsModuleType.REVPH,
             30
     )

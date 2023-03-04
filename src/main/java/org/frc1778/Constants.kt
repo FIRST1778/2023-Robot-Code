@@ -13,6 +13,7 @@ import org.frc1778.lib.SwerveModuleConstants
 import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
@@ -34,6 +35,13 @@ object Constants {
         const val pigeonCanID: Int = 21
         private const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
         private const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
+
+        private val swerveDriveWheelOffsets = mapOf(
+            "Top Left" to 353.32,
+            "Top Right" to 18.37,
+            "Bottom Right" to 45.8,
+            "Bottom Left" to 273.25,
+        )
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
             kDriveTalonId = 2
@@ -48,7 +56,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(169.54)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(swerveDriveWheelOffsets["Top Left"]!!)
 
 
             // azimuth motion
@@ -82,7 +90,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(66.09)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(swerveDriveWheelOffsets["Top Right"]!!)
 
 
             // azimuth motion
@@ -115,7 +123,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(175.51 + 180.0)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(swerveDriveWheelOffsets["Bottom Right"]!!)
 
 
             // azimuth motion
@@ -149,7 +157,7 @@ object Constants {
             kAzimuthBrakeMode = true // neutral mode could change
             //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
             kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(252.77)
+            kAzimuthEncoderHomeOffset = -Math.toRadians(swerveDriveWheelOffsets["Bottom Left"]!!)
 
 
             // azimuth motion
@@ -175,22 +183,23 @@ object Constants {
 
     object ArmConstants {
 
+        val armShuffleboardTab = Shuffleboard.getTab("Arm")
         const val ANGLE_ENCODER_ID: Int = 23
-        val ANGLE_ENCODER_UNIT_MODEL: NativeUnitModel<Radian> = NativeUnitRotationModel(2048.nativeUnits) //TODO
-        val EXTENSION_MOTOR_UNIT_MODEL: NativeUnitLengthModel = NativeUnitLengthModel(2048.nativeUnits, 24.milli.meters) //TODO
+        val ANGLE_ENCODER_UNIT_MODEL: NativeUnitModel<Radian> = NativeUnitRotationModel(4096.nativeUnits) //TODO
+        val EXTENSION_MOTOR_UNIT_MODEL: NativeUnitLengthModel = NativeUnitLengthModel((42 / 5).nativeUnits, (1.128 * 2).inches) //TODO
         const val ANGLE_MOTOR_OTHER_ID: Int = 12
         const val EXTENSION_MOTOR_ID: Int = 13
-        const val ROTATION_ENCODER_CPR: Int = 2048 //TODO
         const val ANGLE_MOTOR_MAIN_ID: Int = 11
+        val ANGLE_ENCODER_OFFSET = (-700).degrees
         val ANGLE_MOTOR_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(2048.nativeUnits) //TODO
-        const val ZEROED_EXTENSION_DISTANCE_READING: Double = 0.0
+        val ZEROED_EXTENSION_DISTANCE_READING: SIUnit<Meter> = 7.75.inches
         val AORTransform: Transform3d = Transform3d()
     }
     object VisionConstants {
         const val cameraName = "The Eye of Sauron"
         val APRIL_TAG_FIELD_LAYOUT = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile)!!
         val CAMERA_ROBOT_TRANSFORM = Transform3d(
-            Translation3d(0.0, 0.0, 0.0),
+            Translation3d((-10).inches.value, 9.0.inches.value, 43.inches.value),
             Rotation3d(0.0, 0.0, 0.0)
         )
     }

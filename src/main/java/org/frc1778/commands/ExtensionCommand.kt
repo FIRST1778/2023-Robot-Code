@@ -9,7 +9,7 @@ import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.meters
 
-class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 1.0, maxVelocity : Double = 0.45) : FalconCommand(Arm){
+class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 2.5, maxVelocity : Double = 0.875) : FalconCommand(Arm){
     companion object {
         const val START_VEL = 0.0   // rad/sec
         const val END_VEL = 0.0     // rad/sec
