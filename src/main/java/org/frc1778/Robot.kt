@@ -4,27 +4,27 @@ import com.pathplanner.lib.PathPlanner
 import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.PneumaticHub
-import edu.wpi.first.wpilibj.Solenoid
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.commands.*
-import org.frc1778.lib.DataLogger
+import org.frc1778.commands.IntakeSpitCommand
+import org.frc1778.commands.PlaceGameObjectCommand
+import org.frc1778.commands.SwerveTrajectoryTrackerCommand
+import org.frc1778.commands.ZeroExtensionCommand
 import org.frc1778.lib.FalconTimedRobot
-import org.frc1778.subsystems.*
+import org.frc1778.subsystems.Arm
+import org.frc1778.subsystems.DotStar
+import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Drive.positions
-import org.ghrobotics.lib.commands.sequential
-import org.ghrobotics.lib.mathematics.units.derived.degrees
-import org.ghrobotics.lib.mathematics.units.derived.inDegrees
-import org.ghrobotics.lib.mathematics.units.inInches
-import org.ghrobotics.lib.mathematics.units.inches
-import org.ghrobotics.lib.mathematics.units.meters
-import org.ghrobotics.lib.mathematics.units.seconds
-import org.ghrobotics.lib.wrappers.FalconSolenoid
+import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.Manipulator
+import org.frc1778.subsystems.Vision
 import kotlin.properties.Delegates
 
 /**
@@ -38,7 +38,8 @@ import kotlin.properties.Delegates
  * object or package, it will get changed everywhere.)
  */
 object Robot : FalconTimedRobot() {
-    val alliance: DriverStation.Alliance = DriverStation.getAlliance()
+//    val alliance: DriverStation.Alliance = DriverStation.getAlliance()
+    val alliance: DriverStation.Alliance = Alliance.Red
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
 
@@ -51,7 +52,11 @@ object Robot : FalconTimedRobot() {
     val pcm = PneumaticHub(30)
     val compressor = pcm.makeCompressor()
 
-    var dataLogger = DataLogger("DataLogs")
+
+    val driveInversion = when(alliance) {
+        Alliance.Red-> 1
+        else -> -1
+    }
 
 
     var scoringLevel by Delegates.observable(Level.Top) { _, oldValue, newValue ->
@@ -110,7 +115,7 @@ object Robot : FalconTimedRobot() {
 
 
         Drive.pigeon.yaw = 0.0
-        field.getObject("traj").setTrajectory(trajectory)
+//        field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
 
         Arm.extensionControlEnabled = false
@@ -122,16 +127,6 @@ object Robot : FalconTimedRobot() {
 
     override fun robotPeriodic() {
         field.robotPose = Drive.robotPosition
-
-        SmartDashboard.putString("Manipulator State", Manipulator.manipulatorSol.state.name)
-        SmartDashboard.putNumber("Angle Native Units", Arm.armEncoder.rawPosition.value)
-        SmartDashboard.putNumber("Extension Distance", Arm.getCurrentExtension().value)
-        SmartDashboard.putData("Ultrasonic (inches)", Arm.distanceSensor)
-        SmartDashboard.putNumber("Cached Ultrasonic (inches)", Arm.lastNonZeroDistance.inInches())
-        SmartDashboard.updateValues()
-        Constants.DriveConstants.driveTab.run {
-
-        }
         Controls.driverController.update()
         Controls.operatorControllerRed.update()
         Controls.operatorControllerBlue.update()
@@ -147,33 +142,75 @@ object Robot : FalconTimedRobot() {
 
     override fun autonomousInit() {
         Arm.resetIsZeroed() // DO NOT REMOVE
-        Drive.resetPosition(Pose2d(1.85, 2.80, Rotation2d.fromDegrees(0.0)), Drive.modules.positions.toTypedArray())
+//        Drive.resetPosition(Pose2d(1.85, 2.80, Rotation2d.fromDegrees(0.0)), Drive.modules.positions.toTypedArray())
         Intake.retract()
-        Arm.resetIsZeroed()
+        Manipulator.open()
+//        RobotContainer.getAutonomousCommand().schedule()
+
+        IntakeSpitCommand().withTimeout(7.5)
+
         //zeroExtensionCommand = ZeroExtensionCommand()
-        //zeroExtensionCommand.schedule()
+        //zeroExtensionCommand.schedule()d
 
         //trajectoryCommand = Drive.followTrajectory(trajectory)
         //Drive.setPose(trajectory.initialHolonomicPose)
         //autonomousCommand = trajectoryCommand
-        //autonomousCommand?.schedule()
 //        trajectoryCommand.schedule()
 
     }
+
 
     override fun autonomousPeriodic() {
 
     }
 
     override fun teleopInit() {
+        Arm.resetIsZeroed()
+//        ZeroExtensionCommand().schedule()
 //
-         // DO NOT REMOVE
+        // DO NOT REMOVE
 
     }
 
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {
-        dataLogger.log()
+        Drive.resetPosition(
+            when (alliance) {
+                Alliance.Blue -> {
+                    when (DriverStation.getLocation()) {
+                        1 -> Pose2d(
+                            Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
+                        )
+
+                        2 -> Pose2d(
+                            Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
+                        )
+
+                        else -> Pose2d(
+                            Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
+                        )
+
+
+                    }
+                }
+
+                else -> {
+                    when (DriverStation.getLocation()) {
+                        1 -> Pose2d(
+                        Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
+                    )
+
+                        2 -> Pose2d(
+                        Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
+                    )
+
+                        else -> Pose2d(
+                        Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
+                    )
+                    }
+                }
+            }, Drive.modules.positions.toTypedArray()
+        )
     }
 
     override fun simulationPeriodic() {

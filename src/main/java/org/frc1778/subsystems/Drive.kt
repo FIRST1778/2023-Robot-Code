@@ -59,9 +59,9 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
 
     init {
 
-        for (module in modules.reversed()) {
-            Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
-        }
+//        for (module in modules.reversed()) {
+//            Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
+//        }
         pigeon.configMountPose(Pigeon2.AxisDirection.PositiveX, Pigeon2.AxisDirection.PositiveZ, 500)
         modules.forEach {
             it.setAngle(0.0)
@@ -75,7 +75,8 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     override val trackWidth: Double = Constants.DriveConstants.trackWidth
     override val maxSpeed: SIUnit<Velocity<Meter>> = Constants.DriveConstants.maxSpeed
     override val motorOutputLimiter: Source<Double> = {
-        motorOutputLimiterEntry.getDouble(100.0) / 100.0
+//        motorOutputLimiterEntry.getDouble(100.0) / 100.0
+        1.0
     }
 
     override val motorCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)

@@ -33,10 +33,10 @@ object Controls {
         //TODO: Find Correct Button ID
         button(1) {
             whileOn {
-                Drive.gamePiecePlacementTrajectoryFollowCommand?.schedule()
+//                Drive.gamePiecePlacementTrajectoryFollowCommand?.schedule()
             }
             changeOff {
-                Drive.gamePiecePlacementTrajectoryFollowCommand?.cancel()
+//                Drive.gamePiecePlacementTrajectoryFollowCommand?.cancel()
             }
         }
     }
@@ -46,18 +46,18 @@ object Controls {
         //charging station selection
         button(1) {
             changeOn {
-                Robot.scoringStation = Station.Left
+//                Robot.scoringStation = Station.Left
             }
         }// station 1
 
         button(2) {
-           changeOn {
-                Robot.scoringStation = Station.Center
+            changeOn {
+//                Robot.scoringStation = Station.Center
             }
         }// station 2
         button(3) {
             changeOn {
-                Robot.scoringStation = Station.Right
+//                Robot.scoringStation = Station.Right
             }
         }// station 3
         // Intake
@@ -67,7 +67,7 @@ object Controls {
         // That has the same init behavior but with the changeOff in the cancel portion of the command
         button(4) {
             change(IntakeSuckCommand())
-             // intake suck
+            // intake suck
         }
         button(5) {
             change(IntakeSpitCommand())
@@ -75,67 +75,58 @@ object Controls {
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
-        button(1) { changeOn(ZeroExtensionCommand()) } // reset extension
+//        button(1) { changeOn(ZeroExtensionCommand()) } // reset extension
         button(2) {
 //            changeOn(Robot.placeGameObjectCommand)
-            changeOn(ExtensionCommand(25.inches))
         }
         button(3) // other
         // level of placement
-        button(4) {
-            changeOn {
-//                Robot.scoringLevel = Level.Bottom
-                ArmAngleCommand(60.0.degrees).schedule()
-            }
-        }// bottom
-        button(5) {
-            changeOn {
-//                Robot.scoringLevel = Level.Middle
-                ArmAngleCommand(75.0.degrees).schedule()
-            }
-        }// middle
-        button(6) {
-            changeOn {
-//               Robot.scoringLevel = Level.Top
-                ArmAngleCommand(90.0.degrees).schedule()
-
-            }
-        }// top
+//        button(4) {
+//            changeOn {
+////                Robot.scoringLevel = Level.Bottom
+//                ArmAngleCommand(60.0.degrees).schedule()
+//            }
+//        }// bottom
+//        button(5) {
+//            changeOn {
+////                Robot.scoringLevel = Level.Middle
+//                ArmAngleCommand(75.0.degrees).schedule()
+//            }
+//        }// middle
+//        button(6) {
+//            changeOn {
+////                Robot.scoringLevel = Level.Top
+//                ArmAngleCommand(90.0.degrees).schedule()
+//
+//            }
+//        }// top
         // manipulator open/close toggle
         button(7) {
-            changeOn(InstantCommand({
-                Manipulator.toggleState()
-            }))
+//            changeOn(InstantCommand({
+//                Manipulator.toggleState()
+//            }))
         }
 
-         // toggle manipulator
+        // toggle manipulator
         button(8) {
-            change(sequential {
-                +IntakeToggleCommand(FalconSolenoid.State.Forward) // intake out
-                +ExtensionCommand(0.0.meters)// zero
-                +ArmAngleCommand(50.0.degrees) // hopper angle
-                +ExtensionCommand(0.0.meters) // hopper extension
-            })
+//            changeOn(ArmToHopperCommand())
         } // manipulator to hopper
 
         // switches
         button(11) {
-            changeOn(
-                sequential {
-                    DotStar.display(DotStar.Color.Yellow)
-                    Robot.gamePiece = GamePiece.Cone
-                }
-            ) // cone
-            changeOff(
-                sequential {
-                    DotStar.display(DotStar.Color.Purple)
-                    Robot.gamePiece = GamePiece.Cube
-                }
-            )
+            changeOn {
+                DotStar.display(DotStar.Color.Yellow)
+                Robot.gamePiece = GamePiece.Cone
+            }
+            // cone
+            changeOff {
+                DotStar.display(DotStar.Color.Purple)
+                Robot.gamePiece = GamePiece.Cube
+            }
+
             // cube
         } // cone/cube
         button(10) // balance
-        //TODO: Confirm these
         axisButton(0, -1.0) {
             changeOn {
                 Robot.scoringSide = Side.Left

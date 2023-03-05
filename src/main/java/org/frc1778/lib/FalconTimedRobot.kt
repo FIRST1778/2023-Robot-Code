@@ -106,7 +106,7 @@ abstract class FalconTimedRobot {
     protected open fun autonomousInit() {}
     protected open fun teleopInit() {}
     protected open fun disabledInit() {}
-    private fun testInit() {}
+    protected open fun testInit() {}
 
     protected open fun robotPeriodic() {}
     protected open fun autonomousPeriodic() {}

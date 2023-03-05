@@ -48,7 +48,7 @@ object Arm : FalconSubsystem(), Sendable {
         it.isEnabled = true
     }
 
-    var armEncoder = FalconCTREAbsoluteEncoder(
+    private val armEncoder = FalconCTREAbsoluteEncoder(
         Constants.ArmConstants.ANGLE_ENCODER_ID, Constants.ArmConstants.ANGLE_ENCODER_UNIT_MODEL
     ).apply {
         resetPosition(Constants.ArmConstants.ANGLE_ENCODER_OFFSET)
@@ -78,6 +78,7 @@ object Arm : FalconSubsystem(), Sendable {
         Constants.ArmConstants.EXTENSION_MOTOR_UNIT_MODEL
     ) {
         brakeMode = true
+        smartCurrentLimit = 40.amps
     }
 
 
@@ -187,6 +188,7 @@ object Arm : FalconSubsystem(), Sendable {
 
     fun resetIsZeroed() {
         lastNonZeroDistance = Double.MAX_VALUE.meters
+        desiredAngle = armEncoder.absolutePosition.value
         extensionControlEnabled = false
         angleControlEnabled = false
         zeroed = false
@@ -207,7 +209,7 @@ object Arm : FalconSubsystem(), Sendable {
         extensionMotor.setVoltage(0.0.volts)
         extensionControlEnabled = true
         angleControlEnabled = true
-        desiredAngle = armEncoder.absolutePosition.value
+        desiredAngle = getCurrentAngle().value
     }
 
     override fun lateInit() {

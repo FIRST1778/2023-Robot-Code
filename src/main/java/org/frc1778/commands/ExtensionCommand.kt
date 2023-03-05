@@ -1,6 +1,7 @@
 package org.frc1778.commands
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Robot
 import org.frc1778.subsystems.Arm
@@ -9,7 +10,7 @@ import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.meters
 
-class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 2.5, maxVelocity : Double = 0.875) : FalconCommand(Arm){
+class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 5.0, maxVelocity : Double = 0.5) : FalconCommand(Arm){
     companion object {
         const val START_VEL = 0.0   // rad/sec
         const val END_VEL = 0.0     // rad/sec
@@ -39,6 +40,10 @@ class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 2
         val state = profile!!.calculate(timer.get())
         Arm.setExtensionVelocity(state.velocity)
         Arm.setExtension(state.position.meters)
+    }
+
+    override fun end(interrupted: Boolean) {
+        DriverStation.reportError("Extension Finished", false)
     }
 
     override fun isFinished(): Boolean {

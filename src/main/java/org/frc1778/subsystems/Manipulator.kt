@@ -11,8 +11,8 @@ import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 object Manipulator : FalconSubsystem() {
     val manipulatorSol = FalconDoubleSolenoid(
-            15,
             14,
+            15,
             PneumaticsModuleType.REVPH,
             30
     )
@@ -22,6 +22,14 @@ object Manipulator : FalconSubsystem() {
             FalconSolenoid.State.Forward -> FalconSolenoid.State.Reverse
             else -> FalconSolenoid.State.Forward
         }
+    }
+
+    fun open() {
+        manipulatorSol.state = FalconSolenoid.State.Forward
+    }
+
+    fun close() {
+        manipulatorSol.state = FalconSolenoid.State.Reverse
     }
 
 }
