@@ -40,7 +40,7 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
             outputInverted = kInvertDrive
             brakeMode = kDriveBrakeMode
             voltageCompSaturation = 12.volts
-            smartCurrentLimit = 80.amps
+            smartCurrentLimit = 40.amps
             canSparkMax.run {
                 setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100)
                 setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20)

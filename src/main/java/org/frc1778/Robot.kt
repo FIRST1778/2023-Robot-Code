@@ -38,8 +38,8 @@ import kotlin.properties.Delegates
  * object or package, it will get changed everywhere.)
  */
 object Robot : FalconTimedRobot() {
-//    val alliance: DriverStation.Alliance = DriverStation.getAlliance()
-    val alliance: DriverStation.Alliance = Alliance.Red
+    val alliance: DriverStation.Alliance = DriverStation.getAlliance()
+//    val alliance: DriverStation.Alliance = Alliance.Red
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
 
@@ -54,8 +54,8 @@ object Robot : FalconTimedRobot() {
 
 
     val driveInversion = when(alliance) {
-        Alliance.Red-> 1
-        else -> -1
+        Alliance.Red-> -1
+        else -> 1
     }
 
 
@@ -106,12 +106,12 @@ object Robot : FalconTimedRobot() {
 
 
     override fun robotInit() {
-        // Access the RobotContainer object so that it is initialized. This will perform all our
-        // button bindings, and put our autonomous chooser on the dashboard.
-        RobotContainer
         SmartDashboard.setNetworkTableInstance(
             NetworkTableInstance.getDefault()
         )
+        // Access the RobotContainer object so that it is initialized. This will perform all our
+        // button bindings, and put our autonomous chooser on the dashboard.
+        RobotContainer
 
 
         Drive.pigeon.yaw = 0.0
@@ -120,7 +120,7 @@ object Robot : FalconTimedRobot() {
 
         Arm.extensionControlEnabled = false
         Arm.angleControlEnabled = false
-        compressor.enableAnalog(80.0, 115.0)
+        compressor.enableAnalog(95.0, 115.0)
 
     }
 
@@ -147,10 +147,10 @@ object Robot : FalconTimedRobot() {
         Manipulator.open()
 //        RobotContainer.getAutonomousCommand().schedule()
 
-        IntakeSpitCommand().withTimeout(7.5)
+        IntakeSpitCommand().withTimeout(7.5).schedule()
 
         //zeroExtensionCommand = ZeroExtensionCommand()
-        //zeroExtensionCommand.schedule()d
+        //zeroExtensionCommand.schedule()
 
         //trajectoryCommand = Drive.followTrajectory(trajectory)
         //Drive.setPose(trajectory.initialHolonomicPose)
@@ -166,14 +166,6 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         Arm.resetIsZeroed()
-//        ZeroExtensionCommand().schedule()
-//
-        // DO NOT REMOVE
-
-    }
-
-    /** This method is called periodically during operator control.  */
-    override fun teleopPeriodic() {
         Drive.resetPosition(
             when (alliance) {
                 Alliance.Blue -> {
@@ -211,6 +203,15 @@ object Robot : FalconTimedRobot() {
                 }
             }, Drive.modules.positions.toTypedArray()
         )
+//        ZeroExtensionCommand().schedule()
+//
+        // DO NOT REMOVE
+
+    }
+
+    /** This method is called periodically during operator control.  */
+    override fun teleopPeriodic() {
+
     }
 
     override fun simulationPeriodic() {

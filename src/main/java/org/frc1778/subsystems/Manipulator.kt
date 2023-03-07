@@ -25,11 +25,11 @@ object Manipulator : FalconSubsystem() {
     }
 
     fun open() {
-        manipulatorSol.state = FalconSolenoid.State.Forward
+//        manipulatorSol.state = FalconSolenoid.State.Forward
     }
 
     fun close() {
-        manipulatorSol.state = FalconSolenoid.State.Reverse
+//        manipulatorSol.state = FalconSolenoid.State.Reverse
     }
 
 }

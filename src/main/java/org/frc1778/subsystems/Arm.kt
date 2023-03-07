@@ -48,11 +48,11 @@ object Arm : FalconSubsystem(), Sendable {
         it.isEnabled = true
     }
 
-    private val armEncoder = FalconCTREAbsoluteEncoder(
-        Constants.ArmConstants.ANGLE_ENCODER_ID, Constants.ArmConstants.ANGLE_ENCODER_UNIT_MODEL
-    ).apply {
-        resetPosition(Constants.ArmConstants.ANGLE_ENCODER_OFFSET)
-    }
+//    private val armEncoder = FalconCTREAbsoluteEncoder(
+//        Constants.ArmConstants.ANGLE_ENCODER_ID, Constants.ArmConstants.ANGLE_ENCODER_UNIT_MODEL
+//    ).apply {
+//        resetPosition(Constants.ArmConstants.ANGLE_ENCODER_OFFSET)
+//    }
 
 
     private val angleMotorMain = falconMAX(
@@ -72,14 +72,14 @@ object Arm : FalconSubsystem(), Sendable {
         follow(angleMotorMain)
     }
 
-    private val extensionMotor = falconMAX(
-        Constants.ArmConstants.EXTENSION_MOTOR_ID,
-        CANSparkMaxLowLevel.MotorType.kBrushless,
-        Constants.ArmConstants.EXTENSION_MOTOR_UNIT_MODEL
-    ) {
-        brakeMode = true
-        smartCurrentLimit = 40.amps
-    }
+//    private val extensionMotor = falconMAX(
+//        Constants.ArmConstants.EXTENSION_MOTOR_ID,
+//        CANSparkMaxLowLevel.MotorType.kBrushless,
+//        Constants.ArmConstants.EXTENSION_MOTOR_UNIT_MODEL
+//    ) {
+//        brakeMode = true
+//        smartCurrentLimit = 40.amps
+//    }
 
 
     private const val angle_kS: Double = 0.3851
@@ -150,7 +150,8 @@ object Arm : FalconSubsystem(), Sendable {
     }
 
     fun getCurrentAngle(): SIUnit<Radian> {
-        return armEncoder.absolutePosition
+//        return armEncoder.absolutePosition
+        return 0.radians
     }
 
     fun extensionControl() {
@@ -168,9 +169,9 @@ object Arm : FalconSubsystem(), Sendable {
                 nextVoltage = -12.0
             }
 
-            extensionMotor.setVoltage(nextVoltage.volts)
+//            extensionMotor.setVoltage(nextVoltage.volts)
         } else {
-            extensionMotor.setVoltage(0.0.volts)
+//            extensionMotor.setVoltage(0.0.volts)
         }
     }
 
@@ -183,12 +184,13 @@ object Arm : FalconSubsystem(), Sendable {
     }
 
     fun getCurrentExtension(): SIUnit<Meter> {
-        return extensionMotor.encoder.position
+//        return extensionMotor.encoder.position
+        return 0.0.meters
     }
 
     fun resetIsZeroed() {
         lastNonZeroDistance = Double.MAX_VALUE.meters
-        desiredAngle = armEncoder.absolutePosition.value
+//        desiredAngle = armEncoder.absolutePosition.value
         extensionControlEnabled = false
         angleControlEnabled = false
         zeroed = false
@@ -199,14 +201,14 @@ object Arm : FalconSubsystem(), Sendable {
     }
 
     fun doExtensionZeroingMovement() {
-        extensionMotor.setVoltage((-2.0).volts)
+//        extensionMotor.setVoltage((-2.0).volts)
     }
 
     fun zeroExtension() {
-        extensionMotor.encoder.resetPosition(0.0.meters)
+//        extensionMotor.encoder.resetPosition(0.0.meters)
         zeroed = true
         desiredExtension = 0.0.meters
-        extensionMotor.setVoltage(0.0.volts)
+//        extensionMotor.setVoltage(0.0.volts)
         extensionControlEnabled = true
         angleControlEnabled = true
         desiredAngle = getCurrentAngle().value
@@ -230,16 +232,16 @@ object Arm : FalconSubsystem(), Sendable {
     }
 
     override fun initSendable(builder: SendableBuilder?) {
-        builder!!.addDoubleProperty("Arm Extension Voltage", {
-            extensionMotor.voltageOutput.value
-        }, {})
-        builder.addDoubleProperty("Arm Extension Position", {
-            extensionMotor.encoder.position.inInches()
-        }, {})
-        builder.addBooleanProperty("Is Zeroed?", {
+//        builder!!.addDoubleProperty("Arm Extension Voltage", {
+////            extensionMotor.voltageOutput.value
+//        }, {})
+//        builder.addDoubleProperty("Arm Extension Position", {
+////            extensionMotor.encoder.position.inInches()
+//        }, {})
+        builder!!.addBooleanProperty("Is Zeroed?", {
             zeroed
         }, {})
-        builder.addDoubleProperty("Rotation Encoder", { armEncoder.absolutePosition.inDegrees() }, {})
+//        builder.addDoubleProperty("Rotation Encoder", { armEncoder.absolutePosition.inDegrees() }, {})
         builder.addDoubleProperty("Arm Rotation Voltage", {
             angleMotorMain.voltageOutput.value
         }, {})

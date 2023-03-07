@@ -12,10 +12,10 @@ class TeleOpDriveCommand : FalconCommand(Drive) {
 
     override fun execute() {
         Drive.swerveDrive(
-            -Controls.handleDeadBand(translationX(), 0.1).pow(2).withSign(
+            Controls.handleDeadBand(translationX(), 0.1).pow(2).withSign(
                 translationX() * Robot.driveInversion
             ) * Constants.DriveConstants.maxSpeed.value,
-            Controls.handleDeadBand(translationY(), 0.1).pow(2).withSign(
+            -Controls.handleDeadBand(translationY(), 0.1).pow(2).withSign(
                 translationY() * Robot.driveInversion
             ) * Constants.DriveConstants.maxSpeed.value,
             -Controls.handleDeadBand(rotation(), 0.1).pow(2)

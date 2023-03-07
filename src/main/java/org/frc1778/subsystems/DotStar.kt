@@ -43,14 +43,14 @@ object DotStar : FalconSubsystem() {
             Color.Yellow -> makeLedFrame(0xFF, 0xFF, 0x00)
             Color.Purple -> makeLedFrame(0xFF, 0x00, 0xFF)
         }
-        for (i in 1..NUM_LEDS) {
+        repeat(NUM_LEDS) { //Could be -1
             spi.write(ledFrame, ledFrame.size)
         }
 
         // The end frame is defined by the datasheet to be 4 0xFF bytes, but
         // the actual requirement seems to be a 1 bit for every two LEDs in
         // the chain, ergo at least one 0xFF byte for every 16 LEDs.
-        val endFrame = ByteArray((NUM_LEDS+15)/16) { 0xFF.toByte() }
+        val endFrame = ByteArray((NUM_LEDS + 15) / 16) { 0xFF.toByte() }
         spi.write(endFrame, endFrame.size)
     }
 }

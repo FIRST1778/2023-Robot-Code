@@ -59,9 +59,9 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
 
     init {
 
-//        for (module in modules.reversed()) {
-//            Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
-//        }
+        for (module in modules.reversed()) {
+            Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
+        }
         pigeon.configMountPose(Pigeon2.AxisDirection.PositiveX, Pigeon2.AxisDirection.PositiveZ, 500)
         modules.forEach {
             it.setAngle(0.0)
@@ -86,12 +86,12 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     var gamePiecePlacementTrajectoryFollowCommand: PlaceGameObjectDriveCommand? = null
 
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
-        val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
-        if (result != null) {
-            if(result.isPresent) {
-                return result.get().estimatedPose.toPose2d() to result.get().timestampSeconds
-            }
-        }
+//        val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
+//        if (result != null) {
+//            if(result.isPresent) {
+//                return result.get().estimatedPose.toPose2d() to result.get().timestampSeconds
+//            }
+//        }
         return null
     }
 

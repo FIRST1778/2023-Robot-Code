@@ -1,15 +1,10 @@
 package org.frc1778.subsystems
 
-import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
-import edu.wpi.first.wpilibj.DigitalInput
-import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PneumaticsModuleType
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.amps
 import org.ghrobotics.lib.mathematics.units.derived.volts
-import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.rev.falconMAX
@@ -20,11 +15,11 @@ object Intake : FalconSubsystem() {
 //    var intakeMotor = CANSparkMax(14, CANSparkMaxLowLevel.MotorType.kBrushless)
 //    var intakeMotor2 = CANSparkMax(15, CANSparkMaxLowLevel.MotorType.kBrushless)
 
-    var intakeMotor = falconMAX(14, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)) {
+    var hopperMotor = falconMAX(14, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)) {
         brakeMode = true
         smartCurrentLimit = 20.amps
     }
-    var intakeMotor2 = falconMAX(15, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)) {
+    var intakeMotor = falconMAX(15, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)) {
         brakeMode = true
         smartCurrentLimit = 20.amps
     }
@@ -53,17 +48,17 @@ object Intake : FalconSubsystem() {
         if (intakeSol.state == FalconSolenoid.State.Reverse || intakeSol.state == FalconSolenoid.State.Off) {
             extend()
         }
-        intakeMotor2.setVoltage(-intakeVoltage / 6)
-        intakeMotor.setVoltage(-intakeVoltage * 0.75)
+        intakeMotor.setVoltage(-intakeVoltage / 6)
+        hopperMotor.setVoltage(-intakeVoltage * 0.75)
     }
 
     fun spit() {
-        intakeMotor.setVoltage(intakeVoltage / 2)
-        intakeMotor2.setVoltage(intakeVoltage / 2)
+        hopperMotor.setVoltage(intakeVoltage / 2)
+        intakeMotor.setVoltage(intakeVoltage + 2.0.volts)
     }
 
     fun stop() {
+        hopperMotor.setVoltage(0.0.volts)
         intakeMotor.setVoltage(0.0.volts)
-        intakeMotor2.setVoltage(0.0.volts)
     }
 }
