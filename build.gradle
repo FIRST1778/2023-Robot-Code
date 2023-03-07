@@ -57,6 +57,8 @@ repositories {
 
 dependencies {
     implementation "com.github.FIRST1778:FalconLibrary:Swerve-Drive-Implementation-SNAPSHOT"
+    implementation 'com.beust:klaxon:5.6'
+
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
