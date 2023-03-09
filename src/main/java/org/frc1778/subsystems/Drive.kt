@@ -35,6 +35,8 @@ import org.ghrobotics.lib.utils.Source
 import kotlin.math.hypot
 
 object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
+    var aprilTagsEnabled: Boolean = false
+
     var scoringPose: Pose2d? = null
 
     val pigeon = Pigeon2(Constants.DriveConstants.pigeonCanID)
@@ -86,13 +88,13 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     var gamePiecePlacementTrajectoryFollowCommand: PlaceGameObjectDriveCommand? = null
 
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
-//        val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
-//        if (result != null) {
-//            if(result.isPresent) {
-//                return result.get().estimatedPose.toPose2d() to result.get().timestampSeconds
-//            }
-//        }
-        return null
+        if (!aprilTagsEnabled)
+            return null;
+
+        val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
+        if (result == null || !result.isPresent())
+            return null
+        return result.get().estimatedPose.toPose2d() to result.get().timestampSeconds
     }
 
     //TODO: Tune Holonomic Drive Controller
