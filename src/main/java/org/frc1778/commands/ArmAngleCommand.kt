@@ -11,7 +11,7 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
 
-class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = .125, maxVelocity: Double = .25) : FalconCommand(Arm, Manipulator) {
+class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = 1.25, maxVelocity: Double = 1.25) : FalconCommand(Arm, Manipulator) {
 
 
     companion object {
@@ -33,10 +33,10 @@ class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = .
         timer.start()
 
         var startPosition: SIUnit<Radian> = Arm.getCurrentAngle()
-
+        var simulatedStartVelocity = Arm.getSimulatedAngleVelocity()
 
         val constraints = TrapezoidProfile.Constraints(maxVel, maxAccel)
-        val startState = TrapezoidProfile.State(startPosition.value, START_VEL)
+        val startState = TrapezoidProfile.State(startPosition.value, simulatedStartVelocity)
         val endState = TrapezoidProfile.State(endPos.value, END_VEL)
         profile = TrapezoidProfile(constraints, endState, startState)
     }
@@ -45,12 +45,16 @@ class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = .
         val state = profile!!.calculate(timer.get())
         Arm.setAngleVelocity(state.velocity)
         Arm.setAngle(state.position.radians)
+        Arm.setSimulatedAngleVelocity(state.velocity)
     }
 
     override fun end(interrupted: Boolean) {
         Intake.retract()
     }
 
+    override fun cancel() {
+        super.cancel()
+    }
     override fun isFinished(): Boolean {
         return profile!!.isFinished(timer.get())
     }

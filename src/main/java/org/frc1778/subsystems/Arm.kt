@@ -19,7 +19,6 @@ import edu.wpi.first.wpilibj.CounterBase
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.DigitalOutput
 import edu.wpi.first.wpilibj.Encoder
-import edu.wpi.first.wpilibj.RobotController
 import edu.wpi.first.wpilibj.Ultrasonic
 import edu.wpi.first.wpilibj.simulation.BatterySim
 import edu.wpi.first.wpilibj.simulation.DIOSim
@@ -27,17 +26,18 @@ import edu.wpi.first.wpilibj.simulation.EncoderSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import org.frc1778.Constants
+import org.frc1778.Constants.ArmConstants.ANGLE_MOTOR_MAIN_ID
 import org.frc1778.ExtensionSim
+import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconCTREAbsoluteEncoder
 import org.frc1778.lib.FalconMAXAbsoluteEncoder
 import org.frc1778.lib.SimulatableCANSparkMax
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.*
-import org.ghrobotics.lib.mathematics.units.derived.Radian
-import org.ghrobotics.lib.mathematics.units.derived.inDegrees
-import org.ghrobotics.lib.mathematics.units.derived.radians
-import org.ghrobotics.lib.mathematics.units.derived.volt
-import org.ghrobotics.lib.mathematics.units.derived.volts
+import org.ghrobotics.lib.mathematics.units.derived.*
+import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitModel
+import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
+import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.rev.falconMAX
 import kotlin.math.cos
 import kotlin.math.sin
@@ -47,15 +47,10 @@ object Arm : FalconSubsystem(), Sendable {
     val distanceSensor = Ultrasonic(DigitalOutput(7), DigitalInput(8)).also {
         it.isEnabled = true
     }
-
-//    private val armEncoder = FalconCTREAbsoluteEncoder(
-//        Constants.ArmConstants.ANGLE_ENCODER_ID, Constants.ArmConstants.ANGLE_ENCODER_UNIT_MODEL
-//    ).apply {
-//        resetPosition(Constants.ArmConstants.ANGLE_ENCODER_OFFSET)
-//    }
+    var simulatedAngleVel = 0.0
 
 
-    private val angleMotorMain = falconMAX(
+    val angleMotorMain = falconMAX(
         Constants.ArmConstants.ANGLE_MOTOR_MAIN_ID,
         CANSparkMaxLowLevel.MotorType.kBrushless,
         Constants.ArmConstants.ANGLE_MOTOR_UNIT_MODEL,
@@ -71,6 +66,9 @@ object Arm : FalconSubsystem(), Sendable {
         brakeMode = true
         follow(angleMotorMain)
     }
+
+    val armEncoder = FalconMAXAbsoluteEncoder(angleMotorMain.canSparkMax,SparkMaxAbsoluteEncoder.Type.kDutyCycle, NativeUnitRotationModel(8192.nativeUnits))
+
 
 //    private val extensionMotor = falconMAX(
 //        Constants.ArmConstants.EXTENSION_MOTOR_ID,
@@ -108,7 +106,7 @@ object Arm : FalconSubsystem(), Sendable {
         Nat.N2(), Nat.N1(), anglePlant, VecBuilder.fill(0.5, 0.5), VecBuilder.fill(0.01), 0.02
     )
     private val angleController = LinearQuadraticRegulator(
-        anglePlant, VecBuilder.fill(2.0, 16.0), VecBuilder.fill(24.0), 0.020
+        anglePlant, VecBuilder.fill(2.0, 3.0), VecBuilder.fill(2.0), 0.020
     )
     private val angleLoop = LinearSystemLoop(
         anglePlant, angleController, angleObserver, 12.0, 0.020
@@ -123,6 +121,13 @@ object Arm : FalconSubsystem(), Sendable {
         extensionPlant, extensionController, extensionObserver, 12.0, 0.020
     )
 
+    val jointLogger = DataLogger("ArmJoint")
+
+    init {
+        jointLogger.add("angle (deg)", {-> getCurrentAngle().inDegrees()})
+        jointLogger.add("desired angle (deg)", { -> desiredAngle.radians.inDegrees()})
+
+    }
     fun angleControl() {
         if (angleControlEnabled) {
             angleLoop.setNextR(VecBuilder.fill(desiredAngle, desiredAngleVelocity))
@@ -150,8 +155,8 @@ object Arm : FalconSubsystem(), Sendable {
     }
 
     fun getCurrentAngle(): SIUnit<Radian> {
-//        return armEncoder.absolutePosition
-        return 0.radians
+        return armEncoder.absolutePosition
+//        return 0.radians
     }
 
     fun extensionControl() {
@@ -174,7 +179,12 @@ object Arm : FalconSubsystem(), Sendable {
 //            extensionMotor.setVoltage(0.0.volts)
         }
     }
-
+    fun setSimulatedAngleVelocity(velocity : Double){
+        simulatedAngleVel = velocity
+    }
+    fun getSimulatedAngleVelocity() : Double{
+        return simulatedAngleVel
+    }
     fun setExtensionVelocity(velocity: Double) {
         desiredExtensionVelocity = velocity
     }
@@ -229,6 +239,7 @@ object Arm : FalconSubsystem(), Sendable {
         }
         if (distanceSensor.rangeInches != 0.0) lastNonZeroDistance = distanceSensor.rangeInches.inches
         distanceSensor.ping()
+        jointLogger.log()
     }
 
     override fun initSendable(builder: SendableBuilder?) {
