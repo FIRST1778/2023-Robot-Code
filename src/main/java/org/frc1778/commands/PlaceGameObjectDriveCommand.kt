@@ -8,8 +8,7 @@ import org.ghrobotics.lib.commands.FalconCommand
 
 class PlaceGameObjectDriveCommand : FalconCommand(Drive) {
     private var scoringTrajectoryTrackerCommand: SwerveTrajectoryTrackerCommand? = null
-
-
+    
     override fun initialize() {
         scoringTrajectoryTrackerCommand = Drive.trajectoryToGoal()?.let { Drive.followTrajectory(it) }
         scoringTrajectoryTrackerCommand?.schedule()

@@ -190,6 +190,24 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
         )
     }
 
+    fun trajectoryToPose(pose: Pose2d) : Trajectory {
+        val currChassisSpeeds = kinematics.toChassisSpeeds(*swerveModuleStates().toTypedArray())
+        return PathPlanner.generatePath(
+            PathConstraints(maxSpeed.value, 3.0),
+            PathPoint(
+                robotPosition.translation,
+                Transform2d(robotPosition, scoringPose).translation.angle,
+                robotPosition.rotation,
+                hypot(currChassisSpeeds.vxMetersPerSecond, currChassisSpeeds.vyMetersPerSecond)
+            ),
+            PathPoint(
+                pose.translation,
+                Transform2d(pose, robotPosition).translation.angle,
+                robotPosition.rotation
+            )
+        )
+    }
+
 
 
 
