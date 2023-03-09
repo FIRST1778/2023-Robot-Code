@@ -202,7 +202,7 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
 
 
 
-    fun swerveDrive(forwardInput: Double, strafeInput: Double, rotationInput: Double, fieldRelative: Boolean) {
+    fun swerveDrive(forwardInput: Double, strafeInput: Double, rotationInput: Double, fieldRelative: Boolean = true) {
         val outputLimiter = motorOutputLimiter()
         val speeds = driveHelper.swerveDrive(
             this,
