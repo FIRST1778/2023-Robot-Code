@@ -10,7 +10,7 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
 
-class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = 0.5, maxVelocity: Double = 0.5) : FalconCommand(Arm, Manipulator) {
+class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = 1.25, maxVelocity: Double = 1.25) : FalconCommand(Arm, Manipulator) {
 
 
     companion object {

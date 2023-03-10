@@ -188,7 +188,7 @@ object Arm : FalconSubsystem(), Sendable {
         Nat.N2(), Nat.N1(), anglePlant, VecBuilder.fill(0.5, 0.5), VecBuilder.fill(0.01), 0.02
     )
     private val angleController = LinearQuadraticRegulator(
-        anglePlant, VecBuilder.fill(2.0, 3.0), VecBuilder.fill(2.0), 0.020
+        anglePlant, VecBuilder.fill(0.1, 4.0), VecBuilder.fill(2.0), 0.020
     )
     private val angleLoop = LinearSystemLoop(
         anglePlant, angleController, angleObserver, 12.0, 0.020

@@ -84,13 +84,13 @@ object Controls {
         button(4) {
             changeOn {
 //                Robot.scoringLevel = Level.Bottom
-                ArmAngleCommand(60.0.degrees).schedule()
+                ArmAngleCommand(40.0.degrees).schedule()
             }
         }// bottom
         button(5) {
             changeOn {
 //                Robot.scoringLevel = Level.Middle
-                ArmAngleCommand(75.0.degrees).schedule()
+                ArmAngleCommand(60.0.degrees).schedule()
             }
         }// middle
         button(6) {
