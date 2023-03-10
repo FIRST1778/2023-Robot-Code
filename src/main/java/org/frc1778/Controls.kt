@@ -81,25 +81,25 @@ object Controls {
         }
         button(3) // other
         // level of placement
-//        button(4) {
-//            changeOn {
-////                Robot.scoringLevel = Level.Bottom
-//                ArmAngleCommand(60.0.degrees).schedule()
-//            }
-//        }// bottom
-//        button(5) {
-//            changeOn {
-////                Robot.scoringLevel = Level.Middle
-//                ArmAngleCommand(75.0.degrees).schedule()
-//            }
-//        }// middle
-//        button(6) {
-//            changeOn {
-////                Robot.scoringLevel = Level.Top
-//                ArmAngleCommand(90.0.degrees).schedule()
-//
-//            }
-//        }// top
+        button(4) {
+            changeOn {
+//                Robot.scoringLevel = Level.Bottom
+                ArmAngleCommand(60.0.degrees).schedule()
+            }
+        }// bottom
+        button(5) {
+            changeOn {
+//                Robot.scoringLevel = Level.Middle
+                ArmAngleCommand(75.0.degrees).schedule()
+            }
+        }// middle
+        button(6) {
+            changeOn {
+//                Robot.scoringLevel = Level.Top
+                ArmAngleCommand(90.0.degrees).schedule()
+
+            }
+        }// top
         // manipulator open/close toggle
         button(7) {
 //            changeOn(InstantCommand({

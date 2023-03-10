@@ -8,6 +8,7 @@ import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.meters
 
 class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 5.0, maxVelocity : Double = 0.5) : FalconCommand(Arm){
@@ -26,7 +27,7 @@ class ExtensionCommand(endPosition : SIUnit<Meter>, maxAcceleration : Double = 5
     override fun initialize() {
         timer.reset()
         timer.start()
-
+//TODO add correct values
         var startPosition: SIUnit<Meter> = Arm.getCurrentExtension()
 
 

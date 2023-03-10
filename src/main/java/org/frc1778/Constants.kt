@@ -14,6 +14,7 @@ import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
@@ -183,6 +184,7 @@ object Constants {
 
     object ArmConstants {
 
+        val DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(1.nativeUnits)
         val armShuffleboardTab = Shuffleboard.getTab("Arm")
         const val ANGLE_ENCODER_ID: Int = 23
         val ANGLE_ENCODER_UNIT_MODEL: NativeUnitModel<Radian> = NativeUnitRotationModel(4096.nativeUnits) //TODO

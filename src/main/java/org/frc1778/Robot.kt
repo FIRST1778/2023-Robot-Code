@@ -13,10 +13,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.commands.IntakeSpitCommand
-import org.frc1778.commands.PlaceGameObjectCommand
-import org.frc1778.commands.SwerveTrajectoryTrackerCommand
-import org.frc1778.commands.ZeroExtensionCommand
+import org.frc1778.commands.*
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.DotStar
@@ -25,6 +22,7 @@ import org.frc1778.subsystems.Drive.positions
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
 import org.frc1778.subsystems.Vision
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import kotlin.properties.Delegates
 
 /**
@@ -119,8 +117,7 @@ object Robot : FalconTimedRobot() {
         fieldTab.add("Field", field).withSize(8, 4)
 
         Arm.extensionControlEnabled = false
-        Arm.angleControlEnabled = false
-        compressor.enableAnalog(95.0, 115.0)
+//        compressor.enableAnalog(95.0, 115.0)
 
     }
 
@@ -137,7 +134,7 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun disabledPeriodic() {
-
+        Arm.setDesiredAngle(Arm.getCurrentAngle())
     }
 
     override fun autonomousInit() {
@@ -165,7 +162,8 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun teleopInit() {
-        Arm.resetIsZeroed()
+        Arm.setDesiredAngle(Arm.getCurrentAngle())
+//        Arm.resetIsZeroed()
         Drive.resetPosition(
             when (alliance) {
                 Alliance.Blue -> {
@@ -203,6 +201,7 @@ object Robot : FalconTimedRobot() {
                 }
             }, Drive.modules.positions.toTypedArray()
         )
+//        ArmAngleCommand(110.0.degrees).schedule()
 //        ZeroExtensionCommand().schedule()
 //
         // DO NOT REMOVE

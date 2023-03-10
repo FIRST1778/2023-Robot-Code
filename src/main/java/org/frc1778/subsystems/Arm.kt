@@ -2,11 +2,7 @@
 
 package org.frc1778.subsystems
 
-import com.revrobotics.AbsoluteEncoder
-import com.revrobotics.CANSparkMax
 import com.revrobotics.CANSparkMaxLowLevel
-import com.revrobotics.SparkMaxAbsoluteEncoder
-import org.frc1778.ArmJointSim
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.controller.LinearQuadraticRegulator
@@ -15,28 +11,14 @@ import edu.wpi.first.math.system.LinearSystemLoop
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.wpilibj.CounterBase
-import edu.wpi.first.wpilibj.DigitalInput
-import edu.wpi.first.wpilibj.DigitalOutput
-import edu.wpi.first.wpilibj.Encoder
-import edu.wpi.first.wpilibj.Ultrasonic
-import edu.wpi.first.wpilibj.simulation.BatterySim
-import edu.wpi.first.wpilibj.simulation.DIOSim
-import edu.wpi.first.wpilibj.simulation.EncoderSim
-import edu.wpi.first.wpilibj.simulation.RoboRioSim
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
+import edu.wpi.first.wpilibj.DutyCycleEncoder
 import org.frc1778.Constants
-import org.frc1778.Constants.ArmConstants.ANGLE_MOTOR_MAIN_ID
-import org.frc1778.ExtensionSim
-import org.frc1778.lib.DataLogger
-import org.frc1778.lib.FalconCTREAbsoluteEncoder
-import org.frc1778.lib.FalconMAXAbsoluteEncoder
-import org.frc1778.lib.SimulatableCANSparkMax
+import org.frc1778.lib.*
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.*
-import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitModel
-import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
+import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnit
+import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitVelocity
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.rev.falconMAX
 import kotlin.math.cos
@@ -44,11 +26,14 @@ import kotlin.math.sin
 
 object Arm : FalconSubsystem(), Sendable {
     var lastNonZeroDistance: SIUnit<Meter> = Double.POSITIVE_INFINITY.meters
-    val distanceSensor = Ultrasonic(DigitalOutput(7), DigitalInput(8)).also {
-        it.isEnabled = true
-    }
-    var simulatedAngleVel = 0.0
 
+    //    val distanceSensor = Ultrasonic(DigitalOutput(7), DigitalInput(8)).also {
+//        it.isEnabled = true
+//    }
+
+
+    var simulatedAngleVel = 0.0
+    var simulatedPosition : SIUnit<Radian> = 0.0.radians
 
     val angleMotorMain = falconMAX(
         Constants.ArmConstants.ANGLE_MOTOR_MAIN_ID,
@@ -67,8 +52,106 @@ object Arm : FalconSubsystem(), Sendable {
         follow(angleMotorMain)
     }
 
-    val armEncoder = FalconMAXAbsoluteEncoder(angleMotorMain.canSparkMax,SparkMaxAbsoluteEncoder.Type.kDutyCycle, NativeUnitRotationModel(8192.nativeUnits))
+//        val armEncoder = FalconMAXAbsoluteEncoder(angleMotorMain.canSparkMax,
+//            SparkMaxAbsoluteEncoder.Type.kDutyCycle, NativeUnitRotationModel(8192.nativeUnits))
+//    val armEncoder = DutyCycleEncoder(7)
+    val armEncoder = object : AbstractFalconAbsoluteEncoder<Radian>(
+        Constants.ArmConstants.DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL
+    ) {
 
+        val dutyCycleEncoder = DutyCycleEncoder(7)
+
+        private var zeroPoint: Double = 0.0
+
+        var inverted = false
+
+        //Same as Position
+        override val absolutePosition: SIUnit<Radian>
+            get() = position
+        override val rawPosition: SIUnit<NativeUnit>
+            get() = if (!inverted) {
+                (dutyCycleEncoder.get() - zeroPoint).nativeUnits
+            } else {
+                (zeroPoint - dutyCycleEncoder.get()).nativeUnits
+            }
+        override val rawVelocity: SIUnit<NativeUnitVelocity>
+            get() = throw Error("Cannot Get Velocity from duty Cycle Encoder")
+
+        override fun resetPositionRaw(newPosition: SIUnit<NativeUnit>) {
+            zeroPoint = newPosition.value
+        }
+
+        override fun initSendable(builder: SendableBuilder?) {
+            builder!!.addDoubleProperty(
+                "-Angle Absolute Position",
+                { absolutePosition.inDegrees() },
+                {}
+            )
+            builder.addDoubleProperty(
+                "Duty Cycle Output",
+                {dutyCycleEncoder.get()},
+                {}
+            )
+        }
+
+    }.apply {
+        resetPositionRaw((0.705 + .25).mod(360.0).nativeUnits)
+        inverted = true
+    }
+//    val extensionEncoder = object : AbstractFalconAbsoluteEncoder<Radian>(
+//        Constants.ArmConstants.DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL
+//    ) {
+//
+//        private val dutyCycleEncoder = DutyCycleEncoder(8)
+//
+//        private var zeroPoint: Double = 0.0
+//
+//
+//        var inverted = false
+//
+//        //Same as Position
+//        override val absolutePosition: SIUnit<Radian>
+//            get() = position
+//        override val rawPosition: SIUnit<NativeUnit>
+//            get() = if (!inverted) {
+//                (dutyCycleEncoder.get() - zeroPoint).nativeUnits
+//            } else {
+//                (zeroPoint - dutyCycleEncoder.get()).nativeUnits
+//            }
+//
+//        //            get() {
+////                var offsetValue =
+////                return (offsetValue + (if (offsetValue < 0.0) 1 else 0)).nativeUnits
+////            }
+//        override val rawVelocity: SIUnit<NativeUnitVelocity>
+//            get() = throw Error("Cannot Get Velocity from duty Cycle Encoder")
+//
+//        override fun resetPositionRaw(newPosition: SIUnit<NativeUnit>) {
+//            zeroPoint = newPosition.value
+//        }
+//
+//        override fun initSendable(builder: SendableBuilder?) {
+//            builder!!.addDoubleProperty(
+//                "Extension Absolute Position",
+//                { absolutePosition.inDegrees() },
+//                {}
+//            )
+//            builder.addDoubleProperty(
+//                "Raw Position",
+//                {
+//                    rawPosition.value
+//                }, {}
+//            )
+//
+//            builder.addDoubleProperty(
+//                "Duty Cycle Output",
+//                {dutyCycleEncoder.get()},
+//                {}
+//            )
+//        }
+//    }.apply {
+//        resetPositionRaw((-1.065).nativeUnits)
+//    }
 
 //    private val extensionMotor = falconMAX(
 //        Constants.ArmConstants.EXTENSION_MOTOR_ID,
@@ -80,7 +163,7 @@ object Arm : FalconSubsystem(), Sendable {
 //    }
 
 
-    private const val angle_kS: Double = 0.3851
+    private const val angle_kS: Double = 1.0
     private const val angle_kA: Double = 0.03516
     private const val angle_kV: Double = 1.615
     private val anglePlant = LinearSystemId.identifyPositionSystem(angle_kV, angle_kA)
@@ -89,7 +172,6 @@ object Arm : FalconSubsystem(), Sendable {
     private const val extension_kV: Double = 7.213374267914612
     private const val extension_kS: Double = 0.4519871072390769
     private val extensionPlant = LinearSystemId.identifyPositionSystem(extension_kV, extension_kA)
-
     // This is set in the ArmTrapezoidCommand to what the profile wants, so we
     // initialize it to a dud value here to not immediately activate the arm.
     private var desiredAngle: Double = Math.toRadians(0.0)
@@ -124,10 +206,14 @@ object Arm : FalconSubsystem(), Sendable {
     val jointLogger = DataLogger("ArmJoint")
 
     init {
-        jointLogger.add("angle (deg)", {-> getCurrentAngle().inDegrees()})
-        jointLogger.add("desired angle (deg)", { -> desiredAngle.radians.inDegrees()})
+        jointLogger.add("angle (deg)", { -> getCurrentAngle().inDegrees() })
+        jointLogger.add("desired angle (deg)", { -> desiredAngle.radians.inDegrees() })
+        jointLogger.add("desired velocity", {-> desiredAngleVelocity.radians.inDegrees()})
+        jointLogger.add("voltage", {-> angleMotorMain.voltageOutput.value} )
+        jointLogger.add("current", {-> angleMotorMain.drawnCurrent.value})
 
     }
+
     fun angleControl() {
         if (angleControlEnabled) {
             angleLoop.setNextR(VecBuilder.fill(desiredAngle, desiredAngleVelocity))
@@ -145,12 +231,14 @@ object Arm : FalconSubsystem(), Sendable {
             angleMotorMain.setVoltage(0.0.volts)
         }
     }
-
-    fun setAngleVelocity(angle: Double) {
+    fun getDesiredAngleVelocity(): Double{
+        return desiredAngleVelocity
+    }
+    fun setDesiredAngleVelocity(angle: Double) {
         desiredAngleVelocity = angle
     }
 
-    fun setAngle(angle: SIUnit<Radian>) {
+    fun setDesiredAngle(angle: SIUnit<Radian>) {
         desiredAngle = angle.value
     }
 
@@ -179,12 +267,15 @@ object Arm : FalconSubsystem(), Sendable {
 //            extensionMotor.setVoltage(0.0.volts)
         }
     }
-    fun setSimulatedAngleVelocity(velocity : Double){
+
+    fun setSimulatedAngleVelocity(velocity: Double) {
         simulatedAngleVel = velocity
     }
-    fun getSimulatedAngleVelocity() : Double{
+
+    fun getSimulatedAngleVelocity(): Double {
         return simulatedAngleVel
     }
+
     fun setExtensionVelocity(velocity: Double) {
         desiredExtensionVelocity = velocity
     }
@@ -196,6 +287,7 @@ object Arm : FalconSubsystem(), Sendable {
     fun getCurrentExtension(): SIUnit<Meter> {
 //        return extensionMotor.encoder.position
         return 0.0.meters
+//        return extensionEncoder.absolutePosition
     }
 
     fun resetIsZeroed() {
@@ -228,17 +320,24 @@ object Arm : FalconSubsystem(), Sendable {
         Constants.ArmConstants.armShuffleboardTab.add(
             this
         ).withSize(3, 4)
+        Constants.ArmConstants.armShuffleboardTab.add(
+            "Angle Encoder",
+            armEncoder
+        ).withSize(2, 2)
+//        Constants.ArmConstants.armShuffleboardTab.add(
+//            "Extension Encoder",
+//            extensionEncoder
+//        ).withSize(2, 2)
 
     }
 
     override fun periodic() {
-
-        if (zeroed) {
+//        if (zeroed) {
             angleControl()
-            extensionControl()
-        }
-        if (distanceSensor.rangeInches != 0.0) lastNonZeroDistance = distanceSensor.rangeInches.inches
-        distanceSensor.ping()
+//            extensionControl()
+//        }
+//        if (distanceSensor.rangeInches != 0.0) lastNonZeroDistance = distanceSensor.rangeInches.inches
+//        distanceSensor.ping()
         jointLogger.log()
     }
 
@@ -256,6 +355,7 @@ object Arm : FalconSubsystem(), Sendable {
         builder.addDoubleProperty("Arm Rotation Voltage", {
             angleMotorMain.voltageOutput.value
         }, {})
+
     }
 
     override fun simulationPeriodic() {
