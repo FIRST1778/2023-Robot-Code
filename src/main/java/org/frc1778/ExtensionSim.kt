@@ -53,11 +53,11 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
         input = voltage
     }
 
-    fun update(dt: Double, jointTheta: Double, encoder: SimulationRelativeEncoder, limitSwitch: DIOSim) {
+    fun update(dt: Double, jointTheta: Double, encoder: SimulationRelativeEncoder, /*limitSwitch: DIOSim*/) {
         calculateAcceleration(jointTheta)
         capVelocity(dt, jointTheta)
         linearArmPosition += linearVelocity * dt
-        limitSwitch.value = (linearArmPosition < limitSwitchTriggerPosition)
+//        limitSwitch.value = (linearArmPosition < limitSwitchTriggerPosition)
         encoder.setPosition(encoder.getPosition() + linearVelocity * dt)
         logger.log()
     }

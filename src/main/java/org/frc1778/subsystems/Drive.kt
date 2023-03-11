@@ -26,6 +26,7 @@ import org.frc1778.Constants
 import org.frc1778.commands.PlaceGameObjectDriveCommand
 import org.frc1778.commands.TeleOpDriveCommand
 import org.frc1778.commands.SwerveTrajectoryTrackerCommand
+import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconNeoSwerveModule
 import org.frc1778.lib.FalconSwerveDrivetrain
 import org.ghrobotics.lib.mathematics.units.Meter
@@ -50,6 +51,13 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
                     "min" to 0.0, "max" to 100.0, "Block increment" to 10.0
                 )
             ).entry!!
+
+    val driveLogger = DataLogger("Drive")
+    init {
+        driveLogger.add("yaw", {-> pigeon.yaw})
+        driveLogger.add("pitch", {-> pigeon.pitch})
+        driveLogger.add("roll", {-> pigeon.roll})
+    }
 
     public override val modules: List<FalconNeoSwerveModule> = listOf(
         FalconNeoSwerveModule(Constants.DriveConstants.topLeftSwerveModuleConstants),

@@ -5,13 +5,10 @@ import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.junit.jupiter.api.Test
 import edu.wpi.first.wpilibj.RobotController
-import edu.wpi.first.wpilibj.simulation.BatterySim
-import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim
-import edu.wpi.first.wpilibj.simulation.EncoderSim
-import edu.wpi.first.wpilibj.simulation.RoboRioSim
-import edu.wpi.first.wpilibj.simulation.SimHooks
+import edu.wpi.first.wpilibj.simulation.*
 import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.derived.volts
+import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.junit.jupiter.api.Assertions
@@ -25,7 +22,7 @@ class ExtensionSimTests {
     @Test
     fun balls(){
         var armJointSim = ArmJointSim(0.0)
-        var encoderSim = DutyCycleEncoderSim(Arm.armEncoder)
+//        var encoderSim = DutyCycleEncoderSim(Arm.armEncoder)
         Arm.zeroed = true
         Arm.angleControlEnabled = true
         var cmd = ArmAngleCommand(90.degrees)
@@ -49,8 +46,8 @@ class ExtensionSimTests {
             armJointSim.update(dt, armJointSim.getMinArmLength())
 
 
-            Arm.setDesiredAngleVelocity()
-            encoderSim.setDistance(armJointSim.angleAtJoint())
+//            Arm.setDesiredAngleVelocity()
+//            encoderSim.setDistance(armJointSim.angleAtJoint())
 
             RoboRioSim.setVInVoltage(
                 BatterySim.calculateDefaultBatteryLoadedVoltage(
@@ -83,7 +80,7 @@ class ExtensionSimTests {
 
 
             var encoderDistance = armJointSim.angleAtJoint()
-            encoderSim.setDistance(armJointSim.angleAtJoint())
+//            encoderSim.setDistance(armJointSim.angleAtJoint())
 
 
             RoboRioSim.setVInVoltage(
@@ -117,7 +114,7 @@ class ExtensionSimTests {
 
 
             var encoderDistance = armJointSim.angleAtJoint()
-            encoderSim.setDistance(armJointSim.angleAtJoint())
+//            encoderSim.setDistance(armJointSim.angleAtJoint())
 
 
             RoboRioSim.setVInVoltage(
@@ -129,42 +126,41 @@ class ExtensionSimTests {
         }
     }
 
-//    @Test
-//    fun ballsOnWalls(){
-//
-//        var armJointSim = ArmJointSim(0.0)
-//        Arm.zeroed = true
-//        Arm.angleControlEnabled = true
-//        Arm.setAngle(135.degrees)
-//        var i = 0
-//        var dt = 0.002
-//        var sum = 0.0
-//        SimHooks.pauseTiming()
-//        Arm.periodic()
-//        while(i++ < 10000) {
-//            if(sum >= 0.02) {
-//                Arm.periodic()
-//                sum = 0.0
-//            }else {
-//                sum += dt
-//            }
-//            armJointSim.setInput(Arm.angleMotorMain.canSparkMax.appliedOutput)
-//
-//
-//            armJointSim.update(dt, armJointSim.getMinArmLength())
-//
-//
-//            var encoderDistance = armJointSim.angleAtJoint()
-//            encoderSim.setDistance(armJointSim.angleAtJoint())
-//
-//
-//            RoboRioSim.setVInVoltage(
-//                BatterySim.calculateDefaultBatteryLoadedVoltage(
-//                    armJointSim.getCurrentDrawAmps()
-//                )
-//            )
-//            SimHooks.stepTiming(dt)
-//        }
-//
-//    }
+    @Test
+    fun ballsOnWalls(){
+
+        var extensionSim = ExtensionSim(0.0.meters)
+        Arm.zeroed = true
+        Arm.extensionControlEnabled = true
+        Arm.setExtension(0.2.meters)
+        var i = 0
+        var dt = 0.002
+        var sum = 0.0
+        SimHooks.pauseTiming()
+        Arm.periodic()
+        while(i++ < 10000) {
+            if(sum >= 0.02) {
+                Arm.periodic()
+                sum = 0.0
+            }else {
+                sum += dt
+            }
+            extensionSim.setInput(Arm.extensionMotor.appliedOutput)
+
+
+            extensionSim.update(dt, Math.toRadians(90.0), Arm.extensionMotor.simulationEncoder)
+
+
+            var encoderDistance = extensionSim.getCurrentArmPosition()
+            Arm.extensionMotor.simulationEncoder.setPosition(encoderDistance)
+
+            RoboRioSim.setVInVoltage(
+                BatterySim.calculateDefaultBatteryLoadedVoltage(
+                    extensionSim.getCurrentDrawAmps()
+                )
+            )
+            SimHooks.stepTiming(dt)
+        }
+
+    }
 }
