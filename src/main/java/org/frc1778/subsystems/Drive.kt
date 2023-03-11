@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.networktables.GenericEntry
+import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.Constants
 import org.frc1778.commands.PlaceGameObjectDriveCommand
@@ -54,9 +55,12 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
 
     val driveLogger = DataLogger("Drive")
     init {
-        driveLogger.add("yaw", {-> pigeon.yaw})
-        driveLogger.add("pitch", {-> pigeon.pitch})
-        driveLogger.add("roll", {-> pigeon.roll})
+        driveLogger.add("yaw") { -> pigeon.yaw }
+        driveLogger.add("pitch") { -> pigeon.pitch }
+        driveLogger.add("roll") { -> pigeon.roll }
+        driveLogger.add("X") { robotPosition.translation.x }
+        driveLogger.add("Y") { robotPosition.translation.y }
+        driveLogger.add("Rotation") {robotPosition.rotation.degrees}
     }
 
     public override val modules: List<FalconNeoSwerveModule> = listOf(
@@ -72,6 +76,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
         for (module in modules.reversed()) {
             Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
         }
+        Constants.DriveConstants.driveTab.add("Drive", this).withSize(3,4)
         pigeon.configMountPose(Pigeon2.AxisDirection.PositiveX, Pigeon2.AxisDirection.PositiveZ, 500)
         modules.forEach {
             it.setAngle(0.0)
@@ -108,22 +113,22 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     //TODO: Tune Holonomic Drive Controller
     override val controller: HolonomicDriveController = HolonomicDriveController(
         PIDController(
+            1.2,
             0.0,
-            0.0,
-            0.0
+            0.12
         ),
         PIDController(
+            1.2,
             0.0,
-            0.0,
-            0.0
+            0.12
         ),
         ProfiledPIDController(
+            0.2,
             0.0,
-            0.0,
-            0.0,
+            0.02,
             TrapezoidProfile.Constraints(
-                Constants.DriveConstants.maxSpeed.value,
-                Constants.DriveConstants.maxAngularSpeed.value
+                Constants.DriveConstants.maxAngularSpeed.value * 17.5,
+                Constants.DriveConstants.maxAngularAcceleration.value * 10.0
             )
 
         )
@@ -179,7 +184,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
 
 
     //TODO: Possibly use Pathfinding to generate a trajectory to our goal
-    fun trajectoryToGoal(): Trajectory? {
+    fun trajectoryToGoal(): PathPlannerTrajectory? {
         val currChassisSpeeds = kinematics.toChassisSpeeds(*swerveModuleStates().toTypedArray())
         if(scoringPose == null) return null
         return PathPlanner.generatePath(
@@ -217,6 +222,18 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
     }
 
 
+//    override fun periodic() {
+//        super.periodic() //DONT REMOVE
+//        driveLogger.log()
+//    }
+
+    override fun initSendable(builder: SendableBuilder?) {
+        super.initSendable(builder)
+        builder!!.addDoubleProperty("Max Angular Speed", {Constants.DriveConstants.maxAngularSpeed.value * 17.0
+        }, {})
+        builder.addDoubleProperty("Max Angular Accel", {Constants.DriveConstants.maxAngularAcceleration.value * 10.0
+        }, {})
+    }
 
 
 }

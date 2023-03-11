@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import org.frc1778.lib.SwerveModuleConstants
 import org.ghrobotics.lib.mathematics.units.*
+import org.ghrobotics.lib.mathematics.units.derived.Acceleration
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.derived.degrees
@@ -25,23 +26,25 @@ import kotlin.math.hypot
 object Constants {
 
     object DriveConstants {
+
         val driveTab: ShuffleboardTab = Shuffleboard.getTab("Drive")!!
         const val wheelBase: Double = 23.5
         const val trackWidth: Double = 23.5
         private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
         val maxSpeed: SIUnit<Frac<Meter, Second>> = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
         val maxAngularSpeed: SIUnit<Velocity<Radian>> =
-            SIUnit(maxSpeed.value / hypot(trackWidth / 2.0, wheelBase / 2.0))
+            SIUnit((maxSpeed.value / hypot(trackWidth / 2.0, wheelBase / 2.0)))
+        val maxAngularAcceleration: SIUnit<Acceleration<Radian>> = SIUnit(maxAngularSpeed.value * (3.0))
 
         const val pigeonCanID: Int = 21
         private const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
         private const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
 
         private val swerveDriveWheelOffsets = mapOf(
-            "Top Left" to 328.1,
-            "Top Right" to 18.3,
-            "Bottom Right" to 44.7,
-            "Bottom Left" to 277.7,
+            "Top Left" to 327.8,
+            "Top Right" to 17.8,
+            "Bottom Right" to 45.5,
+            "Bottom Left" to 272.5,
         )
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
@@ -197,8 +200,7 @@ object Constants {
         val ANGLE_MOTOR_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(2048.nativeUnits) //TODO
         val ZEROED_EXTENSION_DISTANCE_READING: SIUnit<Meter> = 7.9.inches
         val AORTransform: Transform3d = Transform3d(
-            Translation3d((-10.5).inches.value, 0.0, 49.5.inches.value),
-            Rotation3d()
+            Translation3d((-10.5).inches.value, 0.0, 49.5.inches.value), Rotation3d()
         )
         val ARM_EXTENSION_OFFSET = 36.5.inches
         val AllianceXOffset = 18.inches.value
@@ -209,8 +211,7 @@ object Constants {
         val APRIL_TAG_FIELD_LAYOUT =
             AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile)!!
         val CAMERA_ROBOT_TRANSFORM = Transform3d(
-            Translation3d((-10).inches.value, 9.0.inches.value, 42.inches.value),
-            Rotation3d(0.0, 0.0, 0.0)
+            Translation3d((-10).inches.value, 9.0.inches.value, 42.inches.value), Rotation3d(0.0, 0.0, 0.0)
         )
     }
 
@@ -224,20 +225,17 @@ object Constants {
 enum class Level(val transform: Transform3d) {
     Top(
         Transform3d(
-            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value),
-            Rotation3d()
+            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
         )
     ),
     Middle(
         Transform3d(
-            Translation3d((22.7.inches).value,0.0 , 34.0.inches.value),
-            Rotation3d()
+            Translation3d((22.7.inches).value, 0.0, 34.0.inches.value), Rotation3d()
         )
     ),
     Bottom(
         Transform3d(
-            Translation3d(),
-            Rotation3d()
+            Translation3d(), Rotation3d()
         )
     );
 
@@ -250,44 +248,47 @@ enum class GamePiece(val heightOffset: Double) {
 
 //18" away from edge
 enum class Station(private val redPose: Pose3d, private val bluePose: Pose3d) {
-    Left(Pose3d(
-        Translation3d(),
-        Rotation3d()
-    ), Pose3d(
-        Translation3d(),
-        Rotation3d()
-    )), Center(Pose3d(
-        Translation3d(),
-        Rotation3d()
-    ), Pose3d(
-        Translation3d(),
-        Rotation3d()
-    )), Right(Pose3d(
-        Translation3d(),
-        Rotation3d()
-    ), Pose3d(
-        Translation3d(),
-        Rotation3d()
-    ));
+    Left(
+        Pose3d(
+            Translation3d(), Rotation3d()
+        ), Pose3d(
+            Translation3d(), Rotation3d()
+        )
+    ),
+    Center(
+        Pose3d(
+            Translation3d(), Rotation3d()
+        ), Pose3d(
+            Translation3d(), Rotation3d()
+        )
+    ),
+    Right(
+        Pose3d(
+            Translation3d(), Rotation3d()
+        ), Pose3d(
+            Translation3d(), Rotation3d()
+        )
+    );
 
     fun ours(): Pose3d {
-        return if (Robot.alliance == DriverStation.Alliance.Red)
-            redPose
-        else
-            bluePose
+        return if (Robot.alliance == DriverStation.Alliance.Red) redPose
+        else bluePose
     }
 }
 
 enum class Side(val transform: Transform3d) {
-    Left(Transform3d(
-        Translation3d(
-            0.0, 22.0.inches.value, 0.0
-        ),
-        Rotation3d()
-    )), Right(Transform3d(
-        Translation3d(
-            0.0, -22.inches.value, 0.0
-        ),
-        Rotation3d()
-    ))
+    Left(
+        Transform3d(
+            Translation3d(
+                0.0, 22.0.inches.value, 0.0
+            ), Rotation3d()
+        )
+    ),
+    Right(
+        Transform3d(
+            Translation3d(
+                0.0, -22.inches.value, 0.0
+            ), Rotation3d()
+        )
+    )
 }

@@ -208,7 +208,7 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
             this,
             forwardInput * outputLimiter,
             strafeInput * outputLimiter,
-            rotationInput * outputLimiter,
+            rotationInput * outputLimiter * .75,
             fieldRelative
         )
         val states = kinematics.toSwerveModuleStates(speeds)
@@ -222,13 +222,13 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
         poseEstimator.resetPosition(gyro(), positions, pose)
     }
 
-    fun followTrajectory(trajectory: Trajectory, mirrored: Boolean = false) =
-        SwerveTrajectoryTrackerCommand(this, Source(if (mirrored) trajectory.mirror() else trajectory))
+    fun followTrajectory(trajectory: PathPlannerTrajectory, mirrored: Boolean = false) =
+        SwerveTrajectoryTrackerCommand(this, Source((if (mirrored) trajectory.mirror() else trajectory) as PathPlannerTrajectory))
 
-    fun followTrajectory(trajectory: Trajectory, mirrored: BooleanSource) =
-        SwerveTrajectoryTrackerCommand(this, mirrored.map(trajectory.mirror(), trajectory))
+//    fun followTrajectory(trajectory: PathPlannerTrajectory, mirrored: BooleanSource) =
+//        SwerveTrajectoryTrackerCommand(this, {mirrored.map(trajectory.mirror(), trajectory) as PathPlannerTrajectory})
 
-    fun followTrajectory(trajectory: Source<Trajectory>) = SwerveTrajectoryTrackerCommand(this, trajectory)
+    fun followTrajectory(trajectory: Source<PathPlannerTrajectory>) = SwerveTrajectoryTrackerCommand(this, trajectory)
 
     fun followTrajectoryWithCommands(trajectory: Source<PathPlannerTrajectory>, eventMap: HashMap<String, Command>) =
         SwerveTrajectoryTrackerWithMarkersCommand(this, trajectory, eventMap)

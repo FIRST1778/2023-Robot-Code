@@ -28,7 +28,7 @@ class SwerveTrajectoryTrackerWithMarkersCommand(
 
     private val timer = Timer()
     private var elapsed = 0.0
-    private lateinit var trajectory: Trajectory
+    private lateinit var trajectory: PathPlannerTrajectory
     private lateinit var trajectoryFollowingCommand: SwerveTrajectoryTrackerCommand
 
     init {

@@ -43,7 +43,7 @@ object Robot : FalconTimedRobot() {
 
     lateinit var zeroExtensionCommand: ZeroExtensionCommand
 
-    private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Trajectory Test", 4.00, 1.00)
+    private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Tuning Path", 1.5, 1.5)
     private lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
     private var autonomousCommand: Command? = null
 
@@ -52,8 +52,8 @@ object Robot : FalconTimedRobot() {
 
 
     val driveInversion = when(alliance) {
-        Alliance.Red-> -1
-        else -> 1
+        Alliance.Red-> 1
+        else -> -1
     }
 
 
@@ -112,8 +112,8 @@ object Robot : FalconTimedRobot() {
         RobotContainer
 
 
-        Drive.pigeon.yaw = 0.0
-//        field.getObject("traj").setTrajectory(trajectory)
+//        Drive.pigeon.yaw = 0.0
+        field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
 
         Arm.extensionControlEnabled = false
@@ -140,19 +140,19 @@ object Robot : FalconTimedRobot() {
     override fun autonomousInit() {
         Arm.resetIsZeroed() // DO NOT REMOVE
 //        Drive.resetPosition(Pose2d(1.85, 2.80, Rotation2d.fromDegrees(0.0)), Drive.modules.positions.toTypedArray())
-        Intake.retract()
-        Manipulator.open()
+//        Intake.retract()
+//        Manipulator.open()
 //        RobotContainer.getAutonomousCommand().schedule()
 
-        IntakeSpitCommand().withTimeout(7.5).schedule()
+//        IntakeSpitCommand().withTimeout(7.5).schedule()
 
         //zeroExtensionCommand = ZeroExtensionCommand()
         //zeroExtensionCommand.schedule()
 
-        //trajectoryCommand = Drive.followTrajectory(trajectory)
-        //Drive.setPose(trajectory.initialHolonomicPose)
-        //autonomousCommand = trajectoryCommand
-//        trajectoryCommand.schedule()
+        trajectoryCommand = Drive.followTrajectory(trajectory)
+        Drive.setPose(trajectory.initialHolonomicPose)
+        autonomousCommand = trajectoryCommand
+        trajectoryCommand.schedule()
 
     }
 
@@ -164,43 +164,43 @@ object Robot : FalconTimedRobot() {
     override fun teleopInit() {
         Arm.setDesiredAngle(Arm.getCurrentAngle())
 //        Arm.resetIsZeroed()
-        Drive.resetPosition(
-            when (alliance) {
-                Alliance.Blue -> {
-                    when (DriverStation.getLocation()) {
-                        1 -> Pose2d(
-                            Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
-                        )
-
-                        2 -> Pose2d(
-                            Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
-                        )
-
-                        else -> Pose2d(
-                            Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
-                        )
-
-
-                    }
-                }
-
-                else -> {
-                    when (DriverStation.getLocation()) {
-                        1 -> Pose2d(
-                        Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
-                    )
-
-                        2 -> Pose2d(
-                        Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
-                    )
-
-                        else -> Pose2d(
-                        Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
-                    )
-                    }
-                }
-            }, Drive.modules.positions.toTypedArray()
-        )
+//        Drive.resetPosition(
+//            when (alliance) {
+//                Alliance.Blue -> {
+//                    when (DriverStation.getLocation()) {
+//                        1 -> Pose2d(
+//                            Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
+//                        )
+//
+//                        2 -> Pose2d(
+//                            Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
+//                        )
+//
+//                        else -> Pose2d(
+//                            Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
+//                        )
+//
+//
+//                    }
+//                }
+//
+//                else -> {
+//                    when (DriverStation.getLocation()) {
+//                        1 -> Pose2d(
+//                        Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
+//                    )
+//
+//                        2 -> Pose2d(
+//                        Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
+//                    )
+//
+//                        else -> Pose2d(
+//                        Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
+//                    )
+//                    }
+//                }
+//            }, Drive.modules.positions.toTypedArray()
+//        )
 //        ArmAngleCommand(110.0.degrees).schedule()
 //        ZeroExtensionCommand().schedule()
 //

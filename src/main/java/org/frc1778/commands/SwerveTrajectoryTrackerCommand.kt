@@ -8,6 +8,7 @@
 
 package org.frc1778.commands
 
+import com.pathplanner.lib.PathPlannerTrajectory
 import org.frc1778.lib.FalconSwerveDrivetrain
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.trajectory.Trajectory
@@ -22,14 +23,14 @@ import org.ghrobotics.lib.utils.Source
 
 class SwerveTrajectoryTrackerCommand(
     private val drivetrain: FalconSwerveDrivetrain<*>,
-    private val trajectorySource: Source<Trajectory>
+    private val trajectorySource: Source<PathPlannerTrajectory>
 ) : FalconCommand(drivetrain) {
 
     private var prevStates = Array(4) { SwerveModuleState() }
 
     private val timer = Timer()
     private var elapsed = 0.0
-    private lateinit var trajectory: Trajectory
+    private lateinit var trajectory: PathPlannerTrajectory
 
     override fun initialize() {
         trajectory = trajectorySource()
@@ -42,12 +43,12 @@ class SwerveTrajectoryTrackerCommand(
 
     override fun execute() {
         elapsed = timer.get()
-        val currentTrajectoryState = trajectory.sample(elapsed)
+        val currentTrajectoryState = trajectory.sample(elapsed) as PathPlannerTrajectory.PathPlannerState
 
         val chassisSpeeds = drivetrain.controller.calculate(
             drivetrain.robotPosition,
             currentTrajectoryState,
-            currentTrajectoryState.poseMeters.rotation
+            currentTrajectoryState.holonomicRotation
         )
 
         val wheelStates = drivetrain.kinematics.toSwerveModuleStates(chassisSpeeds)
