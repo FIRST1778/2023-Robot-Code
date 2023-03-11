@@ -41,8 +41,6 @@ object Robot : FalconTimedRobot() {
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
 
-    lateinit var zeroExtensionCommand: ZeroExtensionCommand
-
     private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Tuning Path", 1.5, 1.5)
     private lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
     private var autonomousCommand: Command? = null
@@ -134,7 +132,7 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun disabledPeriodic() {
-        Arm.setDesiredAngle(Arm.getCurrentAngle())
+        Arm.resetDesiredAngle()
     }
 
     override fun autonomousInit() {
@@ -145,9 +143,6 @@ object Robot : FalconTimedRobot() {
 //        RobotContainer.getAutonomousCommand().schedule()
 
 //        IntakeSpitCommand().withTimeout(7.5).schedule()
-
-        //zeroExtensionCommand = ZeroExtensionCommand()
-        //zeroExtensionCommand.schedule()
 
         trajectoryCommand = Drive.followTrajectory(trajectory)
         Drive.setPose(trajectory.initialHolonomicPose)
@@ -162,7 +157,7 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun teleopInit() {
-        Arm.setDesiredAngle(Arm.getCurrentAngle())
+        Arm.resetDesiredAngle()
 //        Arm.resetIsZeroed()
 //        Drive.resetPosition(
 //            when (alliance) {
