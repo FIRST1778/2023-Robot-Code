@@ -64,8 +64,8 @@ object Arm : FalconSubsystem(), Sendable {
     val extensionEncoder = ExtensionEncoder(extensionMotor.encoder)
 
     private const val angle_kS: Double = 1.0
-    private const val angle_kA: Double = 0.03516
-    private const val angle_kV: Double = 1.615
+    private const val angle_kA: Double = 0.02813076923076923
+    private const val angle_kV: Double = 1.9842694203664872
     private val anglePlant = LinearSystemId.identifyPositionSystem(angle_kV, angle_kA)
 
     private const val extension_kA: Double = 0.04607411898461538
@@ -258,6 +258,11 @@ object Arm : FalconSubsystem(), Sendable {
             "Limit Switch",
             limitSwitch
         ).withSize(2, 2)
+        Constants.ArmConstants.armShuffleboardTab.add(
+            "Manipulator Line Break",
+            Manipulator.lineBreak
+        ).withSize(2,2)
+
     }
 
     override fun periodic() {
