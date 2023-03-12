@@ -1,24 +1,18 @@
 package org.frc1778.commands
 
-import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Pose3d
-import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Transform2d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.CommandScheduler
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup
 import org.frc1778.Constants
 import org.frc1778.GamePiece
 import org.frc1778.Level
 import org.frc1778.Robot
 import org.frc1778.Side
 import org.frc1778.Station
-import org.frc1778.commands.SwerveTrajectoryTrackerCommand
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.commands.FalconCommand
@@ -61,7 +55,7 @@ class PlaceGameObjectCommand(
         val armExtension = hypot(armTranslation2d.x, armTranslation2d.y).meters - Constants.ArmConstants.ARM_EXTENSION_OFFSET
         command = sequential {
             +ArmAngleCommand(armRotation)
-            +ExtensionCommand(armExtension)
+            +ArmExtensionCommand(armExtension)
         }
         command.schedule()
     }

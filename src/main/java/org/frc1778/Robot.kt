@@ -23,6 +23,7 @@ import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
 import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import kotlin.properties.Delegates
 
 /**
@@ -114,9 +115,8 @@ object Robot : FalconTimedRobot() {
         field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
 
-        Arm.extensionControlEnabled = false
 //        compressor.enableAnalog(95.0, 115.0)
-
+        Arm.initialize()
     }
 
 
@@ -129,9 +129,10 @@ object Robot : FalconTimedRobot() {
 
     override fun disabledInit() {
 //        compressor.disable()
-    }
+        }
 
     override fun disabledPeriodic() {
+        Arm.resetDesiredExtension()
         Arm.resetDesiredAngle()
     }
 
@@ -158,6 +159,7 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
         Arm.resetDesiredAngle()
+        Arm.resetDesiredExtension()
 //        Arm.resetIsZeroed()
 //        Drive.resetPosition(
 //            when (alliance) {

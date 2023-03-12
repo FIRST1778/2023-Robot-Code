@@ -10,20 +10,18 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
 
-class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = 1.25, maxVelocity: Double = 1.25) : FalconCommand(Arm, Manipulator) {
+class ArmAngleCommand(endPosition : SIUnit<Radian>) : FalconCommand(Arm, Manipulator) {
 
 
     companion object {
-        const val START_VEL = 0.0   // rad/sec
         const val END_VEL = 0.0     // rad/sec
     }
 
     var profile: TrapezoidProfile? = null
     var timer = Timer()
-
-    var maxAccel = maxAcceleration
+    val maxAcceleration : Double = 1.25
+    val maxVelocity: Double = 1.5
     var endPos = endPosition
-    var maxVel = maxVelocity
     override fun initialize() {
 //        Intake.extend()
 //        Manipulator.close()
@@ -33,7 +31,7 @@ class ArmAngleCommand(endPosition : SIUnit<Radian>, maxAcceleration : Double = 1
 
         var startPosition: SIUnit<Radian> = Arm.getCurrentAngle()
 
-        val constraints = TrapezoidProfile.Constraints(maxVel, maxAccel)
+        val constraints = TrapezoidProfile.Constraints(maxVelocity, maxAcceleration)
         val startState = TrapezoidProfile.State(startPosition.value, Arm.getDesiredAngleVelocity())
         val endState = TrapezoidProfile.State(endPos.value, END_VEL)
         profile = TrapezoidProfile(constraints, endState, startState)

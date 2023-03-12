@@ -29,9 +29,9 @@ class ManipulatorToHopperCommand() : FalconCommand(Arm, Manipulator, Intake) {
         }
 
         val command = sequential {
-            +ExtensionCommand(0.0.meters)
+            +ArmExtensionCommand(0.0.meters)
             +ArmAngleCommand(desiredAngle)
-            +ExtensionCommand(desiredExtension)
+            +ArmExtensionCommand(desiredExtension)
         }.schedule()
     }
 

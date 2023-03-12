@@ -1,19 +1,14 @@
 package org.frc1778
 
 import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj2.command.InstantCommand
+import edu.wpi.first.wpilibj2.command.ConditionalCommand
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.frc1778.commands.*
 import org.frc1778.subsystems.Arm
-import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Intake
-import org.frc1778.subsystems.Manipulator
 import org.frc1778.subsystems.DotStar
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
-import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.meters
-import org.ghrobotics.lib.wrappers.FalconSolenoid
-import org.ghrobotics.lib.wrappers.hid.HIDControlListener
 import org.ghrobotics.lib.wrappers.hid.mapControls
 import kotlin.math.abs
 import kotlin.math.withSign
@@ -76,9 +71,7 @@ object Controls {
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
         button(1) { changeOn(ZeroExtensionCommand()) } // reset extension
-        button(2) {
-//            changeOn(Robot.placeGameObjectCommand)
-        }
+        button(2) {}
         button(3) // other
         // level of placement
         button(4) {
@@ -88,17 +81,22 @@ object Controls {
             }
         }// bottom
         button(5) {
-            changeOn {
+            changeOn (
 //                Robot.scoringLevel = Level.Middle
-                ArmAngleCommand(60.0.degrees).schedule()
-            }
+                sequential {
+                    +ConditionalCommand(ArmExtensionCommand(0.5.meters), WaitCommand(0.0), {Arm.getCurrentExtension() > 0.52.meters})
+                    +ArmAngleCommand(85.0.degrees)
+                    +ArmExtensionCommand(0.5.meters)
+                }
+            )
         }// middle
         button(6) {
-            changeOn {
+            changeOn (sequential {
 //                Robot.scoringLevel = Level.Top
-                ArmAngleCommand(90.0.degrees).schedule()
-
-            }
+                +ArmExtensionCommand(0.0.meters)
+                +ArmAngleCommand(100.0.degrees)
+                +ArmExtensionCommand(0.9.meters)
+            })
         }// top
         // manipulator open/close toggle
         button(7) {

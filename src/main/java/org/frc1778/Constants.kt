@@ -41,10 +41,10 @@ object Constants {
         private const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
 
         private val swerveDriveWheelOffsets = mapOf(
-            "Top Left" to 327.8,
-            "Top Right" to 17.8,
-            "Bottom Right" to 45.5,
-            "Bottom Left" to 272.5,
+            "Top Left" to 326.4,
+            "Top Right" to 18.4,
+            "Bottom Right" to 45.6,
+            "Bottom Left" to 273.0,
         )
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
@@ -192,7 +192,7 @@ object Constants {
         const val ANGLE_ENCODER_ID: Int = 23
         val ANGLE_ENCODER_UNIT_MODEL: NativeUnitModel<Radian> = NativeUnitRotationModel(4096.nativeUnits) //TODO
         val EXTENSION_MOTOR_UNIT_MODEL: NativeUnitLengthModel =
-            NativeUnitLengthModel((42 / 5).nativeUnits, (1.128 * 2).inches) //TODO
+            NativeUnitLengthModel((42 / 4).nativeUnits, (1.128 * 2).inches) //TODO
         const val ANGLE_MOTOR_OTHER_ID: Int = 12
         const val EXTENSION_MOTOR_ID: Int = 13
         const val ANGLE_MOTOR_MAIN_ID: Int = 11
