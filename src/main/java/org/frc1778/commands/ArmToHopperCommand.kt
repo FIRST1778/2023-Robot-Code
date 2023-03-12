@@ -18,9 +18,9 @@ class ArmToHopperCommand(): FalconCommand(Arm, Intake) {
     override fun initialize() {
         command = sequential {
             + InstantCommand({Intake.extend()})
-            + ExtensionCommand(0.0.meters)
+            + ArmExtensionCommand(0.0.meters)
             + ArmAngleCommand(12.0.degrees)
-            + ExtensionCommand(7.0.inches)
+            + ArmExtensionCommand(7.0.inches)
         }
         command.schedule()
     }

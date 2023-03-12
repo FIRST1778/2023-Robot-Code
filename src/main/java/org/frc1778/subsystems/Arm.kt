@@ -14,6 +14,7 @@ import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import org.frc1778.Constants
 import org.frc1778.lib.DataLogger
+import org.frc1778.lib.ExtensionEncoder
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
@@ -30,6 +31,8 @@ import kotlin.math.sin
 
 object Arm : FalconSubsystem(), Sendable {
     var limitSwitch = DigitalInput(0)
+
+    var desiredPosition = 0
 
     val angleMotorMain = falconMAX(
         Constants.ArmConstants.ANGLE_MOTOR_MAIN_ID,
@@ -49,9 +52,9 @@ object Arm : FalconSubsystem(), Sendable {
     }
 
     val armEncoder = ArmJointAbsoluteEncoder().apply {
-        resetPositionRaw((0.705 + .25).mod(360.0).nativeUnits)
         inverted = true
     }
+
 
     val extensionMotor = falconMAX(
         Constants.ArmConstants.EXTENSION_MOTOR_ID,
@@ -61,6 +64,7 @@ object Arm : FalconSubsystem(), Sendable {
         brakeMode = true
         smartCurrentLimit = 40.amps
     }
+    val extensionEncoder = ExtensionEncoder(extensionMotor.encoder)
 
     private const val angle_kS: Double = 1.0
     private const val angle_kA: Double = 0.03516
@@ -96,7 +100,7 @@ object Arm : FalconSubsystem(), Sendable {
         Nat.N2(), Nat.N1(), extensionPlant, VecBuilder.fill(0.5, 0.5), VecBuilder.fill(0.01), 0.02
     )
     private val extensionController = LinearQuadraticRegulator(
-        extensionPlant, VecBuilder.fill(2.0, 16.0), VecBuilder.fill(24.0), 0.020
+        extensionPlant, VecBuilder.fill(0.1, .5), VecBuilder.fill(2.0), 0.020
     )
     private val extensionLoop = LinearSystemLoop(
         extensionPlant, extensionController, extensionObserver, 12.0, 0.020
@@ -111,6 +115,9 @@ object Arm : FalconSubsystem(), Sendable {
         jointLogger.add("voltage", {-> angleMotorMain.voltageOutput.value} )
         jointLogger.add("current", {-> angleMotorMain.drawnCurrent.value})
 
+    }
+    fun initialize(){
+        armEncoder.resetPositionRaw((0.705 + .25).mod(360.0).nativeUnits)
     }
 
     fun angleControl() {
@@ -127,11 +134,16 @@ object Arm : FalconSubsystem(), Sendable {
 
             angleMotorMain.setVoltage(nextVoltage.volts)
         } else {
+            resetDesiredAngle()
             angleMotorMain.setVoltage(0.0.volts)
         }
     }
     fun getDesiredAngleVelocity(): Double{
         return desiredAngleVelocity
+
+    }
+    fun getDesiredExtensionVelocity(): Double {
+        return desiredExtensionVelocity
     }
     fun setDesiredAngleVelocity(angle: Double) {
         desiredAngleVelocity = angle
@@ -162,22 +174,31 @@ object Arm : FalconSubsystem(), Sendable {
 
             extensionMotor.setVoltage(nextVoltage.volts)
         } else {
+            resetDesiredExtension()
             extensionMotor.setVoltage(0.0.volts)
         }
     }
 
 
 
-    fun setExtensionVelocity(velocity: Double) {
+    fun setDesiredExtensionVelocity(velocity: Double) {
         desiredExtensionVelocity = velocity
     }
 
-    fun setExtension(position: SIUnit<Meter>) {
-        desiredExtension = position
+    fun setDesiredExtension(position: SIUnit<Meter>) {
+        desiredExtension = if(position > 1.0.meters){
+            1.0.meters
+        }else{
+            position
+        }
     }
 
     fun getCurrentExtension(): SIUnit<Meter> {
-        return extensionMotor.encoder.position
+        return extensionEncoder.position
+    }
+    fun resetDesiredExtension(){
+        desiredExtension = getCurrentExtension()
+        desiredExtensionVelocity = 0.0
     }
 
     fun resetDesiredAngle() {
@@ -197,11 +218,11 @@ object Arm : FalconSubsystem(), Sendable {
     }
 
     fun doExtensionZeroingMovement() {
-        extensionMotor.setVoltage((-2.0).volts)
+        extensionMotor.setVoltage((-1.5).volts)
     }
 
     fun zeroExtension() {
-        extensionMotor.encoder.resetPosition(0.0.meters)
+        extensionEncoder.resetPosition(0.0.meters)
         zeroed = true
         desiredExtension = 0.0.meters
         extensionMotor.setVoltage(0.0.volts)
@@ -218,7 +239,10 @@ object Arm : FalconSubsystem(), Sendable {
             "Angle Encoder",
             armEncoder
         ).withSize(2, 2)
-
+        Constants.ArmConstants.armShuffleboardTab.add(
+            "Extension Encoder",
+            extensionEncoder
+        )
         Constants.ArmConstants.armShuffleboardTab.add(
             "Limit Switch",
             limitSwitch
@@ -229,6 +253,9 @@ object Arm : FalconSubsystem(), Sendable {
         if (zeroed) {
             angleControl()
             extensionControl()
+        }else{
+            resetDesiredAngle()
+            resetDesiredExtension()
         }
 
         jointLogger.log()
@@ -248,6 +275,14 @@ object Arm : FalconSubsystem(), Sendable {
         builder.addDoubleProperty("Arm Rotation Voltage", {
             angleMotorMain.voltageOutput.value
         }, {})
+        builder.addDoubleProperty("Angle Current",
+            {angleMotorMain.drawnCurrent.value},
+            {})
+        builder.addDoubleProperty(
+            "Extension Motor Current",
+            { extensionMotor.drawnCurrent.value},
+            {}
+        )
 
     }
 
@@ -262,5 +297,7 @@ object Arm : FalconSubsystem(), Sendable {
 //
 //        RoboRioSim.setVInVoltage(BatterySim.calculateDefaultBatteryLoadedVoltage(armJointSim.getCurrentDrawAmps(), extensionSim.getCurrentDrawAmps()))
     }
+
+
 
 }
