@@ -20,7 +20,7 @@ class ArmJointSim(initialJointAngle: Double){
     private var velocity = 0.0
     private var accel = 0.0
     private var joint_theta = initialJointAngle
-    private var Ng = 80
+    var Ng = 100
     private var motor = DCMotor.getNEO(1)
     private var motor_count = 2
     private var arm_mass = 4.536 // kg
@@ -35,6 +35,16 @@ class ArmJointSim(initialJointAngle: Double){
     private var max_arm_inertia = 4.07 // m^2 kg
     private var min_arm_cog = 0.3 // m
     private var max_arm_cog = 0.6 // m
+
+    fun Ka(): Double {
+        return motor.rOhms * calculateInertia(min_arm_length) / (motor.KtNMPerAmp * motor_count * Ng)
+    }
+
+    fun Kv(): Double {
+        return Ng / motor.KvRadPerSecPerVolt
+
+    }
+
     fun setInput(voltage: Double){
         input = voltage
     }

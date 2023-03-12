@@ -19,6 +19,16 @@ class ExtensionSimTests {
     }
 
     @Test
+    fun alskdfjsd() {
+        var sim = ArmJointSim(0.0)
+        System.out.println("Ng: " + sim.Ng)
+        System.out.println("Ka: " + sim.Ka())
+        System.out.println("Kv: " + sim.Kv())
+        Assertions.assertEquals(0.03516346153846154, sim.Ka(), 0.001)
+        Assertions.assertEquals(1.6151030165773732, sim.Kv(), 0.001)
+    }
+
+    @Test
     fun balls() {
         var armJointSim = ArmJointSim(0.0)
         var encoderSim = DutyCycleEncoderSim(Arm.armEncoder.dutyCycleEncoder)
