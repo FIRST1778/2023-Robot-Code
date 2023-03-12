@@ -8,19 +8,19 @@ import edu.wpi.first.math.controller.LinearQuadraticRegulator
 import edu.wpi.first.math.estimator.KalmanFilter
 import edu.wpi.first.math.system.LinearSystemLoop
 import edu.wpi.first.math.system.plant.LinearSystemId
+import edu.wpi.first.util.datalog.DataLog
 import edu.wpi.first.wpilibj.DigitalInput
 import org.frc1778.Constants
+import org.frc1778.lib.DataLogger
 import org.frc1778.lib.GameObject
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.amps
-import org.ghrobotics.lib.mathematics.units.derived.Radian
-import org.ghrobotics.lib.mathematics.units.derived.degrees
-import org.ghrobotics.lib.mathematics.units.derived.radians
-import org.ghrobotics.lib.mathematics.units.derived.volts
+import org.ghrobotics.lib.mathematics.units.derived.*
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.rev.falconMAX
+import kotlin.math.cos
 import kotlin.math.sin
 
 
@@ -35,6 +35,7 @@ object Manipulator : FalconSubsystem() {
         brakeMode = true
     }
 
+    private var feedforwardVoltage = 0.0
     private const val angle_kS: Double = 5.427248300685566
     private const val angle_kA: Double = 0.9399999999999998
     private const val angle_kV: Double = 0.05952808261099462
@@ -47,6 +48,15 @@ object Manipulator : FalconSubsystem() {
 
     var objectControlEnabled = true
     val angleControlEnabled = true
+
+    var dataLogger = DataLogger("Manipulator")
+    init {
+        dataLogger.add("position", { getCurrentAngle().inDegrees()})
+        dataLogger.add("desired position", { desiredAngle.inDegrees()})
+        dataLogger.add("desired velocity", { desiredAngleVelocity})
+        dataLogger.add("ss voltage", { angleLoop.getU(0)})
+        dataLogger.add("ff voltage", { feedforwardVoltage})
+    }
 
     private var gameObj : GameObject = GameObject.CUBE
     fun setGameObject(gameObject: GameObject){
@@ -87,8 +97,9 @@ object Manipulator : FalconSubsystem() {
             angleLoop.predict(0.020) // 20 ms
 
             var nextVoltage = angleLoop.getU(0)
-            nextVoltage += angle_kS * sin(getCurrentAngle().value)
-            if (nextVoltage > 12) {
+            feedforwardVoltage = angle_kS * cos(getCurrentAngle().value)
+            nextVoltage += feedforwardVoltage
+                if (nextVoltage > 12) {
                 nextVoltage = 12.0
             }
 
@@ -114,6 +125,8 @@ object Manipulator : FalconSubsystem() {
         }else{
             resetDesiredAngle()
         }
+
+        dataLogger.log()
     }
     override fun lateInit(){
         Constants.ManipulatorConstants.manipulatorShuffleboardTab.add(

@@ -1,9 +1,7 @@
-package org.frc1778
+package org.frc1778.simulation
 
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.Timer
-import java.io.File
-import java.io.PrintWriter
 import org.frc1778.lib.DataLogger
 import java.lang.Math.abs
 

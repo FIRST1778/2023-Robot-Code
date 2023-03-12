@@ -68,8 +68,8 @@ object Arm : FalconSubsystem(), Sendable {
     private const val angle_kV: Double = 1.9842694203664872
     private val anglePlant = LinearSystemId.identifyPositionSystem(angle_kV, angle_kA)
 
-    private const val extension_kA: Double = 0.04607411898461538
-    private const val extension_kV: Double = 7.213374267914612
+    private const val extension_kA: Double = 0.057592648730769226
+    private const val extension_kV: Double = 5.770699414331689
     private const val extension_kS: Double = 0.4519871072390769
     private val extensionPlant = LinearSystemId.identifyPositionSystem(extension_kV, extension_kA)
     // This is set in the ArmTrapezoidCommand to what the profile wants, so we

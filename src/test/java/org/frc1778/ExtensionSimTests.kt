@@ -5,9 +5,12 @@ import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim
 import edu.wpi.first.wpilibj.simulation.RoboRioSim
 import edu.wpi.first.wpilibj.simulation.SimHooks
 import org.frc1778.commands.ArmAngleCommand
+import org.frc1778.simulation.ArmJointSim
+import org.frc1778.simulation.ExtensionSim
 import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.volts
+import org.ghrobotics.lib.mathematics.units.meters
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -26,6 +29,14 @@ class ExtensionSimTests {
         System.out.println("Kv: " + sim.Kv())
         Assertions.assertEquals(0.03516346153846154, sim.Ka(), 0.001)
         Assertions.assertEquals(1.6151030165773732, sim.Kv(), 0.001)
+    }
+
+    @Test
+    fun printExtensionCoefficients() {
+        var sim = ExtensionSim(0.meters)
+        System.out.println("Ng: " + sim.Ng)
+        System.out.println("Ka: " + sim.Ka())
+        System.out.println("Kv: " + sim.Kv())
     }
 
     @Test

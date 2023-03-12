@@ -1,14 +1,12 @@
-package org.frc1778
+package org.frc1778.simulation
 
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.DIOSim
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.ExtensionEncoder
-import org.frc1778.lib.SimulationRelativeEncoder
 import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.inMeters
 import org.ghrobotics.lib.mathematics.units.meters
 import kotlin.math.cos
 import kotlin.math.abs
@@ -20,7 +18,7 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
     private var linearAccel = 0.0
     private var velocityAtMotor = 0.0
     private var accelerationAtMotor = 0.0
-    private var Ng = 5.0
+    var Ng = 4.0
     private var motor = DCMotor.getNEO(1)
     private var arm_mass = 3.629 // kg
     private var input = 0.0
@@ -87,7 +85,7 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
     }
 
     fun calculateHardStopForce(): Double {
-        var k = 100/ 0.01 // 1000 N/ 1 cm
+        var k = 100/ 0.01
         if(linearArmPosition < -0.002) {
             return k * (0 - linearArmPosition)
         }else if(linearArmPosition > maxArmPosition.value) {
