@@ -29,7 +29,7 @@ class ArmRotateAndExtend(val armPosition : ArmPosition) : FalconCommand(Arm){
     private var extensionTimer = Timer()
     private var extensionTimerStarted = false
     private var angleTimerStarted = false
-    private var invalidNumber = true
+    private var invalidNumber = false
 
     override fun initialize() {
 
@@ -45,12 +45,12 @@ class ArmRotateAndExtend(val armPosition : ArmPosition) : FalconCommand(Arm){
         val angleConstraints = TrapezoidProfile.Constraints(ANGLE_MAX_VEL, ANGLE_MAX_ACCEL)
         val angleStartState = TrapezoidProfile.State(angleStartPosition.value, Arm.getDesiredAngleVelocity())
         val angleEndState = TrapezoidProfile.State(armPosition.desiredAngle.value, ANGLE_END_VEL)
-        val angleProfile = TrapezoidProfile(angleConstraints, angleEndState, angleStartState)
+        angleProfile = TrapezoidProfile(angleConstraints, angleEndState, angleStartState)
 
         val extensionConstraints = TrapezoidProfile.Constraints(EXTENSION_MAX_VEL, EXTENSION_MAX_ACCEL)
         val extensionStartState = TrapezoidProfile.State(extensionStartPosition.value, Arm.getDesiredExtensionVelocity())
         val extensionEndState = TrapezoidProfile.State(armPosition.desiredExtension.value, EXTENSION_END_VEL)
-        val extensionProfile = TrapezoidProfile(extensionConstraints, extensionEndState, extensionStartState)
+        extensionProfile = TrapezoidProfile(extensionConstraints, extensionEndState, extensionStartState)
     }
 
     override fun execute() {
@@ -68,7 +68,7 @@ class ArmRotateAndExtend(val armPosition : ArmPosition) : FalconCommand(Arm){
                 }
                 val extensionState = extensionProfile!!.calculate(extensionTimer.get())
                 Arm.setDesiredExtensionVelocity(extensionState.velocity)
-                Arm.setDesiredExtension(extensionState.position.meters)
+                Arm.desiredExtension = extensionState.position.meters
             }
         }else if(armPosition == ArmPosition.MIDDLE){ // Second Level
             if(Arm.getCurrentAngle() > armPosition.desiredAngle) {
@@ -78,7 +78,7 @@ class ArmRotateAndExtend(val armPosition : ArmPosition) : FalconCommand(Arm){
                 }
                 val extensionState = extensionProfile!!.calculate(extensionTimer.get())
                 Arm.setDesiredExtensionVelocity(extensionState.velocity)
-                Arm.setDesiredExtension(extensionState.position.meters)
+                Arm.desiredExtension = extensionState.position.meters
                 if (Arm.getCurrentExtension() < 0.75.meters) {
                     if (!angleTimerStarted) {
                         angleTimer.start()
@@ -101,7 +101,7 @@ class ArmRotateAndExtend(val armPosition : ArmPosition) : FalconCommand(Arm){
                     }
                     val extensionState = extensionProfile!!.calculate(extensionTimer.get())
                     Arm.setDesiredExtensionVelocity(extensionState.velocity)
-                    Arm.setDesiredExtension(extensionState.position.meters)
+                    Arm.desiredExtension = extensionState.position.meters
                 }
             }
         }else if(armPosition == ArmPosition.BOTTOM) {
@@ -111,7 +111,7 @@ class ArmRotateAndExtend(val armPosition : ArmPosition) : FalconCommand(Arm){
             }
             val extensionState = extensionProfile!!.calculate(extensionTimer.get())
             Arm.setDesiredExtensionVelocity(extensionState.velocity)
-            Arm.setDesiredExtension(extensionState.position.meters)
+            Arm.desiredExtension = extensionState.position.meters
             if (Arm.getCurrentExtension() < 0.5.meters) {
                 if (!angleTimerStarted) {
                     angleTimer.start()

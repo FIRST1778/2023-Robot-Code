@@ -39,7 +39,7 @@ class ArmExtensionCommand(endPosition : SIUnit<Meter>) : FalconCommand(Arm){
     override fun execute() {
         val state = profile!!.calculate(timer.get())
         Arm.setDesiredExtensionVelocity(state.velocity)
-        Arm.setDesiredExtension(state.position.meters)
+        Arm.desiredExtension = state.position.meters
     }
 
     override fun end(interrupted: Boolean) {

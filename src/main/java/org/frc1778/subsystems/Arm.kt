@@ -16,14 +16,11 @@ import org.frc1778.Constants
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.ExtensionEncoder
 import org.ghrobotics.lib.commands.FalconSubsystem
-import org.ghrobotics.lib.mathematics.units.Meter
-import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.amps
+import org.ghrobotics.lib.mathematics.units.*
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.inDegrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.derived.volts
-import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.rev.falconMAX
 import kotlin.math.cos
@@ -79,6 +76,13 @@ object Arm : FalconSubsystem(), Sendable {
     // initialize it to a dud value here to not immediately activate the arm.
     private var desiredAngle: Double = Math.toRadians(0.0)
     var desiredExtension: SIUnit<Meter> = 0.0.meters
+        set(position)  {
+            field = if(position > 1.0.meters){
+                1.0.meters
+            }else{
+                position
+            }
+        }
     private var desiredExtensionVelocity: Double = 0.0 // m/s
     private var desiredAngleVelocity: Double = 0.0 // rad/s
 
@@ -111,9 +115,14 @@ object Arm : FalconSubsystem(), Sendable {
     init {
         jointLogger.add("angle (deg)", { -> getCurrentAngle().inDegrees() })
         jointLogger.add("desired angle (deg)", { -> desiredAngle.radians.inDegrees() })
-        jointLogger.add("desired velocity", {-> desiredAngleVelocity.radians.inDegrees()})
-        jointLogger.add("voltage", {-> angleMotorMain.voltageOutput.value} )
-        jointLogger.add("current", {-> angleMotorMain.drawnCurrent.value})
+        jointLogger.add("desired angle velocity", {-> desiredAngleVelocity.radians.inDegrees()})
+        jointLogger.add("angle voltage", {-> angleMotorMain.voltageOutput.value} )
+        jointLogger.add("angle current", {-> angleMotorMain.drawnCurrent.value})
+        jointLogger.add("extension (m)", { -> getCurrentExtension().inMeters() })
+        jointLogger.add("desired extension (m)", { -> desiredExtension.inMeters() })
+        jointLogger.add("desired extension velocity", {-> desiredExtensionVelocity})
+        jointLogger.add("angle voltage", {-> extensionMotor.voltageOutput.value} )
+        jointLogger.add("angle current", {-> extensionMotor.drawnCurrent.value})
 
     }
     fun initialize(){
@@ -185,6 +194,7 @@ object Arm : FalconSubsystem(), Sendable {
         desiredExtensionVelocity = velocity
     }
 
+    /*
     fun setDesiredExtension(position: SIUnit<Meter>) {
         desiredExtension = if(position > 1.0.meters){
             1.0.meters
@@ -192,6 +202,7 @@ object Arm : FalconSubsystem(), Sendable {
             position
         }
     }
+    */
 
     fun getCurrentExtension(): SIUnit<Meter> {
         return extensionEncoder.position

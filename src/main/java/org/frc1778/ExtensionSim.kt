@@ -3,10 +3,12 @@ package org.frc1778
 import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.simulation.DIOSim
 import org.frc1778.lib.DataLogger
+import org.frc1778.lib.ExtensionEncoder
 import org.frc1778.lib.SimulationRelativeEncoder
 import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.inMeters
 import org.ghrobotics.lib.mathematics.units.meters
 import kotlin.math.cos
 import kotlin.math.abs
@@ -26,7 +28,7 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
     private var logger = DataLogger("extensionsim")
     private val pulleyRadius = 0.0137541 // m
     private val limitSwitchTriggerPosition = 0.0
-    val maxArmPosition = 0.381.meters
+    val maxArmPosition = 1.081.meters
 
     fun Ka(): Double {
         return arm_mass * pulleyRadius * motor.rOhms / (motor.KtNMPerAmp * Ng)
@@ -53,12 +55,12 @@ class ExtensionSim(initialArmPosition: SIUnit<Meter>) {
         input = voltage
     }
 
-    fun update(dt: Double, jointTheta: Double, encoder: SimulationRelativeEncoder, /*limitSwitch: DIOSim*/) {
+    fun update(dt: Double, jointTheta: Double, encoder: ExtensionEncoder, limitSwitch: DIOSim) {
         calculateAcceleration(jointTheta)
         capVelocity(dt, jointTheta)
         linearArmPosition += linearVelocity * dt
-//        limitSwitch.value = (linearArmPosition < limitSwitchTriggerPosition)
-        encoder.setPosition(encoder.getPosition() + linearVelocity * dt)
+        limitSwitch.value = (linearArmPosition < limitSwitchTriggerPosition)
+        encoder.resetPosition(encoder.position + (linearVelocity * dt).meters)
         logger.log()
     }
 
