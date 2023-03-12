@@ -154,8 +154,8 @@ object Arm : FalconSubsystem(), Sendable {
     fun getDesiredExtensionVelocity(): Double {
         return desiredExtensionVelocity
     }
-    fun setDesiredAngleVelocity(angle: Double) {
-        desiredAngleVelocity = angle
+    fun setDesiredAngleVelocity(velocity: Double) {
+        desiredAngleVelocity = velocity
     }
 
     fun setDesiredAngle(angle: SIUnit<Radian>) {
@@ -258,11 +258,6 @@ object Arm : FalconSubsystem(), Sendable {
             "Limit Switch",
             limitSwitch
         ).withSize(2, 2)
-        Constants.ArmConstants.armShuffleboardTab.add(
-            "Manipulator Line Break",
-            Manipulator.lineBreak
-        ).withSize(2,2)
-
     }
 
     override fun periodic() {

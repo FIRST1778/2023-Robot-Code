@@ -117,6 +117,7 @@ object Robot : FalconTimedRobot() {
 
 //        compressor.enableAnalog(95.0, 115.0)
         Arm.initialize()
+        Manipulator.initialize()
     }
 
 
@@ -134,6 +135,7 @@ object Robot : FalconTimedRobot() {
     override fun disabledPeriodic() {
         Arm.resetDesiredExtension()
         Arm.resetDesiredAngle()
+        Manipulator.resetDesiredAngle()
     }
 
     override fun autonomousInit() {
@@ -160,6 +162,7 @@ object Robot : FalconTimedRobot() {
     override fun teleopInit() {
         Arm.resetDesiredAngle()
         Arm.resetDesiredExtension()
+        Manipulator.resetDesiredAngle()
 //        Arm.resetIsZeroed()
 //        Drive.resetPosition(
 //            when (alliance) {

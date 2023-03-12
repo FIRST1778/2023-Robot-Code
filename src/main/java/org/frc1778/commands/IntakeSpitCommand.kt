@@ -6,12 +6,11 @@ import org.ghrobotics.lib.commands.FalconCommand
 
 class IntakeSpitCommand() : FalconCommand(Intake) {
     override fun initialize() {
-        Intake.retract()
         Intake.spit()
     }
 
     override fun cancel() {
-        super.cancel()
         Intake.stop()
+        super.cancel()
     }
 }

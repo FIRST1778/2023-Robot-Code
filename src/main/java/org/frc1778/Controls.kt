@@ -4,8 +4,10 @@ import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj2.command.ConditionalCommand
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.frc1778.commands.*
+import org.frc1778.lib.GameObject
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.DotStar
+import org.frc1778.subsystems.Manipulator
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.meters
@@ -112,14 +114,15 @@ object Controls {
 
         // switches
         button(11) {
-            changeOn {
-                DotStar.display(DotStar.Color.Yellow)
-                Robot.gamePiece = GamePiece.Cone
-            }
-            // cone
-            changeOff {
-                DotStar.display(DotStar.Color.Purple)
-                Robot.gamePiece = GamePiece.Cube
+            whileOn {
+//                DotStar.display(DotStar.Color.Yellow)
+//                Robot.gamePiece = GamePiece.Cone
+                Manipulator.setGameObject(GameObject.CONE)
+            } // cone
+            whileOff {
+//                DotStar.display(DotStar.Color.Purple)
+//                Robot.gamePiece = GamePiece.Cube
+                Manipulator.setGameObject(GameObject.CUBE)
             }
 
             // cube

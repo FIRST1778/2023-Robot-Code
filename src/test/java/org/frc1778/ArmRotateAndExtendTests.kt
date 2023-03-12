@@ -1,9 +1,8 @@
 package org.frc1778
 
-import ArmPosition
+import org.frc1778.lib.ArmPosition
 import edu.wpi.first.wpilibj.simulation.*
 import org.frc1778.Constants.ArmConstants.DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL
-import org.frc1778.commands.ArmAngleCommand
 import org.frc1778.commands.ArmRotateAndExtend
 import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.mathematics.units.Meter
@@ -70,17 +69,17 @@ class ArmRotateAndExtendTests {
 
     @Test
     fun testGoToMiddleFromTop() {
-        runCommand(startingAngle=110.degrees, startingExtension=1.meters, desiredPosition=ArmPosition.MIDDLE)
+        runCommand(startingAngle=110.degrees, startingExtension=1.meters, desiredPosition= ArmPosition.MIDDLE)
     }
 
     @Test
     fun testGoToMiddleFromBottom() {
-        runCommand(startingAngle=16.degrees, startingExtension=0.1.meters, desiredPosition=ArmPosition.MIDDLE)
+        runCommand(startingAngle=16.degrees, startingExtension=0.1.meters, desiredPosition= ArmPosition.MIDDLE)
     }
 
     @Test
     fun testGoToBottomFromTop() {
-        runCommand(startingAngle=110.degrees, startingExtension=1.meters, desiredPosition=ArmPosition.BOTTOM)
+        runCommand(startingAngle=110.degrees, startingExtension=1.meters, desiredPosition= ArmPosition.BOTTOM)
     }
 
     fun runCommand(startingAngle: SIUnit<Radian>, startingExtension: SIUnit<Meter>, desiredPosition: ArmPosition) {

@@ -6,7 +6,7 @@ import org.ghrobotics.lib.commands.FalconCommand
 
 class IntakeStopCommand() : FalconCommand(Intake) {
     override fun initialize() {
-        Intake.suck()
+        Intake.stop()
     }
 
     override fun isFinished(): Boolean {

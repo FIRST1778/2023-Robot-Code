@@ -184,6 +184,12 @@ object Constants {
 
 
     }
+    object ManipulatorConstants{
+        val ANGLE_MOTOR_MAIN_ID: Int = 14
+        val ANGLE_MOTOR_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(2048.nativeUnits)
+        val DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL : NativeUnitRotationModel = NativeUnitRotationModel(1.nativeUnits)
+        val manipulatorShuffleboardTab = Shuffleboard.getTab("Manipulator")
+    }
 
     object ArmConstants {
 

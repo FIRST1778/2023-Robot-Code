@@ -4,6 +4,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import org.frc1778.subsystems.Arm
+import org.frc1778.subsystems.Manipulator
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
