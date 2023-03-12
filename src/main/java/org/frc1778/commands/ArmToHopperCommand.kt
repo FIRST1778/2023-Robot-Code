@@ -13,24 +13,24 @@ import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 class ArmToHopperCommand(): FalconCommand(Arm, Intake) {
-    lateinit var command: Command
-
-    override fun initialize() {
-        command = sequential {
-            + InstantCommand({Intake.extend()})
-            + ArmExtensionCommand(0.0.meters)
-            + ArmAngleCommand(12.0.degrees)
-            + ArmExtensionCommand(7.0.inches)
-        }
-        command.schedule()
-    }
-
-    override fun end(interrupted: Boolean) {
-        Manipulator.manipulatorSol.state = FalconSolenoid.State.Reverse
-    }
-
-
-    override fun isFinished(): Boolean {
-        return command.isFinished
-    }
+//    lateinit var command: Command
+//
+//    override fun initialize() {
+//        command = sequential {
+////            + InstantCommand({Intake.extend()})
+//            + ArmExtensionCommand(0.0.meters)
+//            + ArmAngleCommand(12.0.degrees)
+//            + ArmExtensionCommand(7.0.inches)
+//        }
+//        command.schedule()
+//    }
+//
+//    override fun end(interrupted: Boolean) {
+////        Manipulator.manipulatorSol.state = FalconSolenoid.State.Reverse
+//    }
+//
+//
+//    override fun isFinished(): Boolean {
+//        return command.isFinished
+//    }
 }

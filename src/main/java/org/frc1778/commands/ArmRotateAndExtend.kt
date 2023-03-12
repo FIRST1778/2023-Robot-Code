@@ -44,6 +44,7 @@ class ArmRotateAndExtend(val armPos : ArmPosition) : FalconCommand(Arm){
         armPosition = position
     }
     override fun initialize() {
+        Manipulator.objectControlEnabled = false
         setArmPosition(armPos)
 
         manipulatorTimer.reset()
@@ -55,13 +56,15 @@ class ArmRotateAndExtend(val armPos : ArmPosition) : FalconCommand(Arm){
         extensionTimer.reset()
         extensionTimerStarted = false
 
+        val desiredManipulatorAngle = armPosition!!.desiredManipulatorAngle.value + Manipulator.getGameObject().offset.value
+
         val angleStartPosition: SIUnit<Radian> = Arm.getCurrentAngle()
         val extensionStartPosition : SIUnit<Meter> = Arm.getCurrentExtension()
         val manipulatorStartPosition : SIUnit<Radian> = Manipulator.getCurrentAngle()
 
         val manipulatorConstraints = TrapezoidProfile.Constraints(MANIPULATOR_MAX_VEL, MANIPULATOR_MAX_ACCEL)
         val manipulatorStartState = TrapezoidProfile.State(manipulatorStartPosition.value, Manipulator.getDesiredAngleVelocity())
-        val manipulatorEndState = TrapezoidProfile.State(armPosition!!.desiredManipulatorAngle.value, MANIPULATOR_END_VEL)
+        val manipulatorEndState = TrapezoidProfile.State(desiredManipulatorAngle, MANIPULATOR_END_VEL)
         manipulatorProfile = TrapezoidProfile(manipulatorConstraints, manipulatorEndState, manipulatorStartState)
 
         val angleConstraints = TrapezoidProfile.Constraints(ANGLE_MAX_VEL, ANGLE_MAX_ACCEL)
@@ -161,6 +164,7 @@ class ArmRotateAndExtend(val armPos : ArmPosition) : FalconCommand(Arm){
             Arm.setDesiredAngleVelocity(0.0)
             Arm.setDesiredExtensionVelocity(0.0)
         }
+        Manipulator.objectControlEnabled = true
         super.end(interrupted)
     }
     override fun cancel() {

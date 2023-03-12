@@ -35,9 +35,9 @@ object Manipulator : FalconSubsystem() {
         brakeMode = true
     }
 
-    private const val angle_kS: Double = 1.0 //TODO(Need Constants)
-    private const val angle_kA: Double = 1.0
-    private const val angle_kV: Double = 1.0
+    private const val angle_kS: Double = 5.427248300685566
+    private const val angle_kA: Double = 0.9399999999999998
+    private const val angle_kV: Double = 0.05952808261099462
     private val anglePlant = LinearSystemId.identifyPositionSystem(angle_kV, angle_kA)
 
     private var desiredAngleVelocity: Double = 0.0 // rad/s

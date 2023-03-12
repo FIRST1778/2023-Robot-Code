@@ -9,7 +9,7 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
 
-class ManipulatorAngleCommand(endPosition : SIUnit<Radian>) : FalconCommand(Manipulator) {
+class ManipulatorAngleCommand(var endPosition : SIUnit<Radian>) : FalconCommand(Manipulator) {
     companion object {
         const val END_VEL = 0.0     // rad/sec
     }
@@ -18,8 +18,9 @@ class ManipulatorAngleCommand(endPosition : SIUnit<Radian>) : FalconCommand(Mani
     var timer = Timer()
     val maxAcceleration : Double = 1.25
     val maxVelocity: Double = 1.5
-    var endPos = endPosition
     override fun initialize() {
+        val endPos = endPosition
+
         timer.reset()
         timer.start()
 

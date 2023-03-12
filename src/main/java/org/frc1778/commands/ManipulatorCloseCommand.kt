@@ -5,11 +5,11 @@ import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 class ManipulatorCloseCommand : FalconCommand(Manipulator) {
-    override fun initialize() {
-        Manipulator.close()
-    }
-
-    override fun isFinished(): Boolean {
-        return true
-    }
+//    override fun initialize() {
+//        Manipulator.close()
+//    }
+//
+//    override fun isFinished(): Boolean {
+//        return true
+//    }
 }
