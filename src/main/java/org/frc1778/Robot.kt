@@ -9,6 +9,7 @@ import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.PneumaticHub
+import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
@@ -23,6 +24,7 @@ import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
 import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import kotlin.properties.Delegates
 
@@ -41,6 +43,10 @@ object Robot : FalconTimedRobot() {
 //    val alliance: DriverStation.Alliance = Alliance.Red
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
+
+    val pdp = PowerDistribution(30, PowerDistribution.ModuleType.kRev)
+    private val powerTab = Shuffleboard.getTab("Field")
+
 
     private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Tuning Path", 1.5, 1.5)
     private lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
@@ -115,9 +121,10 @@ object Robot : FalconTimedRobot() {
         field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
 
-//        compressor.enableAnalog(95.0, 115.0)
-        Arm.initialize()
-        Manipulator.initialize()
+        powerTab.add("PDP", pdp).withSize(2,2)
+
+//        Arm.initialize()
+//        Manipulator.initialize()
     }
 
 
@@ -129,17 +136,17 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun disabledInit() {
-//        compressor.disable()
+        compressor.disable()
         }
 
     override fun disabledPeriodic() {
-        Arm.resetDesiredExtension()
-        Arm.resetDesiredAngle()
-        Manipulator.resetDesiredAngle()
+//        Arm.resetDesiredExtension()
+//        Arm.resetDesiredAngle()
+//        Manipulator.resetDesiredAngle()
     }
 
     override fun autonomousInit() {
-        Arm.resetIsZeroed() // DO NOT REMOVE
+//        Arm.resetIsZeroed() // DO NOT REMOVE
 //        Drive.resetPosition(Pose2d(1.85, 2.80, Rotation2d.fromDegrees(0.0)), Drive.modules.positions.toTypedArray())
 //        Intake.retract()
 //        Manipulator.open()
@@ -147,10 +154,10 @@ object Robot : FalconTimedRobot() {
 
 //        IntakeSpitCommand().withTimeout(7.5).schedule()
 
-        trajectoryCommand = Drive.followTrajectory(trajectory)
-        Drive.setPose(trajectory.initialHolonomicPose)
-        autonomousCommand = trajectoryCommand
-        trajectoryCommand.schedule()
+//        trajectoryCommand = Drive.followTrajectory(trajectory)
+//        Drive.setPose(trajectory.initialHolonomicPose)
+//        autonomousCommand = trajectoryCommand
+//        trajectoryCommand.schedule()
 
     }
 
@@ -160,9 +167,11 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun teleopInit() {
-        Arm.resetDesiredAngle()
-        Arm.resetDesiredExtension()
-        Manipulator.resetDesiredAngle()
+        compressor.enableAnalog(95.0, 115.0)
+
+//        Arm.resetDesiredAngle()
+//        Arm.resetDesiredExtension()
+//        Manipulator.resetDesiredAngle()
 //        Arm.resetIsZeroed()
 //        Drive.resetPosition(
 //            when (alliance) {
@@ -203,14 +212,13 @@ object Robot : FalconTimedRobot() {
 //        )
 //        ArmAngleCommand(110.0.degrees).schedule()
 //        ZeroExtensionCommand().schedule()
-//
         // DO NOT REMOVE
 
     }
 
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {
-
+//        Manipulator.angleMotor.setVoltage(12.0.volts)
     }
 
     override fun simulationPeriodic() {

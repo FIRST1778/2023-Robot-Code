@@ -18,7 +18,7 @@ class ManipulatorAbsoluteEncoder : AbstractFalconAbsoluteEncoder<Radian>(
 
     private var zeroPoint: Double = 0.0
 
-    var inverted = false
+    var inverted = true
 
     //Same as Position
     override val absolutePosition: SIUnit<Radian>

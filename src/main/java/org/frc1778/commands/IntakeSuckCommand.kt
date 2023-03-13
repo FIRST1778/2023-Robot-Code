@@ -5,11 +5,13 @@ import org.ghrobotics.lib.commands.FalconCommand
 
 class IntakeSuckCommand() : FalconCommand(Intake) {
     override fun initialize() {
+        Intake.extend()
         Intake.suck()
     }
 
     override fun cancel() {
         Intake.stop()
+        Intake.retract()
         super.cancel()
     }
 }

@@ -10,39 +10,39 @@ import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
 
 class ManipulatorAngleCommand(var endPosition : SIUnit<Radian>) : FalconCommand(Manipulator) {
-    companion object {
-        const val END_VEL = 0.0     // rad/sec
-    }
-
-    var profile: TrapezoidProfile? = null
-    var timer = Timer()
-    val maxAcceleration : Double = 1.25
-    val maxVelocity: Double = 1.5
-    override fun initialize() {
-        val endPos = endPosition
-
-        timer.reset()
-        timer.start()
-
-        var startPosition: SIUnit<Radian> = Manipulator.getCurrentAngle()
-
-        val constraints = TrapezoidProfile.Constraints(maxVelocity, maxAcceleration)
-        val startState = TrapezoidProfile.State(startPosition.value, Manipulator.getDesiredAngleVelocity())
-        val endState = TrapezoidProfile.State(endPos.value, END_VEL)
-        profile = TrapezoidProfile(constraints, endState, startState)
-    }
-
-    override fun execute() {
-        val state = profile!!.calculate(timer.get())
-        Manipulator.setDesiredAngleVelocity(state.velocity)
-        Manipulator.setDesiredAngle(state.position.radians)
-    }
-
-    override fun cancel() {
-        super.cancel()
-        Manipulator.setDesiredAngleVelocity(0.0)
-    }
-    override fun isFinished(): Boolean {
-        return profile!!.isFinished(timer.get())
-    }
+//    companion object {
+//        const val END_VEL = 0.0     // rad/sec
+//    }
+//
+//    var profile: TrapezoidProfile? = null
+//    var timer = Timer()
+//    val maxAcceleration : Double = 0.25
+//    val maxVelocity: Double = 0.25
+//    override fun initialize() {
+//        val endPos = endPosition
+//
+//        timer.reset()
+//        timer.start()
+//
+//        var startPosition: SIUnit<Radian> = Manipulator.getCurrentAngle()
+//
+//        val constraints = TrapezoidProfile.Constraints(maxVelocity, maxAcceleration)
+//        val startState = TrapezoidProfile.State(startPosition.value, Manipulator.getDesiredAngleVelocity())
+//        val endState = TrapezoidProfile.State(endPos.value, END_VEL)
+//        profile = TrapezoidProfile(constraints, endState, startState)
+//    }
+//
+//    override fun execute() {
+//        val state = profile!!.calculate(timer.get())
+//        Manipulator.setDesiredAngleVelocity(state.velocity)
+//        Manipulator.setDesiredAngle(state.position.radians)
+//    }
+//
+//    override fun cancel() {
+//        super.cancel()
+//        Manipulator.setDesiredAngleVelocity(0.0)
+//    }
+//    override fun isFinished(): Boolean {
+//        return profile!!.isFinished(timer.get())
+//    }
 }

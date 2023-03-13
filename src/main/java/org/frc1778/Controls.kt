@@ -72,33 +72,33 @@ object Controls {
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
-        button(1) { changeOn(ZeroExtensionCommand()) } // reset extension
+//        button(1) {changeOn(ZeroExtensionCommand()) } // reset extension
         button(2) {}
-        button(3) // other
+        button(3) {} // other
         // level of placement
         button(4) {
-            changeOn {
-//                Robot.scoringLevel = Level.Bottom
-                ArmAngleCommand(40.0.degrees).schedule()
-            }
+//            changeOn {
+////                Robot.scoringLevel = Level.Bottom
+////                ArmAngleCommand(40.0.degrees).schedule()
+//            }
         }// bottom
         button(5) {
-            changeOn (
+//            changeOn (
 //                Robot.scoringLevel = Level.Middle
-                sequential {
-                    +ConditionalCommand(ArmExtensionCommand(0.5.meters), WaitCommand(0.0), {Arm.getCurrentExtension() > 0.52.meters})
-                    +ArmAngleCommand(85.0.degrees)
-                    +ArmExtensionCommand(0.5.meters)
-                }
-            )
+//                sequential {
+//                    +ConditionalCommand(ArmExtensionCommand(0.5.meters), WaitCommand(0.0), {Arm.getCurrentExtension() > 0.52.meters})
+//                    +ArmAngleCommand(85.0.degrees)
+//                    +ArmExtensionCommand(0.5.meters)
+//                }
+//            )
         }// middle
         button(6) {
-            changeOn (sequential {
-//                Robot.scoringLevel = Level.Top
-                +ArmExtensionCommand(0.0.meters)
-                +ArmAngleCommand(100.0.degrees)
-                +ArmExtensionCommand(0.9.meters)
-            })
+//            changeOn (sequential {
+////                Robot.scoringLevel = Level.Top
+//                +ArmExtensionCommand(0.0.meters)
+//                +ArmAngleCommand(100.0.degrees)
+//                +ArmExtensionCommand(0.9.meters)
+//            })
         }// top
         // manipulator open/close toggle
         button(7) {
@@ -117,12 +117,12 @@ object Controls {
             whileOn {
 //                DotStar.display(DotStar.Color.Yellow)
 //                Robot.gamePiece = GamePiece.Cone
-                Manipulator.setGameObject(GameObject.CONE)
+//                Manipulator.setGameObject(GameObject.CONE)
             } // cone
             whileOff {
 //                DotStar.display(DotStar.Color.Purple)
 //                Robot.gamePiece = GamePiece.Cube
-                Manipulator.setGameObject(GameObject.CUBE)
+//                Manipulator.setGameObject(GameObject.CUBE)
             }
 
             // cube

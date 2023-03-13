@@ -185,7 +185,7 @@ object Constants {
 
     }
     object ManipulatorConstants{
-        val ANGLE_MOTOR_MAIN_ID: Int = 14
+        val ANGLE_MOTOR_MAIN_ID: Int = 15
         val ANGLE_MOTOR_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(2048.nativeUnits)
         val DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL : NativeUnitRotationModel = NativeUnitRotationModel(1.nativeUnits)
         val manipulatorShuffleboardTab = Shuffleboard.getTab("Manipulator")
@@ -198,7 +198,7 @@ object Constants {
         const val ANGLE_ENCODER_ID: Int = 23
         val ANGLE_ENCODER_UNIT_MODEL: NativeUnitModel<Radian> = NativeUnitRotationModel(4096.nativeUnits) //TODO
         val EXTENSION_MOTOR_UNIT_MODEL: NativeUnitLengthModel =
-            NativeUnitLengthModel((42 / 4).nativeUnits, (1.128 * 2).inches) //TODO
+            NativeUnitLengthModel((42 / 4).nativeUnits, (1.128).inches) //TODO
         const val ANGLE_MOTOR_OTHER_ID: Int = 12
         const val EXTENSION_MOTOR_ID: Int = 13
         const val ANGLE_MOTOR_MAIN_ID: Int = 11
