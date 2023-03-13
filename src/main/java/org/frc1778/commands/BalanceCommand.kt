@@ -3,7 +3,7 @@ package org.frc1778.commands
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.math.controllers.PIDController
+import edu.wpi.first.math.controller.PIDController
 import org.frc1778.subsystems.Drive
 import org.frc1778.Robot
 import org.ghrobotics.lib.commands.FalconCommand
@@ -20,24 +20,22 @@ class BalanceCommand: FalconCommand(Drive) {
 
     // Note that the PIDController defaults to being called every 20ms.  So we must
     // calculate a velocity ONCE per tick: not more, not less.
-    var pid: PIDController
+    var pid: PIDController? = null
     override fun initialize() {
         if (Math.abs(Drive.robotPosition.rotation.radians) > 0.1)
             DriverStation.reportWarning("Smart balancing assumes 0 yaw", false)
         pid = PIDController(PROPORTIONAL, INTEGRAL, DERIVATIVE)
-        pid.enableContinuousInput(0, 2*Math.PI)
-        pid.setTolerance(ERROR_TOLERANCE, ERROR_DERIVATIVE_TOLERANCE)
+        pid!!.enableContinuousInput(0.0, 2.0*Math.PI)
+        pid!!.setTolerance(ERROR_TOLERANCE, ERROR_DERIVATIVE_TOLERANCE)
     }
 
     override fun execute() {
-        val pitch = Drive.pigeon.pitch
-        val desiredPitch = 0.0
-        val velocity = pid.calculate(pitch, desiredPitch)
-
+        val pitch = Math.toRadians(Drive.pigeon.pitch)
+        val velocity = pid!!.calculate(Math.sin(pitch), 0.0)
         Drive.swerveDrive(velocity, 0.0, 0.0, true)
     }
 
     override fun isFinished(): Boolean {
-        return pid.atSetpoint()
+        return pid!!.atSetpoint()
     }
 }
