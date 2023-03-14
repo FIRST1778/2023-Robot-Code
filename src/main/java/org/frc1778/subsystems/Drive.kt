@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.networktables.GenericEntry
+import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.Constants
@@ -36,12 +37,13 @@ import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.utils.Source
 import kotlin.math.hypot
 
-object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
+object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     var aprilTagsEnabled: Boolean = false
 
     var scoringPose: Pose2d? = null
 
     val pigeon = Pigeon2(Constants.DriveConstants.pigeonCanID)
+
 
     private const val maxVoltage = 12.0
 
@@ -233,6 +235,8 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>() {
         }, {})
         builder.addDoubleProperty("Max Angular Accel", {Constants.DriveConstants.maxAngularAcceleration.value * 10.0
         }, {})
+        builder.addDoubleProperty("Yaw", {Drive.robotPosition.rotation.degrees}, {})
+        builder.addDoubleProperty("Pitch", { pigeon.roll}, {})
     }
 
 

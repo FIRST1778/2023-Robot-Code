@@ -74,7 +74,7 @@ object Controls {
         // bug fix buttons
 //        button(1) {changeOn(ZeroExtensionCommand()) } // reset extension
         button(2) {}
-        button(3) {} // other
+        button(3) {changeOn(sequential{+BalanceCommand()})}// other
         // level of placement
         button(4) {
 //            changeOn {

@@ -173,43 +173,43 @@ object Robot : FalconTimedRobot() {
 //        Arm.resetDesiredExtension()
 //        Manipulator.resetDesiredAngle()
 //        Arm.resetIsZeroed()
-//        Drive.resetPosition(
-//            when (alliance) {
-//                Alliance.Blue -> {
-//                    when (DriverStation.getLocation()) {
-//                        1 -> Pose2d(
-//                            Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
-//                        )
-//
-//                        2 -> Pose2d(
-//                            Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
-//                        )
-//
-//                        else -> Pose2d(
-//                            Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
-//                        )
-//
-//
-//                    }
-//                }
-//
-//                else -> {
-//                    when (DriverStation.getLocation()) {
-//                        1 -> Pose2d(
-//                        Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
-//                    )
-//
-//                        2 -> Pose2d(
-//                        Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
-//                    )
-//
-//                        else -> Pose2d(
-//                        Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
-//                    )
-//                    }
-//                }
-//            }, Drive.modules.positions.toTypedArray()
-//        )
+        Drive.resetPosition(
+            when (alliance) {
+                Alliance.Blue -> {
+                    when (DriverStation.getLocation()) {
+                        1 -> Pose2d(
+                            Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
+                        )
+
+                        2 -> Pose2d(
+                            Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
+                        )
+
+                        else -> Pose2d(
+                            Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
+                        )
+
+
+                    }
+                }
+
+                else -> {
+                    when (DriverStation.getLocation()) {
+                        1 -> Pose2d(
+                        Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
+                    )
+
+                        2 -> Pose2d(
+                        Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
+                    )
+
+                        else -> Pose2d(
+                        Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
+                    )
+                    }
+                }
+            }, Drive.modules.positions.toTypedArray()
+        )
 //        ArmAngleCommand(110.0.degrees).schedule()
 //        ZeroExtensionCommand().schedule()
         // DO NOT REMOVE

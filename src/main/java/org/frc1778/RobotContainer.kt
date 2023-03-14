@@ -145,7 +145,6 @@ object RobotContainer {
 
     init {
         configureBindings()
-
         SmartDashboard.putData("Auto choices", autoModeChooser)
     }
 

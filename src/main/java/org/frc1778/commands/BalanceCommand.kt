@@ -30,8 +30,8 @@ class BalanceCommand: FalconCommand(Drive) {
     }
 
     override fun execute() {
-        val pitch = Math.toRadians(Drive.pigeon.pitch)
-        val velocity = pid!!.calculate(Math.sin(pitch), 0.0)
+        val pitch = Math.toRadians(Drive.pigeon.roll)
+        var velocity = pid!!.calculate(Math.sin(pitch), 0.0)
         Drive.swerveDrive(velocity, 0.0, 0.0, true)
     }
 
