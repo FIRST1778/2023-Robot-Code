@@ -1,7 +1,5 @@
 package org.frc1778
 
-import com.pathplanner.lib.PathPlanner
-import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
@@ -14,7 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.commands.*
+import org.frc1778.commands.PlaceGameObjectCommand
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.DotStar
@@ -23,9 +21,6 @@ import org.frc1778.subsystems.Drive.positions
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
 import org.frc1778.subsystems.Vision
-import org.ghrobotics.lib.mathematics.units.derived.degrees
-import org.ghrobotics.lib.mathematics.units.derived.volts
-import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import kotlin.properties.Delegates
 
 /**
@@ -39,7 +34,7 @@ import kotlin.properties.Delegates
  * object or package, it will get changed everywhere.)
  */
 object Robot : FalconTimedRobot() {
-    val alliance: DriverStation.Alliance = DriverStation.getAlliance()
+    val alliance: Alliance = DriverStation.getAlliance()
 //    val alliance: DriverStation.Alliance = Alliance.Red
     private val field = Field2d()
     private val fieldTab = Shuffleboard.getTab("Field")
@@ -48,8 +43,6 @@ object Robot : FalconTimedRobot() {
     private val powerTab = Shuffleboard.getTab("Field")
 
 
-    private val trajectory: PathPlannerTrajectory = PathPlanner.loadPath("Tuning Path", 1.5, 1.5)
-    private lateinit var trajectoryCommand: SwerveTrajectoryTrackerCommand
     private var autonomousCommand: Command? = null
 
     val pcm = PneumaticHub(30)
@@ -118,7 +111,7 @@ object Robot : FalconTimedRobot() {
 
 
 //        Drive.pigeon.yaw = 0.0
-        field.getObject("traj").setTrajectory(trajectory)
+//        field.getObject("traj").setTrajectory(trajectory)
         fieldTab.add("Field", field).withSize(8, 4)
 
         powerTab.add("PDP", pdp).withSize(2,2)
@@ -156,7 +149,8 @@ object Robot : FalconTimedRobot() {
 
 //        trajectoryCommand = Drive.followTrajectory(trajectory)
 //        Drive.setPose(trajectory.initialHolonomicPose)
-//        autonomousCommand = trajectoryCommand
+        autonomousCommand = RobotContainer.getAutonomousCommand()
+        autonomousCommand?.schedule()
 //        trajectoryCommand.schedule()
 
     }

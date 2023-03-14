@@ -2,13 +2,17 @@ package org.frc1778
 
 import com.pathplanner.lib.PathConstraints
 import com.pathplanner.lib.PathPlanner
+import com.pathplanner.lib.PathPlannerTrajectory
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import org.frc1778.commands.BalanceDriveCommand
 import org.frc1778.commands.IntakeSpitCommand
 import org.frc1778.commands.IntakeStopCommand
 import org.frc1778.commands.IntakeSuckCommand
 import org.frc1778.subsystems.Drive
+import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.utils.Source
 
 /**
@@ -121,22 +125,28 @@ object RobotContainer {
         2.5 //m/s^2
     )
 
+
     val stationOne = {
-        Drive.followTrajectory(PathPlanner.loadPath("station 1", autoPathConstraints))
+        Drive.followTrajectory(
+            getAlliancePath("station 1", autoPathConstraints)
+        )
     }
 
 
     //TODO: Test
     val stationOneWithMarkers = {
-        Drive.followTrajectoryWithCommands(
-            { PathPlanner.loadPath("station 1", autoPathConstraints) },
-            hashMapOf(
-                "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(2.5),
-                "Lower Intake" to IntakeSuckCommand(),
-                "Pick Up Intake" to IntakeStopCommand(),
-                //"Balance" to BalanceDriveCommand() TODO
+        sequential {
+            +Drive.followTrajectoryGroupWithCommands(
+                getAlliancePathGroup("station 1", autoPathConstraints), hashMapOf(
+                    "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(2.5),
+                    "Lower Intake" to IntakeSuckCommand(),
+                    "Pick Up Intake" to IntakeStopCommand(),
                 )
-        )
+            )
+            //TODO: Get Balance Working
+            //? Command Cannot be in event map as it requires the Drive subsystems, so we schedule it after
+            //+BalanceDriveCommand()
+        }
     }
 
     /**
@@ -146,8 +156,7 @@ object RobotContainer {
      * @param command The [Command] to run for this mode.
      */
     enum class AutoMode(val optionName: String, val command: Source<Command>) {
-        STATION_ONE("Station 1", stationOne),
-        STATION_ONE_WITH_MARKERS("Station 1 With Markers", stationOneWithMarkers)
+        STATION_ONE("Station 1", stationOne), STATION_ONE_WITH_MARKERS("Station 1 With Markers", stationOneWithMarkers)
 
 
         ; //!Don't remove
@@ -167,18 +176,36 @@ object RobotContainer {
     }
 
     init {
-        configureBindings()
         SmartDashboard.putData("Auto choices", autoModeChooser)
-    }
-
-
-    /** Use this method to define your `trigger->command` mappings. */
-    private fun configureBindings() {
-
     }
 
 
     fun getAutonomousCommand(): Command {
         return autoModeChooser.selected?.command?.let { it() } ?: AutoMode.default.command()
     }
+
+    /**
+     * Get path from path planner transformed to the current [DriverStation.Alliance]
+     *
+     * @param name Name of the Path
+     * @param constraints Path Constraints
+     * @return [PathPlannerTrajectory]
+     */
+    private fun getAlliancePath(name: String, constraints: PathConstraints) =
+        PathPlannerTrajectory.transformTrajectoryForAlliance(
+            PathPlanner.loadPath(name, constraints), Robot.alliance
+        )
+
+    /**
+     * Get path group from path planner transformed to the current [DriverStation.Alliance]
+     *
+     * @param name Name of the Path
+     * @param constraints Path Constraints
+     * @return [List] of [PathPlannerTrajectory]
+     * */
+    private fun getAlliancePathGroup(name: String, constraints: PathConstraints) =
+            PathPlanner.loadPathGroup(name, constraints).map {
+                PathPlannerTrajectory.transformTrajectoryForAlliance(it, Robot.alliance)
+            }
+
 }

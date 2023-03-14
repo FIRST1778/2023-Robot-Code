@@ -16,7 +16,6 @@ import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
@@ -41,11 +40,8 @@ import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.mathematics.units.operations.div
 import org.ghrobotics.lib.mathematics.units.seconds
 import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
-import org.ghrobotics.lib.utils.BooleanSource
 import org.ghrobotics.lib.utils.Source
-import org.ghrobotics.lib.utils.map
 import java.util.*
-import kotlin.collections.HashMap
 
 abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
     TrajectoryTrackerSwerveDriveBase(), SensorlessCompatibleSubsystem {
@@ -222,6 +218,10 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
         poseEstimator.resetPosition(gyro(), positions, pose)
     }
 
+    fun resetPosition(pose: Pose2d) {
+        resetPosition(pose, this.modules.positions.toTypedArray())
+    }
+
     fun followTrajectory(trajectory: PathPlannerTrajectory, mirrored: Boolean = false) =
         SwerveTrajectoryTrackerCommand(this, Source((if (mirrored) trajectory.mirror() else trajectory) as PathPlannerTrajectory))
 
@@ -230,8 +230,11 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
 
     fun followTrajectory(trajectory: Source<PathPlannerTrajectory>) = SwerveTrajectoryTrackerCommand(this, trajectory)
 
-    fun followTrajectoryWithCommands(trajectory: Source<PathPlannerTrajectory>, eventMap: HashMap<String, Command>) =
+    fun followTrajectoryWithCommands(trajectory: PathPlannerTrajectory, eventMap: HashMap<String, Command>) =
         SwerveTrajectoryTrackerWithMarkersCommand(this, trajectory, eventMap)
+
+    fun followTrajectoryGroupWithCommands(trajectories: List<PathPlannerTrajectory>, eventMap: HashMap<String, Command>) =
+        SwerveTrajectoryGroupFollowingCommand(this, trajectories, eventMap)
 
     protected class PeriodicIO {
         var leftFrontVoltage: SIUnit<Volt> = 0.volts
