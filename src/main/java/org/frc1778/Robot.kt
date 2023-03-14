@@ -57,8 +57,8 @@ object Robot : FalconTimedRobot() {
 
 
     val driveInversion = when(alliance) {
-        Alliance.Red-> 1
-        else -> -1
+        Alliance.Red-> -1
+        else -> 1
     }
 
 
