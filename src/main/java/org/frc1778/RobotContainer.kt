@@ -1,16 +1,14 @@
 package org.frc1778
 
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Translation2d
+import com.pathplanner.lib.PathConstraints
+import com.pathplanner.lib.PathPlanner
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.frc1778.commands.IntakeSpitCommand
+import org.frc1778.commands.IntakeStopCommand
+import org.frc1778.commands.IntakeSuckCommand
 import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Drive.positions
-import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.utils.Source
 
 /**
@@ -27,93 +25,119 @@ import org.ghrobotics.lib.utils.Source
 object RobotContainer {
 
 
+    //<editor-fold desc="Old Auto Things">
+    /**
     val driveStation1 = {
-        sequential {
-            +InstantCommand({
-                Drive.resetPosition(
-                    Pose2d(
-                        Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
-                    ), Drive.modules.positions.toTypedArray()
-                )
-            })
-            +IntakeSpitCommand().withTimeout(7.5)
-        }
+    sequential {
+    +InstantCommand({
+    Drive.resetPosition(
+    Pose2d(
+    Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
+    ), Drive.modules.positions.toTypedArray()
+    )
+    })
+    +IntakeSpitCommand().withTimeout(7.5)
+    }
     }
 
     val driveStation2 = {
-        sequential {
-            +InstantCommand({
-                Drive.resetPosition(
-                    Pose2d(
-                        Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
-                    ), Drive.modules.positions.toTypedArray()
-                )
-                +IntakeSpitCommand().withTimeout(7.5)
+    sequential {
+    +InstantCommand({
+    Drive.resetPosition(
+    Pose2d(
+    Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
+    ), Drive.modules.positions.toTypedArray()
+    )
+    +IntakeSpitCommand().withTimeout(7.5)
 
-            }
+    }
 
-            )
-        }
+    )
+    }
     }
 
     val driveStation3 = {
-        sequential {
-            +InstantCommand({
-                Drive.resetPosition(
-                    Pose2d(
-                        Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
-                    ), Drive.modules.positions.toTypedArray()
-                )
-                +IntakeSpitCommand().withTimeout(7.5)
+    sequential {
+    +InstantCommand({
+    Drive.resetPosition(
+    Pose2d(
+    Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
+    ), Drive.modules.positions.toTypedArray()
+    )
+    +IntakeSpitCommand().withTimeout(7.5)
 
-            })
-        }
+    })
+    }
     }
 
     val driveStation4 = {
-        sequential {
-            +InstantCommand({
-                Drive.resetPosition(
-                    Pose2d(
-                        Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
-                    ), Drive.modules.positions.toTypedArray()
-                )
-            })
-            +IntakeSpitCommand().withTimeout(7.5)
-        }
+    sequential {
+    +InstantCommand({
+    Drive.resetPosition(
+    Pose2d(
+    Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
+    ), Drive.modules.positions.toTypedArray()
+    )
+    })
+    +IntakeSpitCommand().withTimeout(7.5)
+    }
     }
 
     val driveStation5 = {
-        sequential {
-            +InstantCommand({
-                Drive.resetPosition(
-                    Pose2d(
-                        Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
-                    ), Drive.modules.positions.toTypedArray()
-                )
+    sequential {
+    +InstantCommand({
+    Drive.resetPosition(
+    Pose2d(
+    Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
+    ), Drive.modules.positions.toTypedArray()
+    )
 
-            })
-            +IntakeSpitCommand().withTimeout(7.5)
+    })
+    +IntakeSpitCommand().withTimeout(7.5)
 
-        }
+    }
 
     }
 
     val driveStation6 = {
-        sequential {
-            +InstantCommand({
-                Drive.resetPosition(
-                    Pose2d(
-                        Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
-                    ), Drive.modules.positions.toTypedArray()
-                )
+    sequential {
+    +InstantCommand({
+    Drive.resetPosition(
+    Pose2d(
+    Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
+    ), Drive.modules.positions.toTypedArray()
+    )
 
-            })
-            +IntakeSpitCommand().withTimeout(7.5)
+    })
+    +IntakeSpitCommand().withTimeout(7.5)
 
-        }
+    }
+    }
+     */
+    //</editor-fold>
+
+    private val autoPathConstraints = PathConstraints(
+        4.0, // m/s
+        2.5 //m/s^2
+    )
+
+    val stationOne = {
+        Drive.followTrajectory(PathPlanner.loadPath("station 1", autoPathConstraints))
     }
 
+
+    //TODO: Test
+    val stationOneWithMarkers = {
+        Drive.followTrajectoryWithCommands(
+            { PathPlanner.loadPath("station 1", autoPathConstraints) },
+            hashMapOf(
+                "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(2.5),
+                "Lower Intake" to IntakeSuckCommand(),
+                "Pick Up Intake" to IntakeStopCommand(),
+                //"Balance" to BalanceDriveCommand() TODO
+                )
+        )
+    }
 
     /**
      * A enumeration of the available autonomous modes.
@@ -122,22 +146,21 @@ object RobotContainer {
      * @param command The [Command] to run for this mode.
      */
     enum class AutoMode(val optionName: String, val command: Source<Command>) {
-        CUSTOM_AUTO_1("Blue Drive Station 1", driveStation1), CUSTOM_AUTO_2(
-            "Blue Drive Station 2", driveStation2
-        ),
-        CUSTOM_AUTO_3("Blue Drive Station 3", driveStation3), CUSTOM_AUTO_4(
-            "Red Drive Station 1", driveStation4
-        ),
-        CUSTOM_AUTO_5("Red Drive Station 2", driveStation5), CUSTOM_AUTO_6(
-            "Red Drive Station 3", driveStation6
-        );
+        STATION_ONE("Station 1", stationOne),
+        STATION_ONE_WITH_MARKERS("Station 1 With Markers", stationOneWithMarkers)
+
+
+        ; //!Don't remove
 
         companion object {
             /** The default auto mode. */
-            val default = CUSTOM_AUTO_1
+            val default = STATION_ONE
         }
     }
 
+
+    //TODO: This might still be broken.
+    //!!NEED TO GET THIS WORKING!!
     private val autoModeChooser = SendableChooser<AutoMode>().apply {
         AutoMode.values().forEach { addOption(it.optionName, it) }
         setDefaultOption(AutoMode.default.optionName, AutoMode.default)
