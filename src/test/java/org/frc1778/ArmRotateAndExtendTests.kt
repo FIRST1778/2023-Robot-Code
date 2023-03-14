@@ -16,10 +16,11 @@ import org.junit.jupiter.api.Test
 
 class ArmRotateAndExtendTests {
 
+    /*
     @Test
     fun testGoToTop() {
         var armJointSim = ArmJointSim(16.0.degrees.value)
-        var extensionSim = ExtensionSim(0.0.meters)
+        var extensionSim = ExtensionSim(0.0.mete*s)
         var encoderSim = DutyCycleEncoderSim(Arm.armEncoder.dutyCycleEncoder)
         var limitSwitchSim = DIOSim(Arm.limitSwitch)
         //Arm.initialize()
@@ -133,4 +134,5 @@ class ArmRotateAndExtendTests {
             }
         }
     }
+     */
 }

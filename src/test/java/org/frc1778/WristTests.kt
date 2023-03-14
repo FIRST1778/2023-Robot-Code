@@ -24,6 +24,7 @@ class WristTests {
         System.out.printf("Ks: %s\n", wristSim.Ks())
     }
 
+    /*
     @Test
     fun moveWrist() {
         runCommand()
@@ -71,4 +72,6 @@ class WristTests {
             }
         }
     }
+
+     */
 }

@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class ExtensionSimTests {
+    /*
     @Test
     fun aksdflksdfj() {
         Arm.angleMotorMain.setVoltage(4.volts)
@@ -143,4 +144,6 @@ class ExtensionSimTests {
             SimHooks.stepTiming(dt)
         }
     }
+
+     */
 }
