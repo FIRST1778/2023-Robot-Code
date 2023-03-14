@@ -20,7 +20,6 @@ class SwerveTrajectoryTrackerWithMarkersCommand(
     private val unpassedMarkers = mutableListOf<PathPlannerTrajectory.EventMarker>()
 
 
-
     private var isFinished = true
     private val timer = Timer()
     private var elapsed = 0.0

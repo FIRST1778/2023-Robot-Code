@@ -5,46 +5,15 @@ import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandBase
 import edu.wpi.first.wpilibj2.command.Commands
 import edu.wpi.first.wpilibj2.command.FunctionalCommand
-import org.ghrobotics.lib.commands.FalconCommand
-import org.ghrobotics.lib.commands.sequential
+import java.util.HashMap
 
-class SwerveTrajectoryGroupFollowingCommand(
-    private val drivetrain: FalconSwerveDrivetrain<*>,
-    private val trajectories: List<PathPlannerTrajectory>,
-    private val eventMap: HashMap<String, Command>
-): FalconCommand(drivetrain) {
-    private val command = sequential {
-        for(trajectory in trajectories) {
-            +stopEventGroup(trajectory.startStopEvent)
-            +drivetrain.followTrajectoryWithCommands(trajectory, eventMap)
-        }
-        +stopEventGroup(trajectories.last().endStopEvent)
-    }
-
-    override fun initialize() {
-        command.initialize()
-    }
-
-    override fun execute() {
-        command.execute()
-    }
-
-
-    override fun cancel() {
-        super.cancel()
-        command.cancel()
-    }
-
-    override fun isFinished(): Boolean {
-        return command.isFinished
-    }
-
-    private fun stopEventGroup(stopEvent: PathPlannerTrajectory.StopEvent): CommandBase {
+object PathPlannerTrajectoryStopEventBuilder {
+     fun stopEventGroup(stopEvent: PathPlannerTrajectory.StopEvent, eventMap: HashMap<String, Command>): CommandBase {
         if (stopEvent.names.isEmpty()) {
             return Commands.waitSeconds(stopEvent.waitTime)
         }
 
-        val eventCommands: CommandBase = stopEventCommands(stopEvent)
+        val eventCommands: CommandBase = stopEventCommands(stopEvent, eventMap)
 
         return when (stopEvent.waitBehavior) {
             PathPlannerTrajectory.StopEvent.WaitBehavior.BEFORE -> Commands.sequence(Commands.waitSeconds(stopEvent.waitTime), eventCommands)
@@ -57,7 +26,7 @@ class SwerveTrajectoryGroupFollowingCommand(
     }
 
     @OptIn(ExperimentalStdlibApi::class)
-    private fun stopEventCommands(stopEvent: PathPlannerTrajectory.StopEvent): CommandBase {
+     fun stopEventCommands(stopEvent: PathPlannerTrajectory.StopEvent, eventMap: HashMap<String, Command>): CommandBase {
         val commands = mutableListOf<CommandBase>()
         val startIndex = if (stopEvent.executionBehavior == PathPlannerTrajectory.StopEvent.ExecutionBehavior.PARALLEL_DEADLINE) 1 else 0
         for (i in startIndex..<stopEvent.names.size) {
@@ -67,7 +36,7 @@ class SwerveTrajectoryGroupFollowingCommand(
             }
         }
 
-        return when (stopEvent.executionBehavior) {
+         return when (stopEvent.executionBehavior) {
             PathPlannerTrajectory.StopEvent.ExecutionBehavior.SEQUENTIAL -> Commands.sequence(*commands.toTypedArray())
 
             PathPlannerTrajectory.StopEvent.ExecutionBehavior.PARALLEL -> Commands.parallel(*commands.toTypedArray())
@@ -94,5 +63,4 @@ class SwerveTrajectoryGroupFollowingCommand(
             { eventCommand.isFinished },
             *eventCommand.requirements.toTypedArray())
     }
-
 }
