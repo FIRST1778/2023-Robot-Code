@@ -128,8 +128,8 @@ object RobotContainer {
 
     //TODO: Test
     val stationOneWithMarkers = {
-        Drive.followTrajectoryWithCommands(
-            { PathPlanner.loadPath("station 1", autoPathConstraints) },
+        Drive.followTrajectoryGroupWithCommands(
+             PathPlanner.loadPathGroup("station 1", autoPathConstraints) ,
             hashMapOf(
                 "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(2.5),
                 "Lower Intake" to IntakeSuckCommand(),
@@ -167,14 +167,7 @@ object RobotContainer {
     }
 
     init {
-        configureBindings()
         SmartDashboard.putData("Auto choices", autoModeChooser)
-    }
-
-
-    /** Use this method to define your `trigger->command` mappings. */
-    private fun configureBindings() {
-
     }
 
 

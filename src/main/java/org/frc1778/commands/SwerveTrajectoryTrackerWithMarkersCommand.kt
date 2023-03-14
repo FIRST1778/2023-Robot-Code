@@ -1,34 +1,29 @@
 package org.frc1778.commands
 
-import org.frc1778.lib.FalconSwerveDrivetrain
 import com.pathplanner.lib.PathPlannerTrajectory
-import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
+import org.frc1778.lib.FalconSwerveDrivetrain
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.debug.FalconDashboard
-import org.ghrobotics.lib.utils.Source
 import java.util.*
 
 class SwerveTrajectoryTrackerWithMarkersCommand(
     private val drivetrain: FalconSwerveDrivetrain<*>,
-    private val trajectorySource: Source<PathPlannerTrajectory>,
+    private val trajectory: PathPlannerTrajectory,
     private val eventMap: HashMap<String, Command>
 ) : FalconCommand(drivetrain) {
 
 
     private val currentCommands = mutableMapOf<Command, Boolean>()
-    private val markers = trajectorySource().markers
+    private val markers = trajectory.markers
     private val unpassedMarkers = mutableListOf<PathPlannerTrajectory.EventMarker>()
 
+
+
     private var isFinished = true
-
-    private var prevStates = Array(4) { SwerveModuleState() }
-
     private val timer = Timer()
     private var elapsed = 0.0
-    private lateinit var trajectory: PathPlannerTrajectory
     private lateinit var trajectoryFollowingCommand: SwerveTrajectoryTrackerCommand
 
     init {
@@ -48,7 +43,7 @@ class SwerveTrajectoryTrackerWithMarkersCommand(
     }
 
     override fun initialize() {
-        trajectory = trajectorySource()
+        drivetrain.resetPosition(trajectory.initialHolonomicPose)
         currentCommands.clear()
         unpassedMarkers.clear()
         unpassedMarkers.addAll(markers)
@@ -62,7 +57,6 @@ class SwerveTrajectoryTrackerWithMarkersCommand(
         trajectoryFollowingCommand = drivetrain.followTrajectory(trajectory)
         trajectoryFollowingCommand.initialize()
         currentCommands[trajectoryFollowingCommand] = true
-        prevStates = Array(4) { SwerveModuleState() }
 
         FalconDashboard.isFollowingPath = true
     }
@@ -115,13 +109,19 @@ class SwerveTrajectoryTrackerWithMarkersCommand(
     }
 
     override fun end(interrupted: Boolean) {
-        for((command, run) in currentCommands) {
-            if(run) {
+        for ((command, run) in currentCommands) {
+            if (run) {
                 command.end(true)
             }
         }
     }
 
-    override fun isFinished(): Boolean  { return isFinished }
+    override fun isFinished(): Boolean {
+        return isFinished
+    }
+
+
+
+
 
 }
