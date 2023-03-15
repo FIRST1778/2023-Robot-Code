@@ -18,11 +18,11 @@ import com.ctre.phoenix.ErrorCode as PhoenixErrorCode
 
 class BalanceCommand: FalconCommand(Drive) {
     companion object {
-        const val PROPORTIONAL: Double = 2.125 // (m/sec)/rad; extra slow to be careful
+        const val PROPORTIONAL: Double = 2.125 // (m/sec)/m
         const val INTEGRAL: Double = 0.0
         const val DERIVATIVE: Double = 0.185
-        const val ERROR_TOLERANCE: Double = 0.055 // rad
-        const val ERROR_DERIVATIVE_TOLERANCE: Double = 0.4 // rad/sec
+        const val ERROR_TOLERANCE: Double = 0.055
+        const val ERROR_DERIVATIVE_TOLERANCE: Double = 0.4
     }
 
     var pitch = 0.0
