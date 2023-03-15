@@ -34,10 +34,11 @@ import kotlin.properties.Delegates
  * object or package, it will get changed everywhere.)
  */
 object Robot : FalconTimedRobot() {
-    val alliance: Alliance = DriverStation.getAlliance()
+    var alliance: Alliance = DriverStation.getAlliance()
 //    val alliance: DriverStation.Alliance = Alliance.Red
-    private val field = Field2d()
-    private val fieldTab = Shuffleboard.getTab("Field")
+
+
+    val robotHeadingOnStart = 0.0
 
     val pdp = PowerDistribution(30, PowerDistribution.ModuleType.kRev)
     private val powerTab = Shuffleboard.getTab("Field")
@@ -49,8 +50,8 @@ object Robot : FalconTimedRobot() {
     val compressor = pcm.makeCompressor()
 
 
-    val driveInversion = when(alliance) {
-        Alliance.Red-> -1
+    val driveInversion = when (alliance) {
+        Alliance.Red -> -1
         else -> 1
     }
 
@@ -110,11 +111,12 @@ object Robot : FalconTimedRobot() {
         RobotContainer
 
 
+        Drive.setPose(Pose2d(0.0, 0.0, Rotation2d.fromDegrees(robotHeadingOnStart)))
 //        Drive.pigeon.yaw = 0.0
 //        field.getObject("traj").setTrajectory(trajectory)
-        fieldTab.add("Field", field).withSize(8, 4)
 
-        powerTab.add("PDP", pdp).withSize(2,2)
+        compressor.enableAnalog(95.0, 115.0)
+        powerTab.add("PDP", pdp).withSize(2, 2)
 
 //        Arm.initialize()
 //        Manipulator.initialize()
@@ -122,15 +124,15 @@ object Robot : FalconTimedRobot() {
 
 
     override fun robotPeriodic() {
-        field.robotPose = Drive.robotPosition
+
         Controls.driverController.update()
         Controls.operatorControllerRed.update()
         Controls.operatorControllerBlue.update()
     }
 
     override fun disabledInit() {
-        compressor.disable()
-        }
+//        compressor.disable()
+    }
 
     override fun disabledPeriodic() {
 //        Arm.resetDesiredExtension()
@@ -149,6 +151,7 @@ object Robot : FalconTimedRobot() {
 
 //        trajectoryCommand = Drive.followTrajectory(trajectory)
 //        Drive.setPose(trajectory.initialHolonomicPose)
+        alliance = DriverStation.getAlliance()
         autonomousCommand = RobotContainer.getAutonomousCommand()
         autonomousCommand?.schedule()
 //        trajectoryCommand.schedule()
@@ -161,49 +164,49 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun teleopInit() {
-        compressor.enableAnalog(95.0, 115.0)
+
 
 //        Arm.resetDesiredAngle()
 //        Arm.resetDesiredExtension()
 //        Manipulator.resetDesiredAngle()
 //        Arm.resetIsZeroed()
-        Drive.resetPosition(
-            when (alliance) {
-                Alliance.Blue -> {
-                    when (DriverStation.getLocation()) {
-                        1 -> Pose2d(
-                            Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
-                        )
-
-                        2 -> Pose2d(
-                            Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
-                        )
-
-                        else -> Pose2d(
-                            Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
-                        )
-
-
-                    }
-                }
-
-                else -> {
-                    when (DriverStation.getLocation()) {
-                        1 -> Pose2d(
-                        Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
-                    )
-
-                        2 -> Pose2d(
-                        Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
-                    )
-
-                        else -> Pose2d(
-                        Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
-                    )
-                    }
-                }
-            }, Drive.modules.positions.toTypedArray()
-        )
+//        Drive.resetPosition(
+//            when (alliance) {
+//                Alliance.Blue -> {
+//                    when (DriverStation.getLocation()) {
+//                        1 -> Pose2d(
+//                            Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
+//                        )
+//
+//                        2 -> Pose2d(
+//                            Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
+//                        )
+//
+//                        else -> Pose2d(
+//                            Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
+//                        )
+//
+//
+//                    }
+//                }
+//
+//                else -> {
+//                    when (DriverStation.getLocation()) {
+//                        1 -> Pose2d(
+//                        Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
+//                    )
+//
+//                        2 -> Pose2d(
+//                        Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
+//                    )
+//
+//                        else -> Pose2d(
+//                        Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
+//                    )
+//                    }
+//                }
+//            }, Drive.modules.positions.toTypedArray()
+//        )
 //        ArmAngleCommand(110.0.degrees).schedule()
 //        ZeroExtensionCommand().schedule()
         // DO NOT REMOVE

@@ -24,7 +24,51 @@
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/Ungrouped/PWMSparkMax[2]": "Motor Controller",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
-      "/Shuffleboard/Field/Field": "Field2d"
+      "/Shuffleboard/Drive/Drive": "Subsystem",
+      "/Shuffleboard/Field/Field": "Field2d",
+      "/SmartDashboard/Auto choices": "String Chooser"
+    },
+    "windows": {
+      "/Shuffleboard/Drive/Drive": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Field/Field": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Auto choices": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "transitory": {
+      "Shuffleboard": {
+        "Drive": {
+          "Bottom Left Swerve": {
+            "open": true
+          },
+          "Bottom Right Swerve": {
+            "open": true
+          },
+          "Drive": {
+            "open": true
+          },
+          "Top Left Swerve": {
+            "open": true
+          },
+          "Top Right Swerve": {
+            "open": true
+          },
+          "open": true
+        },
+        "open": true
+      }
     }
   }
 }

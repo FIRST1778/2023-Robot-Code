@@ -31,7 +31,7 @@ object Intake : FalconSubsystem() {
         30
     )
 
-    var intakeVoltage = 5.0.volts
+    private var intakeVoltage = 5.0.volts
     fun setMotorVoltage(voltage : SIUnit<Volt>){
         beltMotor.setVoltage(voltage)
         wheelMotor.setVoltage(voltage/5)
@@ -41,7 +41,7 @@ object Intake : FalconSubsystem() {
 //        if (Manipulator.lineBreak.get()){
 //            intakeMotor.setVoltage(-intakeVoltage)
 //        }
-        setMotorVoltage(intakeVoltage)
+        setMotorVoltage(intakeVoltage + 2.0.volts)
         solenoid.state = FalconSolenoid.State.Forward
     }
     fun extend(){
@@ -52,7 +52,7 @@ object Intake : FalconSubsystem() {
     }
 
     fun spit() {
-        setMotorVoltage(-intakeVoltage)
+        setMotorVoltage(-intakeVoltage * 1.5)
     }
 
     fun stop() {

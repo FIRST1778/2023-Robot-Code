@@ -42,7 +42,8 @@ class SwerveTrajectoryTrackerWithMarkersCommand(
     }
 
     override fun initialize() {
-        drivetrain.resetPosition(trajectory.initialHolonomicPose)
+        drivetrain.setTrajectory(trajectory)
+
         currentCommands.clear()
         unpassedMarkers.clear()
         unpassedMarkers.addAll(markers)

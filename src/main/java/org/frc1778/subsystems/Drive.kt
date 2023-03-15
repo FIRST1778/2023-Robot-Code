@@ -79,7 +79,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
             Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
         }
         Constants.DriveConstants.driveTab.add("Drive", this).withSize(3,4)
-        pigeon.configMountPose(Pigeon2.AxisDirection.PositiveX, Pigeon2.AxisDirection.PositiveZ, 500)
+        pigeon.configMountPose(Pigeon2.AxisDirection.PositiveY, Pigeon2.AxisDirection.PositiveZ, 500)
         modules.forEach {
             it.setAngle(0.0)
         }
@@ -115,22 +115,22 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     //TODO: Tune Holonomic Drive Controller
     override val controller: HolonomicDriveController = HolonomicDriveController(
         PIDController(
-            1.2,
+            1.35,
             0.0,
-            0.12
+            0.135
         ),
         PIDController(
-            1.2,
+            1.35,
             0.0,
-            0.12
+            0.135
         ),
         ProfiledPIDController(
             0.2,
             0.0,
             0.02,
             TrapezoidProfile.Constraints(
-                Constants.DriveConstants.maxAngularSpeed.value * 17.5,
-                Constants.DriveConstants.maxAngularAcceleration.value * 10.0
+                Constants.DriveConstants.maxAngularSpeed.value * 40.0,
+                Constants.DriveConstants.maxAngularAcceleration.value * 32.5
             )
 
         )
@@ -237,6 +237,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         }, {})
         builder.addDoubleProperty("Yaw", {Drive.robotPosition.rotation.degrees}, {})
         builder.addDoubleProperty("Pitch", { pigeon.roll}, {})
+
     }
 
 

@@ -1,0 +1,205 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 14.685548458115466,
+        "y": 4.8829405504745385
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 14.16315853719388,
+        "y": 4.916846548454473
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Spit Out Game Piece",
+          "Pick Up Intake"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 13.337050780649843,
+        "y": 4.769982947291089
+      },
+      "prevControl": {
+        "x": 13.574553963794271,
+        "y": 4.799726428902648
+      },
+      "nextControl": {
+        "x": 12.485240907892951,
+        "y": 4.663307361088598
+      },
+      "holonomicAngle": 0.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 11.383716856642542,
+        "y": 4.714146932684771
+      },
+      "prevControl": {
+        "x": 11.832719330339081,
+        "y": 4.7535587251199605
+      },
+      "nextControl": {
+        "x": 10.555821333618251,
+        "y": 4.641477296273127
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 9.218481297819528,
+        "y": 4.602976287762456
+      },
+      "prevControl": {
+        "x": 10.476000882781006,
+        "y": 4.612155262835167
+      },
+      "nextControl": {
+        "x": 10.476000882781006,
+        "y": 4.612155262835167
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "minimum",
+        "waitTime": 0.25
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 12.746879315769837,
+        "y": 4.540559257268017
+      },
+      "prevControl": {
+        "x": 12.230010337875413,
+        "y": 4.549032519200712
+      },
+      "nextControl": {
+        "x": 13.45256195003098,
+        "y": 4.528990689493244
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 14.671342486528385,
+        "y": 4.366743193444257
+      },
+      "prevControl": {
+        "x": 14.104692672331492,
+        "y": 4.4196086974859705
+      },
+      "nextControl": {
+        "x": 14.104692672331492,
+        "y": 4.4196086974859705
+      },
+      "holonomicAngle": 0.0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Spit Out Game Piece",
+          "Pick Up Intake"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 14.226530097490935,
+        "y": 3.270189107204742
+      },
+      "prevControl": {
+        "x": 14.321991438247135,
+        "y": 3.787883301305672
+      },
+      "nextControl": {
+        "x": 14.20136122409383,
+        "y": 3.133696370705059
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 12.607358894664623,
+        "y": 3.277532287262911
+      },
+      "prevControl": {
+        "x": 13.114038318678297,
+        "y": 3.2665175171756577
+      },
+      "nextControl": null,
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": []
+}

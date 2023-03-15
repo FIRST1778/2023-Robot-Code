@@ -16,11 +16,15 @@ import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.SwerveTrajectoryTrackerCommand
 import org.frc1778.commands.SwerveTrajectoryTrackerWithMarkersCommand
+import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
@@ -43,8 +47,8 @@ import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
 import org.ghrobotics.lib.utils.Source
 import java.util.*
 
-abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
-    TrajectoryTrackerSwerveDriveBase(), SensorlessCompatibleSubsystem {
+abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> : TrajectoryTrackerSwerveDriveBase(),
+    SensorlessCompatibleSubsystem {
     /**
      * The current inputs and outputs
      */
@@ -96,11 +100,18 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
 
     abstract fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>?
 
-     fun swerveModuleStates(): List<SwerveModuleState> = List(4) {
-            SwerveModuleState(
-                modules[it].driveVelocity.value, Rotation2d(modules[it].encoder.absolutePosition.value)
-            )
-        }
+    fun swerveModuleStates(): List<SwerveModuleState> = List(4) {
+        SwerveModuleState(
+            modules[it].driveVelocity.value, Rotation2d(modules[it].encoder.absolutePosition.value)
+        )
+    }
+
+    private val field = Field2d()
+    private val fieldTab = Shuffleboard.getTab("Field")
+
+    fun setTrajectory(traj: Trajectory) {
+        field.getObject("traj").setTrajectory(traj)
+    }
 
 
     override fun periodic() {
@@ -141,8 +152,10 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
             poseEstimator.addVisionMeasurement(cameraEstimatedRobotPose, timeStamp)
         }
 
+
         robotPosition = poseEstimator.update(periodicIO.gyro, periodicIO.positions)
 
+        field.robotPose = Drive.robotPosition
 
         poseBuffer[Timer.getFPGATimestamp().seconds] = robotPosition
 
@@ -170,6 +183,7 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
 
     override fun lateInit() {
         resetPosition(Pose2d(), modules.positions.toTypedArray())
+        fieldTab.add("Field", field).withSize(8, 4)
     }
 
     override fun setNeutral() {
@@ -196,8 +210,6 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
     }
 
 
-
-
     fun swerveDrive(forwardInput: Double, strafeInput: Double, rotationInput: Double, fieldRelative: Boolean = true) {
         val outputLimiter = motorOutputLimiter()
         val speeds = driveHelper.swerveDrive(
@@ -222,8 +234,9 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
         resetPosition(pose, this.modules.positions.toTypedArray())
     }
 
-    fun followTrajectory(trajectory: PathPlannerTrajectory, mirrored: Boolean = false) =
-        SwerveTrajectoryTrackerCommand(this, Source((if (mirrored) trajectory.mirror() else trajectory) as PathPlannerTrajectory))
+    fun followTrajectory(trajectory: PathPlannerTrajectory, mirrored: Boolean = false) = SwerveTrajectoryTrackerCommand(
+        this, Source((if (mirrored) trajectory.mirror() else trajectory) as PathPlannerTrajectory)
+    )
 
 //    fun followTrajectory(trajectory: PathPlannerTrajectory, mirrored: BooleanSource) =
 //        SwerveTrajectoryTrackerCommand(this, {mirrored.map(trajectory.mirror(), trajectory) as PathPlannerTrajectory})
@@ -231,10 +244,11 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> :
     fun followTrajectory(trajectory: Source<PathPlannerTrajectory>) = SwerveTrajectoryTrackerCommand(this, trajectory)
 
     fun followTrajectoryWithCommands(trajectory: PathPlannerTrajectory, eventMap: HashMap<String, Command>) =
-        SwerveTrajectoryFollowingCommand(this, listOf(trajectory), eventMap)
+        SwerveTrajectoryTrackerWithMarkersCommand(this, trajectory, eventMap)
 
-    fun followTrajectoryGroupWithCommands(trajectories: List<PathPlannerTrajectory>, eventMap: HashMap<String, Command>) =
-        SwerveTrajectoryFollowingCommand(this, trajectories, eventMap)
+    fun followTrajectoryGroupWithCommands(
+        trajectories: List<PathPlannerTrajectory>, eventMap: HashMap<String, Command>
+    ) = SwerveTrajectoryFollowingCommand(this, trajectories, eventMap)
 
     protected class PeriodicIO {
         var leftFrontVoltage: SIUnit<Volt> = 0.volts

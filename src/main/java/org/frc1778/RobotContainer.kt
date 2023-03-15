@@ -3,17 +3,25 @@ package org.frc1778
 import com.pathplanner.lib.PathConstraints
 import com.pathplanner.lib.PathPlanner
 import com.pathplanner.lib.PathPlannerTrajectory
+import com.playingwithfusion.CANVenom.BrakeCoastMode
+import edu.wpi.first.math.geometry.Pose2d
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.commands.BalanceDriveCommand
+import edu.wpi.first.wpilibj2.command.InstantCommand
+import org.frc1778.commands.BalanceCommand
+import org.frc1778.commands.DriveBrakeCommand
 import org.frc1778.commands.IntakeSpitCommand
 import org.frc1778.commands.IntakeStopCommand
 import org.frc1778.commands.IntakeSuckCommand
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.utils.Source
+import java.util.HashMap
+import kotlin.io.path.Path
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -27,9 +35,7 @@ import org.ghrobotics.lib.utils.Source
  * directly reference the (single instance of the) object.
  */
 object RobotContainer {
-
-
-    //<editor-fold desc="Old Auto Things">
+    //<editor-fold desc="Old Auto Code ">
     /**
     val driveStation1 = {
     sequential {
@@ -120,33 +126,90 @@ object RobotContainer {
      */
     //</editor-fold>
 
+
     private val autoPathConstraints = PathConstraints(
-        4.0, // m/s
-        2.5 //m/s^2
+        2.5, // m/s
+        1.75 //m/s^2
+    )
+
+
+    //<editor-fold desc="Old Auto Things">
+    private val eventMap: HashMap<String, Command> = hashMapOf(
+        "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
+        "Lower Intake" to IntakeSuckCommand(),
+        "Pick Up Intake" to IntakeStopCommand(),
     )
 
 
     val stationOne = {
-        Drive.followTrajectory(
-            getAlliancePath("station 1", autoPathConstraints)
+        Drive.followTrajectoryGroupWithCommands(
+            getAlliancePathGroup("station 1", autoPathConstraints), eventMap
         )
     }
 
+    val station2Red = {
+        sequential {
+            +Drive.followTrajectoryGroupWithCommands(
+                PathPlanner.loadPathGroup(
+                    "Station 2 Red", autoPathConstraints
+                ), eventMap
+            )
+            +BalanceCommand()
+
+        }
+    }
 
     //TODO: Test
     val stationOneWithMarkers = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("station 1", autoPathConstraints), hashMapOf(
-                    "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(2.5),
-                    "Lower Intake" to IntakeSuckCommand(),
-                    "Pick Up Intake" to IntakeStopCommand(),
-                )
+                getAlliancePathGroup("station 1", autoPathConstraints), eventMap
             )
             //TODO: Get Balance Working
             //? Command Cannot be in event map as it requires the Drive subsystems, so we schedule it after
-            //+BalanceDriveCommand()
+            //+BalanceCommand()
         }
+    }
+
+    val station3WithMarkers = {
+        sequential {
+            +Drive.followTrajectoryGroupWithCommands(
+                getAlliancePathGroup("Station 3 Red", autoPathConstraints, Alliance.Blue), eventMap
+            )
+            +DriveBrakeCommand()
+
+            // +BalanceCommand()
+        }
+    }
+
+    val station1Red = {
+        sequential {
+            +Drive.followTrajectoryGroupWithCommands(
+                PathPlanner.loadPathGroup("Station 1 Red", autoPathConstraints), eventMap
+            )
+            +BalanceCommand()
+        }
+    }
+
+    val station1RedScore2 = {
+        sequential {
+            +Drive.followTrajectoryGroupWithCommands(
+                PathPlanner.loadPathGroup("Station 1 Red Score 2", autoPathConstraints), eventMap
+            )
+        }
+    }
+
+    val station1RedScore2ThenBalance = {
+        sequential {
+            +Drive.followTrajectoryGroupWithCommands(
+                PathPlanner.loadPathGroup("Station 1 Red Score 2 And Balance", autoPathConstraints), eventMap
+            )
+            +BalanceCommand()
+        }
+    }
+
+    val balance = {
+        BalanceCommand()
     }
 
     /**
@@ -156,7 +219,16 @@ object RobotContainer {
      * @param command The [Command] to run for this mode.
      */
     enum class AutoMode(val optionName: String, val command: Source<Command>) {
-        STATION_ONE("Station 1", stationOne), STATION_ONE_WITH_MARKERS("Station 1 With Markers", stationOneWithMarkers)
+        STATION_ONE("Station 1 Blue", stationOne),
+        STATION_ONE_RED("Station 1 Red", station1Red),
+        STATION_ONE_RED_SCORE_2("Station 1 Red Score 2", station1RedScore2),
+        STATION_ONE_RED_SCORE2_AND_BALANCE("Station 1 Red Score 2 And Balance", station1RedScore2ThenBalance),
+        STATION_ONE_WITH_MARKERS(
+            "Station 1 Blue With Markers",
+            stationOneWithMarkers
+        ),
+        STATION_TWO("Red Station 2", station2Red),
+        STATION_THREE_WITH_MARKERS("Station 3 Red", station3WithMarkers),
 
 
         ; //!Don't remove
@@ -204,8 +276,13 @@ object RobotContainer {
      * @return [List] of [PathPlannerTrajectory]
      * */
     private fun getAlliancePathGroup(name: String, constraints: PathConstraints) =
-            PathPlanner.loadPathGroup(name, constraints).map {
-                PathPlannerTrajectory.transformTrajectoryForAlliance(it, Robot.alliance)
-            }
+        PathPlanner.loadPathGroup(name, constraints).map {
+            PathPlannerTrajectory.transformTrajectoryForAlliance(it, Robot.alliance)
+        }
+
+    private fun getAlliancePathGroup(name: String, constraints: PathConstraints, alliance: Alliance) =
+        PathPlanner.loadPathGroup(name, constraints).map {
+            PathPlannerTrajectory.transformTrajectoryForAlliance(it, alliance)
+        }
 
 }

@@ -6,6 +6,7 @@ import org.ghrobotics.lib.commands.FalconCommand
 
 class IntakeStopCommand() : FalconCommand(Intake) {
     override fun initialize() {
+        Intake.retract()
         Intake.stop()
     }
 

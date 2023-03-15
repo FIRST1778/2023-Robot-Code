@@ -74,7 +74,7 @@ object Controls {
         // bug fix buttons
 //        button(1) {changeOn(ZeroExtensionCommand()) } // reset extension
         button(2) {}
-        button(3) {changeOn(sequential{+BalanceCommand()})}// other
+//        button(3) {changeOn(sequential{+BalanceCommand()})}// other
         // level of placement
         button(4) {
 //            changeOn {
@@ -127,7 +127,9 @@ object Controls {
 
             // cube
         } // cone/cube
-        button(10) // balance
+        button(10) {
+            change(BalanceCommand())
+        } // balance
         axisButton(0, -1.0) {
             changeOn {
                 Robot.scoringSide = Side.Left
