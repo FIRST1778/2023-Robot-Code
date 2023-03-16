@@ -28,6 +28,7 @@ import org.frc1778.Constants
 import org.frc1778.commands.PlaceGameObjectDriveCommand
 import org.frc1778.commands.TeleOpDriveCommand
 import org.frc1778.commands.SwerveTrajectoryTrackerCommand
+import org.frc1778.commands.BalanceCommand
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconNeoSwerveModule
 import org.frc1778.lib.FalconSwerveDrivetrain
@@ -235,11 +236,10 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         }, {})
         builder.addDoubleProperty("Max Angular Accel", {Constants.DriveConstants.maxAngularAcceleration.value * 10.0
         }, {})
-        builder.addDoubleProperty("Yaw", {Drive.robotPosition.rotation.degrees}, {})
-        builder.addDoubleProperty("Pitch", { pigeon.roll}, {})
-
+        builder.addDoubleProperty("Yaw", {pigeon.yaw}, {})
+        builder.addDoubleProperty("Pitch", {pigeon.pitch}, {})
+        builder.addDoubleProperty("Roll", {pigeon.roll}, {})
+        builder.addDoubleProperty("Inclination", {Math.toRadians(BalanceCommand.boardInclination())}, {})
     }
-
-
 }
 
