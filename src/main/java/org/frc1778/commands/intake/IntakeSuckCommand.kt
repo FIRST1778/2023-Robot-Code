@@ -1,17 +1,17 @@
-package org.frc1778.commands
+package org.frc1778.commands.intake
 
 import org.frc1778.subsystems.Intake
 import org.ghrobotics.lib.commands.FalconCommand
 
-
-class IntakeSpitCommand() : FalconCommand(Intake) {
+class IntakeSuckCommand() : FalconCommand(Intake) {
     override fun initialize() {
-        Intake.spit()
-        Intake.retract()
+        Intake.extend()
+        Intake.suck()
     }
 
     override fun cancel() {
         Intake.stop()
+        Intake.retract()
         super.cancel()
     }
 }

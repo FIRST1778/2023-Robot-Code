@@ -22,8 +22,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.Constants
-import org.frc1778.commands.SwerveTrajectoryTrackerCommand
-import org.frc1778.commands.SwerveTrajectoryTrackerWithMarkersCommand
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.debug.FalconDashboard

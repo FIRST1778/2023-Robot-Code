@@ -1,4 +1,4 @@
-package org.frc1778.commands
+package org.frc1778.commands.arm
 
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand

@@ -1,18 +1,7 @@
 package org.frc1778
 
-import edu.wpi.first.wpilibj.simulation.BatterySim
-import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim
-import edu.wpi.first.wpilibj.simulation.RoboRioSim
-import edu.wpi.first.wpilibj.simulation.SimHooks
-import org.frc1778.commands.ManipulatorAngleCommand
 import org.frc1778.simulation.WristSim
-import org.frc1778.subsystems.Arm
-import org.frc1778.subsystems.Manipulator
-import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
-import org.ghrobotics.lib.mathematics.units.derived.volts
-import org.ghrobotics.lib.mathematics.units.seconds
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class WristTests {

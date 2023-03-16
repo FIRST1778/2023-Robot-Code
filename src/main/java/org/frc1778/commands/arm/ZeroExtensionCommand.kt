@@ -1,4 +1,4 @@
-package org.frc1778.commands
+package org.frc1778.commands.arm
 
 import org.frc1778.subsystems.Arm
 import org.ghrobotics.lib.commands.FalconCommand

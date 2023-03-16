@@ -1,4 +1,4 @@
-package org.frc1778.commands
+package org.frc1778.commands.arm
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.DriverStation

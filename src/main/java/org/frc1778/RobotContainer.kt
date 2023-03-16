@@ -5,12 +5,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.InstantCommand
-import org.frc1778.commands.BalanceCommand
-import org.frc1778.commands.DriveToChargeStation
-import org.frc1778.commands.IntakeSpitCommand
-import org.frc1778.commands.IntakeStopCommand
-import org.frc1778.commands.IntakeSuckCommand
+import org.frc1778.commands.drive.BalanceCommand
+import org.frc1778.commands.drive.DriveToChargeStation
+import org.frc1778.commands.intake.IntakeSpitCommand
+import org.frc1778.commands.intake.IntakeStopCommand
+import org.frc1778.commands.intake.IntakeSuckCommand
 import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
@@ -122,7 +121,7 @@ object RobotContainer {
     //</editor-fold>
 
 
-    val autoPathConstraints = PathConstraints(
+    private val autoPathConstraints = PathConstraints(
         2.75, // m/s
         1.875 //m/s^2
     )
@@ -136,61 +135,25 @@ object RobotContainer {
     )
 
 
-    val station1Blue = {
+    val station1 = {
         Drive.followTrajectoryGroupWithCommands(
-            getAlliancePathGroup("Station 1 Red No Balance", autoPathConstraints, Alliance.Red, Alliance.Blue), eventMap
+            getAlliancePathGroup("Station 1", autoPathConstraints, Alliance.Red), eventMap
         )
     }
+
+    val station1Score2 = {
+        Drive.followTrajectoryGroupWithCommands(
+            getAlliancePathGroup("Station 1 Score 2", autoPathConstraints, Alliance.Red), eventMap
+        )
+
+    }
+
 
     val station2 = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
                 getAlliancePathGroup("Station 2", autoPathConstraints, Alliance.Red), eventMap
             )
-            +BalanceCommand()
-
-        }
-    }
-
-
-    val station3WithMarkers = {
-        sequential {
-            +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("Station 3 Red No Balance", autoPathConstraints, Alliance.Red), eventMap
-            )
-            +IntakeStopCommand()
-            // +BalanceCommand()
-        }
-    }
-
-    val station3Score2 = {
-        Drive.followTrajectoryGroupWithCommands(
-            getAlliancePathGroup("Station 3 Score 2", autoPathConstraints, Alliance.Red), eventMap
-        )
-    }
-
-    val station1Red = {
-        sequential {
-            +Drive.followTrajectoryGroupWithCommands(
-                PathPlanner.loadPathGroup("Station 1 Red No Balance", autoPathConstraints), eventMap
-            )
-//            +BalanceCommand()
-        }
-    }
-
-    val station1RedScore2 = {
-        Drive.followTrajectoryGroupWithCommands(
-            PathPlanner.loadPathGroup("Station 1 Red Score 2", autoPathConstraints), eventMap
-        )
-
-    }
-
-    val station1RedScore2ThenBalance = {
-        sequential {
-            +Drive.followTrajectoryGroupWithCommands(
-                PathPlanner.loadPathGroup("Station 1 Red Score 2 And Balance", autoPathConstraints), eventMap
-            )
-            +BalanceCommand()
         }
     }
 
@@ -203,6 +166,22 @@ object RobotContainer {
         }
     }
 
+    val station3 = {
+        sequential {
+            +Drive.followTrajectoryGroupWithCommands(
+                getAlliancePathGroup("Station 3", autoPathConstraints, Alliance.Red), eventMap
+            )
+            +IntakeStopCommand()
+            // +BalanceCommand()
+        }
+    }
+
+    val station3Score2 = {
+        Drive.followTrajectoryGroupWithCommands(
+            getAlliancePathGroup("Station 3 Score 2", autoPathConstraints, Alliance.Red), eventMap
+        )
+    }
+
 
     /**
      * A enumeration of the available autonomous modes.
@@ -211,29 +190,19 @@ object RobotContainer {
      * @param command The [Command] to run for this mode.
      */
     enum class AutoMode(val optionName: String, val command: Source<Command>) {
-        STATION_ONE_BLUE("Station 1 Blue", station1Blue), STATION_ONE_RED(
-            "Station 1 Red", station1Red
-        ),
-        STATION_ONE_RED_SCORE_2(
-            "Station 1 Red Score 2", station1RedScore2
-        ),
-        STATION_ONE_RED_SCORE2_AND_BALANCE(
-            "Station 1 Red Score 2 And Balance", station1RedScore2ThenBalance
-        ),
-        STATION_TWO("Red Station 2", station2), STATION_THREE_WITH_MARKERS(
-            "Station 3",
-            station3WithMarkers
-        ),
-        STATION_TWO_BALANCE("Station Two Balance", station2Balance),
+        STATION_ONE("Station 1", station1),
+        STATION_ONE_SCORE_2("Station 1 Score 2", station1Score2),
+        STATION_TWO("Station 2", station2),
+        STATION_TWO_BALANCE("Station 2 Leave & Balance", station2Balance),
+        STATION_THREE_WITH_MARKERS("Station 3", station3),
         STATION_THREE_SCORE_2("Station 3 Score 2", station3Score2),
-
 
 
         ; //!Don't remove
 
         companion object {
             /** The default auto mode. */
-            val default = STATION_ONE_RED
+            val default = STATION_ONE
         }
     }
 

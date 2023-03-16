@@ -1,24 +1,12 @@
-package org.frc1778.commands
+package org.frc1778.commands.drive
 
-import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.Timer
-import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.util.sendable.Sendable
-import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Translation3d
-import edu.wpi.first.math.geometry.Transform3d
-import org.frc1778.Constants
 import org.frc1778.subsystems.Drive
-import org.frc1778.Robot
 import org.ghrobotics.lib.commands.FalconCommand
 import kotlin.math.atan
-import kotlin.math.cos
-import kotlin.math.sign
 import kotlin.math.sin
-import kotlin.math.withSign
-import com.ctre.phoenix.ErrorCode as PhoenixErrorCode
 
 class BalanceCommand: FalconCommand(Drive) {
     companion object {

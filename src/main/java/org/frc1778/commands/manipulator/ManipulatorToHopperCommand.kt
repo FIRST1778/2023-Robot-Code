@@ -1,8 +1,10 @@
-package org.frc1778.commands
+package org.frc1778.commands.manipulator
 
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.GamePiece
 import org.frc1778.Robot
+import org.frc1778.commands.arm.ArmAngleCommand
+import org.frc1778.commands.arm.ArmExtensionCommand
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator

@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj2.command.FunctionalCommand
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import java.util.HashMap
 
+/**
+ * Private code from Path Planner we needed to extract
+ */
 object PathPlannerTrajectoryStopEventBuilder {
      fun stopEventGroup(stopEvent: PathPlannerTrajectory.StopEvent, eventMap: HashMap<String, Command>): CommandBase {
         if (stopEvent.names.isEmpty()) {

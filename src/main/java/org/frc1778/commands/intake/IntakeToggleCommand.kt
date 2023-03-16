@@ -1,4 +1,4 @@
-package org.frc1778.commands
+package org.frc1778.commands.intake
 
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.frc1778.subsystems.Intake

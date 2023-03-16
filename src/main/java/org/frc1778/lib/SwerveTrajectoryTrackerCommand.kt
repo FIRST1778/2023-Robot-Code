@@ -6,7 +6,7 @@
  * Copyright 2019, Green Hope Falcons
  */
 
-package org.frc1778.commands
+package org.frc1778.lib
 
 import edu.wpi.first.math.geometry.Pose2d
 import org.frc1778.lib.FalconSwerveDrivetrain

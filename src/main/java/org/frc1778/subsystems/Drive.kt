@@ -22,9 +22,8 @@ import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.Constants
 import org.frc1778.commands.PlaceGameObjectDriveCommand
-import org.frc1778.commands.TeleOpDriveCommand
-import org.frc1778.commands.SwerveTrajectoryTrackerCommand
-import org.frc1778.commands.BalanceCommand
+import org.frc1778.commands.drive.TeleOpDriveCommand
+import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconNeoSwerveModule
 import org.frc1778.lib.FalconSwerveDrivetrain

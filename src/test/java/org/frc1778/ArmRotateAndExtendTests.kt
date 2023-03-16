@@ -1,19 +1,5 @@
 package org.frc1778
 
-import org.frc1778.lib.ArmPosition
-import edu.wpi.first.wpilibj.simulation.*
-import org.frc1778.Constants.ArmConstants.DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL
-import org.frc1778.commands.ArmRotateAndExtend
-import org.frc1778.simulation.ArmJointSim
-import org.frc1778.simulation.ExtensionSim
-import org.frc1778.subsystems.Arm
-import org.ghrobotics.lib.mathematics.units.Meter
-import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.derived.*
-import org.ghrobotics.lib.mathematics.units.meters
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
-
 class ArmRotateAndExtendTests {
 
     /*

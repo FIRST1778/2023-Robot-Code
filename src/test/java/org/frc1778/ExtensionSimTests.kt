@@ -1,19 +1,5 @@
 package org.frc1778
 
-import edu.wpi.first.wpilibj.simulation.BatterySim
-import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim
-import edu.wpi.first.wpilibj.simulation.RoboRioSim
-import edu.wpi.first.wpilibj.simulation.SimHooks
-import org.frc1778.commands.ArmAngleCommand
-import org.frc1778.simulation.ArmJointSim
-import org.frc1778.simulation.ExtensionSim
-import org.frc1778.subsystems.Arm
-import org.ghrobotics.lib.mathematics.units.derived.degrees
-import org.ghrobotics.lib.mathematics.units.derived.volts
-import org.ghrobotics.lib.mathematics.units.meters
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Test
-
 class ExtensionSimTests {
     /*
     @Test
