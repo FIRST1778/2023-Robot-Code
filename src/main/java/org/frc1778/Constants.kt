@@ -41,7 +41,7 @@ object Constants {
         private const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
 
         private val swerveDriveWheelOffsets = mapOf(
-            "Top Left" to 325.1,
+            "Top Left" to 272.5,
             "Top Right" to 18.3,
             "Bottom Right" to 48.77,
             "Bottom Left" to 273.1,

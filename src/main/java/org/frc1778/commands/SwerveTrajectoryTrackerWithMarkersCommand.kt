@@ -1,9 +1,10 @@
 package org.frc1778.commands
 
-import com.pathplanner.lib.PathPlannerTrajectory
+
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.lib.FalconSwerveDrivetrain
+import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.debug.FalconDashboard
 import java.util.*

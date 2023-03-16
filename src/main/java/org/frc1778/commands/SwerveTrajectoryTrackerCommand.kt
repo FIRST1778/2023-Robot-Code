@@ -8,12 +8,14 @@
 
 package org.frc1778.commands
 
-import com.pathplanner.lib.PathPlannerTrajectory
+import edu.wpi.first.math.geometry.Pose2d
 import org.frc1778.lib.FalconSwerveDrivetrain
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.DriverStation
+import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.Timer
+import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
@@ -22,8 +24,7 @@ import org.ghrobotics.lib.mathematics.units.inFeet
 import org.ghrobotics.lib.utils.Source
 
 class SwerveTrajectoryTrackerCommand(
-    private val drivetrain: FalconSwerveDrivetrain<*>,
-    private val trajectorySource: Source<PathPlannerTrajectory>
+    private val drivetrain: FalconSwerveDrivetrain<*>, private val trajectorySource: Source<PathPlannerTrajectory>
 ) : FalconCommand(drivetrain) {
 
     private var prevStates = Array(4) { SwerveModuleState() }
@@ -34,6 +35,9 @@ class SwerveTrajectoryTrackerCommand(
 
     override fun initialize() {
         trajectory = trajectorySource()
+        drivetrain.setTrajectory(trajectory)
+
+        timer.reset()
         timer.start()
 
         prevStates = Array(4) { SwerveModuleState() }
@@ -46,9 +50,7 @@ class SwerveTrajectoryTrackerCommand(
         val currentTrajectoryState = trajectory.sample(elapsed) as PathPlannerTrajectory.PathPlannerState
 
         val chassisSpeeds = drivetrain.controller.calculate(
-            drivetrain.robotPosition,
-            currentTrajectoryState,
-            currentTrajectoryState.holonomicRotation
+            drivetrain.robotPosition, currentTrajectoryState, currentTrajectoryState.holonomicRotation
         )
 
         val wheelStates = drivetrain.kinematics.toSwerveModuleStates(chassisSpeeds)
@@ -56,6 +58,12 @@ class SwerveTrajectoryTrackerCommand(
         drivetrain.setOutputSI(
             wheelStates
         )
+
+        if (TimedRobot.isSimulation()) {
+            drivetrain.resetPosition(
+                Pose2d(currentTrajectoryState.poseMeters.translation, currentTrajectoryState.holonomicRotation)
+            )
+        }
 
         if (currentTrajectoryState != null) {
             val referencePose = currentTrajectoryState.poseMeters
