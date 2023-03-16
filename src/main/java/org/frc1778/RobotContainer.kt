@@ -1,11 +1,11 @@
 package org.frc1778
 
 
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.frc1778.commands.BalanceCommand
 import org.frc1778.commands.DriveToChargeStation
 import org.frc1778.commands.IntakeSpitCommand
@@ -123,8 +123,8 @@ object RobotContainer {
 
 
     val autoPathConstraints = PathConstraints(
-        2.5, // m/s
-        1.75 //m/s^2
+        2.75, // m/s
+        1.875 //m/s^2
     )
 
 
@@ -136,44 +136,37 @@ object RobotContainer {
     )
 
 
-val station1Blue = {
-    Drive.followTrajectoryGroupWithCommands(
-        getAlliancePathGroup("Station 1 Red", autoPathConstraints, Alliance.Red, Alliance.Blue), eventMap
-    )
-}
+    val station1Blue = {
+        Drive.followTrajectoryGroupWithCommands(
+            getAlliancePathGroup("Station 1 Red No Balance", autoPathConstraints, Alliance.Red, Alliance.Blue), eventMap
+        )
+    }
 
-    val station2Red = {
+    val station2 = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                PathPlanner.loadPathGroup(
-                    "Station 2 Red", autoPathConstraints
-                ), eventMap
+                getAlliancePathGroup("Station 2", autoPathConstraints, Alliance.Red), eventMap
             )
             +BalanceCommand()
 
         }
     }
 
-    //TODO: Test
-    val stationOneWithMarkers = {
-        sequential {
-            +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("station 1", autoPathConstraints), eventMap
-            )
-            //TODO: Get Balance Working
-            //? Command Cannot be in event map as it requires the Drive subsystems, so we schedule it after
-            //+BalanceCommand()
-        }
-    }
 
     val station3WithMarkers = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("Station 3 Red No Balance", autoPathConstraints, Alliance.Blue), eventMap
+                getAlliancePathGroup("Station 3 Red No Balance", autoPathConstraints, Alliance.Red), eventMap
             )
-
+            +IntakeStopCommand()
             // +BalanceCommand()
         }
+    }
+
+    val station3Score2 = {
+        Drive.followTrajectoryGroupWithCommands(
+            getAlliancePathGroup("Station 3 Score 2", autoPathConstraints, Alliance.Red), eventMap
+        )
     }
 
     val station1Red = {
@@ -201,9 +194,15 @@ val station1Blue = {
         }
     }
 
-    val balance = {
-        BalanceCommand()
+    val station2Balance = {
+        sequential {
+            +Drive.followTrajectoryGroupWithCommands(
+                getAlliancePathGroup("Station 2 Balance", autoPathConstraints, Alliance.Red), eventMap
+            )
+            +BalanceCommand()
+        }
     }
+
 
     /**
      * A enumeration of the available autonomous modes.
@@ -212,8 +211,7 @@ val station1Blue = {
      * @param command The [Command] to run for this mode.
      */
     enum class AutoMode(val optionName: String, val command: Source<Command>) {
-        STATION_ONE_BLUE("Station 1 Blue", station1Blue),
-        STATION_ONE_RED(
+        STATION_ONE_BLUE("Station 1 Blue", station1Blue), STATION_ONE_RED(
             "Station 1 Red", station1Red
         ),
         STATION_ONE_RED_SCORE_2(
@@ -222,10 +220,13 @@ val station1Blue = {
         STATION_ONE_RED_SCORE2_AND_BALANCE(
             "Station 1 Red Score 2 And Balance", station1RedScore2ThenBalance
         ),
-        STATION_ONE_WITH_MARKERS(
-            "Station 1 Blue With Markers", stationOneWithMarkers
+        STATION_TWO("Red Station 2", station2), STATION_THREE_WITH_MARKERS(
+            "Station 3",
+            station3WithMarkers
         ),
-        STATION_TWO("Red Station 2", station2Red), STATION_THREE_WITH_MARKERS("Station 3 Red", station3WithMarkers),
+        STATION_TWO_BALANCE("Station Two Balance", station2Balance),
+        STATION_THREE_SCORE_2("Station 3 Score 2", station3Score2),
+
 
 
         ; //!Don't remove
@@ -267,37 +268,10 @@ val station1Blue = {
         }
     }
 
-    /**
-     * Get path from path planner transformed to the current [DriverStation.Alliance]
-     *
-     * @param name Name of the Path
-     * @param constraints Path Constraints
-     * @return [PathPlannerTrajectory]
-     */
-    private fun getAlliancePath(name: String, constraints: PathConstraints) =
-        PathPlannerTrajectory.transformTrajectoryForAlliance(
-            PathPlanner.loadPath(name, constraints), Robot.alliance
-        )
 
-    /**
-     * Get path group from path planner transformed to the current [DriverStation.Alliance]
-     *
-     * @param name Name of the Path
-     * @param constraints Path Constraints
-     * @return [List] of [PathPlannerTrajectory]
-     * */
-    private fun getAlliancePathGroup(name: String, constraints: PathConstraints) =
-        PathPlanner.loadPathGroup(name, constraints).map {
-            PathPlannerTrajectory.transformTrajectoryForAlliance(it, Robot.alliance)
-        }
-
-    private fun getAlliancePathGroup(name: String, constraints: PathConstraints, alliance: Alliance) =
-        PathPlanner.loadPathGroup(name, constraints).map {
-            PathPlannerTrajectory.transformTrajectoryForAlliance(it, alliance)
-        }
-
-    private fun getAlliancePathGroup(name: String, constraints: PathConstraints, from: Alliance, to: Alliance) =
-        PathPlanner.loadPathGroup(name, constraints).map {
-            PathPlannerTrajectory.transformTrajectoryForAlliance(it, from, to)
-        }
+    private fun getAlliancePathGroup(
+        name: String, constraints: PathConstraints, from: Alliance, to: Alliance = Robot.alliance
+    ) = PathPlanner.loadPathGroup(name, constraints).map {
+        PathPlannerTrajectory.transformTrajectoryForAlliance(it, from, to)
+    }
 }

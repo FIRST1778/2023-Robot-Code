@@ -52,7 +52,7 @@ object Intake : FalconSubsystem() {
     }
 
     fun spit() {
-        setMotorVoltage(-intakeVoltage * 1.5)
+        setMotorVoltage(-intakeVoltage * 1.25)
     }
 
     fun stop() {

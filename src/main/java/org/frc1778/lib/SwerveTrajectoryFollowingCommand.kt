@@ -26,6 +26,7 @@ class SwerveTrajectoryFollowingCommand(
     }
 
     override fun initialize() {
+        drivetrain.controller.thetaController.reset(drivetrain.robotPosition.rotation.radians)
         command.initialize()
     }
 

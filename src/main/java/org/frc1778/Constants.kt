@@ -26,7 +26,6 @@ import kotlin.math.hypot
 object Constants {
 
     object DriveConstants {
-
         val driveTab: ShuffleboardTab = Shuffleboard.getTab("Drive")!!
         const val wheelBase: Double = 23.5
         const val trackWidth: Double = 23.5

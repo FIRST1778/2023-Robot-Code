@@ -22,7 +22,7 @@ import kotlin.math.abs
 
 class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConstants) :
     AbstractFalconSwerveModule<FalconMAX<Meter>, FalconMAX<Radian>>, Sendable {
-    private var resetIteration: Int = 0
+    private var resetIteration: Int = 500
     private var referenceAngle: Double = 0.0
     val name = swerveModuleConstants.kName
     private val maxVoltage = swerveModuleConstants.kDriveMaxVoltage

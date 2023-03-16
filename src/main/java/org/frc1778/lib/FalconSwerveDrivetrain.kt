@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj2.command.Command
+import org.frc1778.Constants
 import org.frc1778.commands.SwerveTrajectoryTrackerCommand
 import org.frc1778.commands.SwerveTrajectoryTrackerWithMarkersCommand
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
@@ -184,6 +185,7 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> : Tr
     override fun lateInit() {
         resetPosition(Pose2d(), modules.positions.toTypedArray())
         fieldTab.add("Field", field).withSize(8, 4)
+        Constants.DriveConstants.driveTab.add("Theta Controller", controller.thetaController)
     }
 
     override fun setNeutral() {

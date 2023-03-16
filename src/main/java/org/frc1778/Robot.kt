@@ -125,6 +125,7 @@ object Robot : FalconTimedRobot() {
 
     override fun robotPeriodic() {
 
+        Shuffleboard.update()
         Controls.driverController.update()
         Controls.operatorControllerRed.update()
         Controls.operatorControllerBlue.update()
@@ -141,20 +142,11 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun autonomousInit() {
-//        Arm.resetIsZeroed() // DO NOT REMOVE
-//        Drive.resetPosition(Pose2d(1.85, 2.80, Rotation2d.fromDegrees(0.0)), Drive.modules.positions.toTypedArray())
-//        Intake.retract()
-//        Manipulator.open()
-//        RobotContainer.getAutonomousCommand().schedule()
 
-//        IntakeSpitCommand().withTimeout(7.5).schedule()
-
-//        trajectoryCommand = Drive.followTrajectory(trajectory)
-//        Drive.setPose(trajectory.initialHolonomicPose)
         alliance = DriverStation.getAlliance()
         autonomousCommand = RobotContainer.getAutonomousCommand()
         autonomousCommand?.schedule()
-//        trajectoryCommand.schedule()
+
 
     }
 

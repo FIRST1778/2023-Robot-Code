@@ -131,7 +131,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
             0.02,
             TrapezoidProfile.Constraints(
                 Constants.DriveConstants.maxAngularSpeed.value * 30.0,
-                Constants.DriveConstants.maxAngularAcceleration.value * 23.0
+                Constants.DriveConstants.maxAngularAcceleration.value * 18.5
             )
 
         )

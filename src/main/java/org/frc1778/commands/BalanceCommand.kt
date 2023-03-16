@@ -69,7 +69,7 @@ class BalanceCommand: FalconCommand(Drive) {
     override fun execute() {
         val inclination = boardInclination()
         val velocity = pid.calculate(sin(inclination), 0.0)
-        Drive.swerveDrive(velocity * Robot.driveInversion, 0.0, 0.0, true)
+        Drive.swerveDrive(velocity, 0.0, 0.0, true)
     }
 
     override fun end(interrupted: Boolean) {
