@@ -26,7 +26,8 @@
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/Shuffleboard/Drive/Drive": "Subsystem",
       "/Shuffleboard/Field/Field": "Field2d",
-      "/SmartDashboard/Auto choices": "String Chooser"
+      "/SmartDashboard/Auto choices": "String Chooser",
+      "/SmartDashboard/Balance?": "String Chooser"
     },
     "windows": {
       "/Shuffleboard/Drive/Drive": {
@@ -40,6 +41,11 @@
         }
       },
       "/SmartDashboard/Auto choices": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Balance?": {
         "window": {
           "visible": true
         }

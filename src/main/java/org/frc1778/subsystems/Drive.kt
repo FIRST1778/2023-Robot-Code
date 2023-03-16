@@ -1,10 +1,6 @@
 package org.frc1778.subsystems
 
 import com.ctre.phoenix.sensors.Pigeon2
-import com.pathplanner.lib.PathConstraints
-import com.pathplanner.lib.PathPlanner
-import com.pathplanner.lib.PathPlannerTrajectory
-import com.pathplanner.lib.PathPoint
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.controller.HolonomicDriveController
 import edu.wpi.first.math.controller.PIDController
@@ -27,10 +23,13 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.Constants
 import org.frc1778.commands.PlaceGameObjectDriveCommand
 import org.frc1778.commands.TeleOpDriveCommand
-import org.frc1778.commands.SwerveTrajectoryTrackerCommand
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconNeoSwerveModule
 import org.frc1778.lib.FalconSwerveDrivetrain
+import org.frc1778.lib.pathplanner.PathConstraints
+import org.frc1778.lib.pathplanner.PathPlanner
+import org.frc1778.lib.pathplanner.PathPlannerTrajectory
+import org.frc1778.lib.pathplanner.PathPoint
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
@@ -129,8 +128,8 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
             0.0,
             0.02,
             TrapezoidProfile.Constraints(
-                Constants.DriveConstants.maxAngularSpeed.value * 40.0,
-                Constants.DriveConstants.maxAngularAcceleration.value * 32.5
+                Constants.DriveConstants.maxAngularSpeed.value * 30.0,
+                Constants.DriveConstants.maxAngularAcceleration.value * 23.0
             )
 
         )

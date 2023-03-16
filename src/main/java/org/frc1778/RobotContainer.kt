@@ -1,27 +1,22 @@
 package org.frc1778
 
-import com.pathplanner.lib.PathConstraints
-import com.pathplanner.lib.PathPlanner
-import com.pathplanner.lib.PathPlannerTrajectory
-import com.playingwithfusion.CANVenom.BrakeCoastMode
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
+
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.frc1778.commands.BalanceCommand
-import org.frc1778.commands.DriveBrakeCommand
+import org.frc1778.commands.DriveToChargeStation
 import org.frc1778.commands.IntakeSpitCommand
 import org.frc1778.commands.IntakeStopCommand
 import org.frc1778.commands.IntakeSuckCommand
+import org.frc1778.lib.pathplanner.PathConstraints
+import org.frc1778.lib.pathplanner.PathPlanner
+import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.utils.Source
-import java.util.HashMap
-import kotlin.io.path.Path
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -127,7 +122,7 @@ object RobotContainer {
     //</editor-fold>
 
 
-    private val autoPathConstraints = PathConstraints(
+    val autoPathConstraints = PathConstraints(
         2.5, // m/s
         1.75 //m/s^2
     )
@@ -141,11 +136,11 @@ object RobotContainer {
     )
 
 
-    val stationOne = {
-        Drive.followTrajectoryGroupWithCommands(
-            getAlliancePathGroup("station 1", autoPathConstraints), eventMap
-        )
-    }
+val station1Blue = {
+    Drive.followTrajectoryGroupWithCommands(
+        getAlliancePathGroup("Station 1 Red", autoPathConstraints, Alliance.Red, Alliance.Blue), eventMap
+    )
+}
 
     val station2Red = {
         sequential {
@@ -174,9 +169,8 @@ object RobotContainer {
     val station3WithMarkers = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("Station 3 Red", autoPathConstraints, Alliance.Blue), eventMap
+                getAlliancePathGroup("Station 3 Red No Balance", autoPathConstraints, Alliance.Blue), eventMap
             )
-            +DriveBrakeCommand()
 
             // +BalanceCommand()
         }
@@ -185,18 +179,17 @@ object RobotContainer {
     val station1Red = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                PathPlanner.loadPathGroup("Station 1 Red", autoPathConstraints), eventMap
+                PathPlanner.loadPathGroup("Station 1 Red No Balance", autoPathConstraints), eventMap
             )
-            +BalanceCommand()
+//            +BalanceCommand()
         }
     }
 
     val station1RedScore2 = {
-        sequential {
-            +Drive.followTrajectoryGroupWithCommands(
-                PathPlanner.loadPathGroup("Station 1 Red Score 2", autoPathConstraints), eventMap
-            )
-        }
+        Drive.followTrajectoryGroupWithCommands(
+            PathPlanner.loadPathGroup("Station 1 Red Score 2", autoPathConstraints), eventMap
+        )
+
     }
 
     val station1RedScore2ThenBalance = {
@@ -219,23 +212,27 @@ object RobotContainer {
      * @param command The [Command] to run for this mode.
      */
     enum class AutoMode(val optionName: String, val command: Source<Command>) {
-        STATION_ONE("Station 1 Blue", stationOne),
-        STATION_ONE_RED("Station 1 Red", station1Red),
-        STATION_ONE_RED_SCORE_2("Station 1 Red Score 2", station1RedScore2),
-        STATION_ONE_RED_SCORE2_AND_BALANCE("Station 1 Red Score 2 And Balance", station1RedScore2ThenBalance),
-        STATION_ONE_WITH_MARKERS(
-            "Station 1 Blue With Markers",
-            stationOneWithMarkers
+        STATION_ONE_BLUE("Station 1 Blue", station1Blue),
+        STATION_ONE_RED(
+            "Station 1 Red", station1Red
         ),
-        STATION_TWO("Red Station 2", station2Red),
-        STATION_THREE_WITH_MARKERS("Station 3 Red", station3WithMarkers),
+        STATION_ONE_RED_SCORE_2(
+            "Station 1 Red Score 2", station1RedScore2
+        ),
+        STATION_ONE_RED_SCORE2_AND_BALANCE(
+            "Station 1 Red Score 2 And Balance", station1RedScore2ThenBalance
+        ),
+        STATION_ONE_WITH_MARKERS(
+            "Station 1 Blue With Markers", stationOneWithMarkers
+        ),
+        STATION_TWO("Red Station 2", station2Red), STATION_THREE_WITH_MARKERS("Station 3 Red", station3WithMarkers),
 
 
         ; //!Don't remove
 
         companion object {
             /** The default auto mode. */
-            val default = STATION_ONE
+            val default = STATION_ONE_RED
         }
     }
 
@@ -247,13 +244,27 @@ object RobotContainer {
         setDefaultOption(AutoMode.default.optionName, AutoMode.default)
     }
 
+    private val balanceChooser = SendableChooser<Boolean>().apply {
+        addOption("Yes", true)
+        addOption("No", false)
+        setDefaultOption("No", false)
+    }
+
     init {
         SmartDashboard.putData("Auto choices", autoModeChooser)
+        SmartDashboard.putData("Balance?", balanceChooser)
     }
 
 
     fun getAutonomousCommand(): Command {
-        return autoModeChooser.selected?.command?.let { it() } ?: AutoMode.default.command()
+        return sequential {
+            +autoModeChooser.selected!!.command()
+            if (balanceChooser.selected!!) {
+                +DriveToChargeStation()
+                +BalanceCommand()
+            }
+
+        }
     }
 
     /**
@@ -285,4 +296,8 @@ object RobotContainer {
             PathPlannerTrajectory.transformTrajectoryForAlliance(it, alliance)
         }
 
+    private fun getAlliancePathGroup(name: String, constraints: PathConstraints, from: Alliance, to: Alliance) =
+        PathPlanner.loadPathGroup(name, constraints).map {
+            PathPlannerTrajectory.transformTrajectoryForAlliance(it, from, to)
+        }
 }

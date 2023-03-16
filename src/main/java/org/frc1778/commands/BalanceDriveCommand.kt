@@ -1,9 +1,5 @@
 package org.frc1778.commands
 
-import com.pathplanner.lib.PathPlannerTrajectory
-import com.pathplanner.lib.PathPlanner
-import com.pathplanner.lib.PathConstraints
-import com.pathplanner.lib.PathPoint
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Robot
@@ -14,6 +10,9 @@ import edu.wpi.first.math.geometry.Transform2d
 import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
+import org.frc1778.lib.pathplanner.PathConstraints
+import org.frc1778.lib.pathplanner.PathPlanner
+import org.frc1778.lib.pathplanner.PathPoint
 
 class BalanceDriveCommand : FalconCommand(Drive) {
     companion object {

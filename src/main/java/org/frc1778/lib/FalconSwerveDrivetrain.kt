@@ -8,7 +8,6 @@
 
 package org.frc1778.lib
 
-import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
@@ -24,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.SwerveTrajectoryTrackerCommand
 import org.frc1778.commands.SwerveTrajectoryTrackerWithMarkersCommand
+import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.localization.TimePoseInterpolatableBuffer

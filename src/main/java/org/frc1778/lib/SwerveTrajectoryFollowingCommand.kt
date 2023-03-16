@@ -1,9 +1,10 @@
 package org.frc1778.lib
 
-import com.pathplanner.lib.PathPlannerTrajectory
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.frc1778.lib.PathPlannerTrajectoryStopEventBuilder.stopEventGroup
+import org.frc1778.lib.pathplanner.PathPlannerTrajectory
+import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.sequential
 
@@ -21,6 +22,7 @@ class SwerveTrajectoryFollowingCommand(
             +drivetrain.followTrajectoryWithCommands(trajectory, eventMap)
         }
         +stopEventGroup(trajectories.last().endStopEvent, eventMap)
+
     }
 
     override fun initialize() {
@@ -31,6 +33,10 @@ class SwerveTrajectoryFollowingCommand(
         command.execute()
     }
 
+
+    override fun end(interrupted: Boolean) {
+        command.end(interrupted)
+    }
 
     override fun cancel() {
         super.cancel()

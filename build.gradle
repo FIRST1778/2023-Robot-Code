@@ -54,10 +54,13 @@ def includeDesktopSupport = true
 repositories {
     maven {url "https://jitpack.io"}
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
     implementation "com.github.FIRST1778:FalconLibrary:Swerve-Drive-Implementation-SNAPSHOT"
+
+//    implementation "com.pathplanner.lib:pathplannerLib-java:2023.4.4_BETA"
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
