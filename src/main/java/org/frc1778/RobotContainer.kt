@@ -3,7 +3,6 @@ package org.frc1778
 
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.commands.drive.DriveToChargeStation
@@ -16,6 +15,7 @@ import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.utils.Source
+import org.ghrobotics.lib.wrappers.networktables.ShuffleboardTabBuilder
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -29,96 +29,6 @@ import org.ghrobotics.lib.utils.Source
  * directly reference the (single instance of the) object.
  */
 object RobotContainer {
-    //<editor-fold desc="Old Auto Code ">
-    /**
-    val driveStation1 = {
-    sequential {
-    +InstantCommand({
-    Drive.resetPosition(
-    Pose2d(
-    Translation2d(1.85, 4.40), Rotation2d.fromDegrees(180.0)
-    ), Drive.modules.positions.toTypedArray()
-    )
-    })
-    +IntakeSpitCommand().withTimeout(7.5)
-    }
-    }
-
-    val driveStation2 = {
-    sequential {
-    +InstantCommand({
-    Drive.resetPosition(
-    Pose2d(
-    Translation2d(1.85, 2.7), Rotation2d.fromDegrees(180.0)
-    ), Drive.modules.positions.toTypedArray()
-    )
-    +IntakeSpitCommand().withTimeout(7.5)
-
-    }
-
-    )
-    }
-    }
-
-    val driveStation3 = {
-    sequential {
-    +InstantCommand({
-    Drive.resetPosition(
-    Pose2d(
-    Translation2d(1.85, 1.05), Rotation2d.fromDegrees(180.0)
-    ), Drive.modules.positions.toTypedArray()
-    )
-    +IntakeSpitCommand().withTimeout(7.5)
-
-    })
-    }
-    }
-
-    val driveStation4 = {
-    sequential {
-    +InstantCommand({
-    Drive.resetPosition(
-    Pose2d(
-    Translation2d(14.75, 4.40), Rotation2d.fromDegrees(0.0)
-    ), Drive.modules.positions.toTypedArray()
-    )
-    })
-    +IntakeSpitCommand().withTimeout(7.5)
-    }
-    }
-
-    val driveStation5 = {
-    sequential {
-    +InstantCommand({
-    Drive.resetPosition(
-    Pose2d(
-    Translation2d(14.75, 2.7), Rotation2d.fromDegrees(0.0)
-    ), Drive.modules.positions.toTypedArray()
-    )
-
-    })
-    +IntakeSpitCommand().withTimeout(7.5)
-
-    }
-
-    }
-
-    val driveStation6 = {
-    sequential {
-    +InstantCommand({
-    Drive.resetPosition(
-    Pose2d(
-    Translation2d(14.75, 1.05), Rotation2d.fromDegrees(0.0)
-    ), Drive.modules.positions.toTypedArray()
-    )
-
-    })
-    +IntakeSpitCommand().withTimeout(7.5)
-
-    }
-    }
-     */
-    //</editor-fold>
 
 
     private val autoPathConstraints = PathConstraints(
@@ -222,8 +132,18 @@ object RobotContainer {
     }
 
     init {
-        SmartDashboard.putData("Auto choices", autoModeChooser)
-        SmartDashboard.putData("Balance?", balanceChooser)
+//        SmartDashboard.putData("Auto choices", autoModeChooser)
+//        SmartDashboard.putData("Balance?", balanceChooser)
+        val autoTab = ShuffleboardTabBuilder("Auto")
+        autoTab.sendableChooser("Auto", autoModeChooser) {
+            position(0,0)
+            size(2, 1)
+        }
+        autoTab.sendableChooser("Balance?", balanceChooser) {
+            position(2, 0)
+            size(1,1)
+        }
+
     }
 
 
