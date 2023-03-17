@@ -115,21 +115,22 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     //TODO: Tune Holonomic Drive Controller
     override val controller: HolonomicDriveController = HolonomicDriveController(
         PIDController(
-            1.35,
+            1.2,
             0.0,
-            0.135
+            0.02125
+
         ),
         PIDController(
-            1.35,
+            1.2,
             0.0,
-            0.135
+            0.02125
         ),
         ProfiledPIDController(
             0.2,
             0.0,
             0.02,
             TrapezoidProfile.Constraints(
-                Constants.DriveConstants.maxAngularSpeed.value * 30.0,
+                Constants.DriveConstants.maxAngularSpeed.value * 25.0,
                 Constants.DriveConstants.maxAngularAcceleration.value * 18.5
             )
 

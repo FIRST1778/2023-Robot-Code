@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Spit Out Game Piece",
+          "Spit Out Game Piece Long",
           "Pick Up Intake"
         ],
         "executionBehavior": "sequential",
@@ -40,7 +40,7 @@
       },
       "holonomicAngle": 36.208725868553465,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 2.0,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -65,7 +65,7 @@
       },
       "holonomicAngle": 35.44994350209202,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 2.0,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -77,20 +77,20 @@
     },
     {
       "anchorPoint": {
-        "x": 10.635032939852595,
-        "y": 0.8197320562608539
+        "x": 10.619007914804316,
+        "y": 1.0086832332207267
       },
       "prevControl": {
-        "x": 10.895215835052667,
-        "y": 0.7935253796937567
+        "x": 10.879190810004388,
+        "y": 0.9824765566536295
       },
       "nextControl": {
-        "x": 10.374850044652522,
-        "y": 0.8459387328279514
+        "x": 10.358825019604243,
+        "y": 1.0348899097878241
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
-      "velOverride": null,
+      "velOverride": 1.5,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -102,27 +102,27 @@
     },
     {
       "anchorPoint": {
-        "x": 9.16507724789915,
-        "y": 0.8525575495747538
+        "x": 9.286472318233216,
+        "y": 1.0086832332207267
       },
       "prevControl": {
-        "x": 9.991185004443185,
-        "y": 0.8066626742111965
+        "x": 10.11258007477725,
+        "y": 0.9627883578571694
       },
       "nextControl": {
-        "x": 9.991185004443185,
-        "y": 0.8066626742111965
+        "x": 10.11258007477725,
+        "y": 0.9627883578571694
       },
       "holonomicAngle": 180.0,
       "isReversal": true,
       "velOverride": 0.5,
       "isLocked": false,
-      "isStopPoint": false,
+      "isStopPoint": true,
       "stopEvent": {
         "names": [],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
-        "waitTime": 0.5
+        "waitTime": 0.375
       }
     },
     {
@@ -177,12 +177,12 @@
     },
     {
       "anchorPoint": {
-        "x": 14.790670131589065,
-        "y": 1.0534013413159549
+        "x": 14.66404214016216,
+        "y": 1.1045903231248406
       },
       "prevControl": {
-        "x": 14.285239504612944,
-        "y": 0.7284816525455924
+        "x": 14.158611513186038,
+        "y": 0.7796706343544781
       },
       "nextControl": null,
       "holonomicAngle": 0,

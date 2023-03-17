@@ -21,6 +21,7 @@ import org.frc1778.subsystems.Drive.positions
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
 import org.frc1778.subsystems.Vision
+import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
 import kotlin.properties.Delegates
 
 /**
@@ -35,8 +36,8 @@ import kotlin.properties.Delegates
  */
 object Robot : FalconTimedRobot() {
     var alliance: Alliance = DriverStation.getAlliance()
-//    val alliance: DriverStation.Alliance = Alliance.Red
 
+    //    val alliance: DriverStation.Alliance = Alliance.Red
 
     val robotHeadingOnStart = 0.0
 

@@ -130,6 +130,7 @@ object RobotContainer {
     //<editor-fold desc="Old Auto Things">
     private val eventMap: HashMap<String, Command> = hashMapOf(
         "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
+        "Spit Out Game Piece Long" to IntakeSpitCommand().withTimeout(1.5),
         "Lower Intake" to IntakeSuckCommand(),
         "Pick Up Intake" to IntakeStopCommand(),
     )

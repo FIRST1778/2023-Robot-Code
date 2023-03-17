@@ -32,7 +32,7 @@ class DriveToChargeStation : FalconCommand(Drive) {
                 ).withControlLengths(0.025, 0.025),
                 PathPoint(
                     entryPoint.location, entryPoint.heading, holonomicRotation, 3.0
-                ).withControlLengths(.1, .5),
+                ).withControlLengths(.2, .5),
                 PathPoint(balancePoint.first, balancePoint.second, holonomicRotation).withPrevControlLength(.1)
             )
         )
@@ -59,28 +59,28 @@ class DriveToChargeStation : FalconCommand(Drive) {
 
     //
 
-    enum class BalanceLocation(val location: Translation2d, val heading: Rotation2d, val qualifier: Rectangle2d) {
+    enum class BalanceLocation(val location: Translation2d, val heading: Rotation2d, val holonomicRotation: Rotation2d, val qualifier: Rectangle2d) {
         BLUE_INNER(
 
-            Translation2d(1.9, 2.8), Rotation2d.fromDegrees(0.0), Rectangle2d(
+            Translation2d(1.9, 2.8), Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(0.0), Rectangle2d(
                 Translation2d(1.55, 5.25), Translation2d(2.6, .15)
             )
         ),
         BLUE_OUTER(
 
-            Translation2d(6.15, 2.8), Rotation2d.fromDegrees(180.0), Rectangle2d(
+            Translation2d(6.15, 2.8), Rotation2d.fromDegrees(180.0), Rotation2d.fromDegrees(1800.0), Rectangle2d(
                 Translation2d(5.3, 7.90), Translation2d(8.3, .15)
             )
         ),
         RED_INNER(
 
-            Translation2d(14.6, 2.8), Rotation2d.fromDegrees(180.0), Rectangle2d(
+            Translation2d(14.35, 2.8), Rotation2d.fromDegrees(180.0), Rotation2d.fromDegrees(180.0), Rectangle2d(
                 Translation2d(15.0, 5.25), Translation2d(13.75, .15)
             )
         ),
         RED_OUTER(
 
-            Translation2d(10.75, 2.8), Rotation2d.fromDegrees(0.0), Rectangle2d(
+            Translation2d(10.3, 2.8), Rotation2d.fromDegrees(0.0), Rotation2d.fromDegrees(0.0), Rectangle2d(
                 Translation2d(12.0, 7.90), Translation2d(8.3, .15)
             )
         );
