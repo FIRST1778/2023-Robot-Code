@@ -3,24 +3,28 @@ package org.frc1778
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.PlaceGameObjectCommand
 import org.frc1778.lib.FalconTimedRobot
+import org.frc1778.lib.PathFinding2023
+import org.frc1778.lib.pathplanner.PathConstraints
+import org.frc1778.lib.pathplanner.PathPlanner
+import org.frc1778.lib.pathplanner.server.PathPlannerServer
 import org.frc1778.subsystems.Arm
 import org.frc1778.subsystems.DotStar
 import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Drive.positions
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
 import org.frc1778.subsystems.Vision
+import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
 import kotlin.properties.Delegates
 
 /**
@@ -35,7 +39,8 @@ import kotlin.properties.Delegates
  */
 object Robot : FalconTimedRobot() {
     var alliance: Alliance = DriverStation.getAlliance()
-//    val alliance: DriverStation.Alliance = Alliance.Red
+
+    //    val alliance: DriverStation.Alliance = Alliance.Red
 
 
     val robotHeadingOnStart = 0.0
@@ -45,6 +50,7 @@ object Robot : FalconTimedRobot() {
 
 
     private var autonomousCommand: Command? = null
+
 
     val pcm = PneumaticHub(30)
     val compressor = pcm.makeCompressor()
@@ -110,6 +116,11 @@ object Robot : FalconTimedRobot() {
         // button bindings, and put our autonomous chooser on the dashboard.
         RobotContainer
 
+        PathPlannerServer.startServer(5811)
+
+
+
+
 
         Drive.setPose(Pose2d(0.0, 0.0, Rotation2d.fromDegrees(robotHeadingOnStart)))
 //        Drive.pigeon.yaw = 0.0
@@ -156,8 +167,48 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun teleopInit() {
+        alliance = DriverStation.getAlliance()
 
 
+        val pathFinder = PathFinding2023.fromJson(
+            "Nodes Blue", setOf(0, 4, 5, 6), setOf(
+                Rectangle2d(
+                    Translation2d(1.5, 5.45), Translation2d(5.75, 4.00)
+                ), Rectangle2d(
+                    Translation2d(5.75, 1.45), Translation2d(1.5, 0.0)
+                ), Rectangle2d(
+                    Translation2d(1.5, 5.45), Translation2d(2.75, 0.0)
+                ), Rectangle2d(
+                    Translation2d(9.85, 8.00), Translation2d(16.2, 5.5)
+                )
+            ), Alliance.Blue
+        )!!
+
+        val foundPath = pathFinder.findPath(
+            Pose2d(
+                Translation2d(
+                    8.00, 4.75
+                ), Rotation2d.fromDegrees(0.0)
+            ), ChassisSpeeds(), Pose2d(
+                Translation2d(
+                    2.00, 2.5
+                ), Rotation2d.fromDegrees(180.0)
+            )
+
+        )
+
+
+        val pathPlannerTrajectory = PathPlanner.generatePath(
+            PathConstraints(2.0, 1.5),
+            foundPath,
+        )
+
+        Drive.setTrajectory(
+            pathPlannerTrajectory
+        )
+        Drive.followTrajectory(pathPlannerTrajectory).schedule()
+
+        PathPlannerServer.sendActivePath(pathPlannerTrajectory.states)
 //        Arm.resetDesiredAngle()
 //        Arm.resetDesiredExtension()
 //        Manipulator.resetDesiredAngle()

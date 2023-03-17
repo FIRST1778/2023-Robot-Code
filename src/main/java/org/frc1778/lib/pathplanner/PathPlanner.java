@@ -492,7 +492,7 @@ public class PathPlanner {
     }
   }
 
-  private static List<PathPlannerTrajectory.Waypoint> getWaypointsFromJson(JSONObject json) {
+  public static List<PathPlannerTrajectory.Waypoint> getWaypointsFromJson(JSONObject json) {
     JSONArray jsonWaypoints = (JSONArray) json.get("waypoints");
 
     List<PathPlannerTrajectory.Waypoint> waypoints = new ArrayList<>();
