@@ -24,28 +24,30 @@
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/Ungrouped/PWMSparkMax[2]": "Motor Controller",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/Shuffleboard/Auto/Auto": "String Chooser",
+      "/Shuffleboard/Auto/Balance?": "String Chooser",
       "/Shuffleboard/Drive/Drive": "Subsystem",
       "/Shuffleboard/Field/Field": "Field2d",
       "/SmartDashboard/Auto choices": "String Chooser",
       "/SmartDashboard/Balance?": "String Chooser"
     },
     "windows": {
+      "/Shuffleboard/Auto/Auto": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Auto/Balance?": {
+        "window": {
+          "visible": true
+        }
+      },
       "/Shuffleboard/Drive/Drive": {
         "window": {
           "visible": true
         }
       },
       "/Shuffleboard/Field/Field": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Auto choices": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Balance?": {
         "window": {
           "visible": true
         }

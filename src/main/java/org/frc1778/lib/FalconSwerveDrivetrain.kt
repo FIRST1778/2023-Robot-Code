@@ -248,7 +248,7 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> : Tr
 
     fun followTrajectoryGroupWithCommands(
         trajectories: List<PathPlannerTrajectory>, eventMap: HashMap<String, Command>
-    ) = SwerveTrajectoryFollowingCommand(this, trajectories, eventMap)
+    ) = SwerveTrajectoryGroupTrackerCommand(this, trajectories, eventMap)
 
     protected class PeriodicIO {
         var leftFrontVoltage: SIUnit<Volt> = 0.volts

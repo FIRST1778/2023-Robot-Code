@@ -60,7 +60,7 @@ class SwerveTrajectoryTrackerCommand(
         )
 
         if (TimedRobot.isSimulation()) {
-            drivetrain.resetPosition(
+            drivetrain.     resetPosition(
                 Pose2d(currentTrajectoryState.poseMeters.translation, currentTrajectoryState.holonomicRotation)
             )
         }
