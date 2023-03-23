@@ -64,6 +64,7 @@ dependencies {
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
+    implementation 'com.github.ajalt.colormath:colormath:3.2.1'
 
 
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)

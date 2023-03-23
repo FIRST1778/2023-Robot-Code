@@ -1,5 +1,9 @@
 package org.frc1778.subsystems
 
+import com.github.ajalt.colormath.model.HSV
+import com.github.ajalt.colormath.model.RGB
+import com.github.ajalt.colormath.transform.Interpolator
+import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.wpilibj.SPI
 import org.ghrobotics.lib.commands.FalconSubsystem
 import kotlin.math.ceil
@@ -22,6 +26,41 @@ object DotStar : FalconSubsystem() {
     private val spi = SPI(SPI.Port.kOnboardCS0).apply {
         setClockRate(8_000_000)
     }
+
+
+    /**
+     * Red to blue animation using a color interpolator.
+     * Color interpreters take in a value form 0 to 1 and interpolates between the colors
+     * to create smooth animations.
+     * Tool to create gradients [here](ajalt.github.io/colormath/gradient)
+     */
+    val redToBlueAnimation = GradientAnimation(RGB.interpolator {
+        stop(RGB(51, 51, 221))
+        stop(RGB(255, 255, 255))
+        stop(RGB(255, 0, 0))
+    }, 4.0)
+
+    /**
+     * Gradiant Animation by interpolating between colors over a given time interval. Get sequence by calling the [next] function
+     *
+     * @property interpolator
+     * @param totalTime
+     */
+    class GradientAnimation(private val interpolator: Interpolator<RGB>, totalTime: Double) {
+        //Step amount for interpolation & Convert time to the closest periodic step
+        private val interpolatorStep = 1 / (totalTime - (totalTime % .2))
+        private var currentInterpolationValue = 0.0
+
+        fun next(): RGB {
+            currentInterpolationValue += interpolatorStep
+            if (currentInterpolationValue > 1.0) {
+                currentInterpolationValue = 0.0
+            }
+
+            return interpolator.interpolate(currentInterpolationValue)
+        }
+    }
+
 
     private fun makeLedFrame(r: Int, g: Int, b: Int): ByteArray {
         return byteArrayOf(
@@ -50,8 +89,7 @@ object DotStar : FalconSubsystem() {
     }
 
     override fun periodic() {
-        if (litUpCurrent == litUpGoal)
-            return
+        if (litUpCurrent == litUpGoal) return
 
         // Calculate animation.
         val dx: Double = (litUpGoal - litUpCurrent).toDouble() * ANIMATION_PER_TICK
