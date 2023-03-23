@@ -1,5 +1,7 @@
 package org.frc1778.commands.drive
 
+import kotlin.math.PI
+import kotlin.math.round
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.trajectory.TrapezoidProfile
@@ -8,28 +10,22 @@ import org.frc1778.Robot
 import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.commands.FalconCommand
 
-class TurnToGridCommand : FalconCommand(Drive) {
-
+class AlignTo180Command : FalconCommand(Drive) {
     private lateinit var targetRotation: Rotation2d
 
     override fun initialize() {
-        targetRotation = Rotation2d.fromDegrees(
-            when (Robot.alliance) {
-                DriverStation.Alliance.Red -> 0.0
-                else -> 180.0
-            }
-        )
-
-
         val initialState = Drive.robotPosition.rotation
         val initialSpeeds = Drive.kinematics.toChassisSpeeds(*Drive.swerveModuleStates().toTypedArray())
+
+        // Round to 180
+        val goal = PI * round(initialState.radians / PI)
+        targetRotation = Rotation2d(goal)
 
         Drive.controller.thetaController.reset(
             TrapezoidProfile.State(
                 initialState.radians, initialSpeeds.omegaRadiansPerSecond
             )
         )
-
     }
 
     override fun execute() {
