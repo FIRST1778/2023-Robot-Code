@@ -2,6 +2,8 @@ package org.frc1778.subsystems
 
 import edu.wpi.first.wpilibj.SPI
 import org.ghrobotics.lib.commands.FalconSubsystem
+import kotlin.math.ceil
+import kotlin.math.floor
 
 object DotStar : FalconSubsystem() {
     // Adafruit DotStars are addressable LEDs controlled via an SPI
@@ -15,8 +17,6 @@ object DotStar : FalconSubsystem() {
     // A helpful blog post which seems more factually correct (and has better
     // English) than the datasheets:
     //     https://cpldcpu.wordpress.com/2014/11/30/understanding-the-apa102-superled/
-    enum class Color { Yellow, Purple }
-
     private const val NUM_LEDS = 10 // ???
 
     private val spi = SPI(SPI.Port.kOnboardCS0).apply {
@@ -34,17 +34,39 @@ object DotStar : FalconSubsystem() {
         )
     }
 
-    fun display(color: Color) {
+    private val offFrame: ByteArray = byteArrayOf(0xE0.toByte(), 0.toByte(), 0.toByte(), 0.toByte())
+
+    private var litUpCurrent: Int = 0
+    private var litUpGoal: Int = 0
+    private const val ANIMATION_PER_TICK: Double = 0.1
+    private const val EXECUTES_PER_TICK: Int = 5  // 100 ms
+
+    fun animateOn() {
+        litUpGoal = NUM_LEDS
+    }
+
+    fun animateOff() {
+        litUpGoal = 0
+    }
+
+    override fun periodic() {
+        if (litUpCurrent == litUpGoal)
+            return
+
+        // Calculate animation.
+        val dx: Double = (litUpGoal - litUpCurrent).toDouble() * ANIMATION_PER_TICK
+        litUpCurrent += (if (dx >= 0) ceil(dx) else floor(dx)).toInt()
+
         // The start frame is at least 4 0x00 bytes.
         val startFrame = ByteArray(4) { 0x00.toByte() }
         spi.write(startFrame, startFrame.size)
 
-        val ledFrame: ByteArray = when (color) {
-            Color.Yellow -> makeLedFrame(0xFF, 0xFF, 0x00)
-            Color.Purple -> makeLedFrame(0xFF, 0x00, 0xFF)
-        }
-        repeat(NUM_LEDS) { //Could be -1
+        val ledFrame: ByteArray = makeLedFrame(0x80, 0x00, 0x80)
+        repeat(litUpCurrent) {
             spi.write(ledFrame, ledFrame.size)
+        }
+        repeat(NUM_LEDS - litUpCurrent) {
+            spi.write(offFrame, offFrame.size)
         }
 
         // The end frame is defined by the datasheet to be 4 0xFF bytes, but
