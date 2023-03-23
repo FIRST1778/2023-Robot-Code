@@ -183,10 +183,19 @@ object Constants {
 
 
     }
-    object ManipulatorConstants{
+
+    object ShooterConstants {
+        private const val ANGLE_MOTOR_GEAR_REDUCTION: Double = ((22.0 / 64.0) * (1.0 / 5.0) * (1.0 / 5.0))
+        val ANGLE_MOTOR_UNIT_MODEL = NativeUnitRotationModel((42.0 * (1 / ANGLE_MOTOR_GEAR_REDUCTION)).nativeUnits)
+        const val ANGLE_MOTOR_ID: Int = 15
+        val shooterTab = Shuffleboard.getTab("Shooter")!!
+    }
+
+    //<editor-fold desc="Old Constants">
+    object ManipulatorConstants {
         val ANGLE_MOTOR_MAIN_ID: Int = 15
         val ANGLE_MOTOR_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(2048.nativeUnits)
-        val DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL : NativeUnitRotationModel = NativeUnitRotationModel(1.nativeUnits)
+        val DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(1.nativeUnits)
         val manipulatorShuffleboardTab = Shuffleboard.getTab("Manipulator")
     }
 
@@ -210,6 +219,7 @@ object Constants {
         val ARM_EXTENSION_OFFSET = 36.5.inches
         val AllianceXOffset = 18.inches.value
     }
+    //</editor-fold>
 
     object VisionConstants {
         const val cameraName = "The Eye of Sauron"

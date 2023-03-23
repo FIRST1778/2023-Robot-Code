@@ -20,8 +20,10 @@ import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Drive.positions
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Manipulator
+import org.frc1778.subsystems.Shooter
 import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
+import org.ghrobotics.lib.mathematics.units.derived.volts
 import kotlin.properties.Delegates
 
 /**
@@ -95,8 +97,7 @@ object Robot : FalconTimedRobot() {
     init {
         +Vision
         +Drive
-        +Arm
-        +Manipulator
+        +Shooter
         +DotStar
         +Intake
     }
@@ -131,7 +132,7 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun disabledInit() {
-//        compressor.disable()
+        Shooter.parentShooterMotor.setNeutral()
     }
 
     override fun disabledPeriodic() {
@@ -159,7 +160,7 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun teleopInit() {
-
+//        Shooter.setVoltage(3.0.volts)
     }
 
     /** This method is called periodically during operator control.  */
