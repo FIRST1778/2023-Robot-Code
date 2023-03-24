@@ -37,7 +37,7 @@ object DotStar : FalconSubsystem() {
     // English) than the datasheets:
     //     https://cpldcpu.wordpress.com/2014/11/30/understanding-the-apa102-superled/
     private val spi = SPI(SPI.Port.kOnboardCS0).apply {
-        setClockRate(8_000_000)
+        setClockRate(4_000_000)
     }
 
     /**
@@ -60,7 +60,7 @@ object DotStar : FalconSubsystem() {
      */
     class GradientAnimation(private val interpolator: Interpolator<RGB>, totalTime: Double) {
         //Step amount for interpolation & Convert time to the closest periodic step
-        private val interpolatorStep = 1 / (totalTime - (totalTime % .2))
+        private val interpolatorStep = 1 / (totalTime - (totalTime % .02))
         private var currentInterpolationValue = 0.0
 
         fun next(): RGB {
@@ -81,15 +81,14 @@ object DotStar : FalconSubsystem() {
         // The start frame is at least 4 0x00 bytes.
         ByteArray(4) { 0x00.toByte() }
 
-    private fun ledFrame(r: Int, g: Int, b: Int, a: Int) =
-        byteArrayOf(
-            // The first 3 bits (111) begin an LED frame.  The next 5 bits
-            // are the brightness, which we always set to full (31 out of 31).
-            (0xE0 or (a and 0x1F)).toByte(),
-            // Blue-green-red seems to be the norm for color order, but we might
-            // need to change this.
-            b.toByte(), g.toByte(), r.toByte()
-        )
+    private fun ledFrame(r: Int, g: Int, b: Int) = byteArrayOf(
+        // The first 3 bits (111) begin an LED frame.  The next 5 bits
+        // are the brightness, which we always set to full (31 out of 31).
+        0xFF.toByte(),
+        // Blue-green-red seems to be the norm for color order, but we might
+        // need to change this.
+        b.toByte(), g.toByte(), r.toByte()
+    )
 
     private fun endFrame() =
         // The end frame is defined by the datasheet to be 4 0xFF bytes, but
@@ -100,11 +99,10 @@ object DotStar : FalconSubsystem() {
     override fun periodic() {
         emit(startFrame())
 
-        val led: ByteArray = ledFrame(0x80, 0x00, 0x80, 0xFF)
         // The LEDs which are farthest from the source need to have their frames
         // emitted first.
         repeat(LEDS) {
-            emit(led)
+            emit(ledFrame((LEDS-it)*(256/LEDS), 0x00, 0x80))
         }
 
         emit(endFrame())
