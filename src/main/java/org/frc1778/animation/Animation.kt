@@ -7,6 +7,10 @@ import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.Interpolator
 import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.wpilibj.Timer
+import kotlin.math.sin
+import kotlin.math.PI
+import kotlin.math.abs
+
 
 interface Animation {
     fun get(): RGB
