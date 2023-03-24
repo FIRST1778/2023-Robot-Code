@@ -71,7 +71,10 @@ object Shooter : FalconSubsystem(), Sendable {
     private var desiredAngleVelocity: Double = 0.0 // rad/s
     private var desiredAngle: SIUnit<Radian> = 0.0.radians
 
-    val encoder = ShooterAbsoluteEncoder(angleMotor.canSparkMax, NativeUnitRotationModel(1.nativeUnits))
+    val encoder = ShooterAbsoluteEncoder(angleMotor.canSparkMax, NativeUnitRotationModel(1.nativeUnits)).apply {
+        setInverted(true)
+        resetPositionRaw(0.0.nativeUnits)
+    }
 
     val angleControlEnabled = true
 
@@ -113,7 +116,7 @@ object Shooter : FalconSubsystem(), Sendable {
         anglePlant, angleController, angleObserver, 12.0, 0.020
     )
     //TODO Get angle offset for gravity/feedforward
-    val angleOffset : SIUnit<Radian> = 0.0.degrees
+    val angleOffset : SIUnit<Radian> = 36.0.degrees
     fun angleControl() {
         if (angleControlEnabled) {
             angleLoop.setNextR(VecBuilder.fill(desiredAngle.value, desiredAngleVelocity))
@@ -141,7 +144,7 @@ object Shooter : FalconSubsystem(), Sendable {
     }
     //TODO Get encoder offset
     fun initialize() {
-        encoder.resetPosition(130.degrees)
+//        encoder.resetPosition(130.degrees)
     }
 
     override fun periodic() {

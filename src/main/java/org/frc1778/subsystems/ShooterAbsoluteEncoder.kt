@@ -28,7 +28,11 @@ class ShooterAbsoluteEncoder(sparkMax: CANSparkMax, model: NativeUnitRotationMod
         get() = dutyCycleEncoder.velocity.nativeUnitsPer100ms
 
     override fun resetPositionRaw(newPosition: SIUnit<NativeUnit>) {
-        dutyCycleEncoder.zeroOffset = model.fromNativeUnitPosition(newPosition).value
+        dutyCycleEncoder.zeroOffset = newPosition.value
+    }
+
+    fun setInverted(inverted: Boolean) {
+        dutyCycleEncoder.inverted = inverted
     }
 
     override fun initSendable(builder: SendableBuilder?) {

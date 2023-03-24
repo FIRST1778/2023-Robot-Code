@@ -82,12 +82,14 @@ object Robot : FalconTimedRobot() {
 
     override fun disabledInit() {
         Shooter.parentShooterMotor.setNeutral()
+        Shooter.resetDesiredAngle()
     }
 
     override fun disabledPeriodic() {
 //        Arm.resetDesiredExtension()
 //        Arm.resetDesiredAngle()
 //        Manipulator.resetDesiredAngle()
+        Shooter.resetDesiredAngle()
     }
 
     override fun autonomousInit() {
@@ -99,6 +101,7 @@ object Robot : FalconTimedRobot() {
         }
         autonomousCommand = RobotContainer.getAutonomousCommand()
         autonomousCommand?.schedule()
+        Shooter.resetDesiredAngle()
 
 
     }
@@ -110,6 +113,7 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
 //        Shooter.setVoltage(3.0.volts)
+        Shooter.resetDesiredAngle()
     }
 
     /** This method is called periodically during operator control.  */

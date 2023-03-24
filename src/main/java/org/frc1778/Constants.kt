@@ -187,7 +187,7 @@ object Constants {
     object ShooterConstants {
         const val ANGLE_MOTOR_GEAR_REDUCTION: Double = ((22.0 / 64.0) * (1.0 / 5.0) * (1.0 / 5.0))
         val ANGLE_MOTOR_UNIT_MODEL = NativeUnitRotationModel((42.0 * (1 / ANGLE_MOTOR_GEAR_REDUCTION)).nativeUnits)
-        const val ANGLE_MOTOR_ID: Int = 15
+        const val ANGLE_MOTOR_ID: Int = 16
         val shooterTab = Shuffleboard.getTab("Shooter")!!
     }
 
