@@ -1,6 +1,8 @@
 package org.frc1778.subsystems
 
+import com.github.ajalt.colormath.Color
 import com.github.ajalt.colormath.model.HSV
+import com.github.ajalt.colormath.model.Oklab
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.Interpolator
 import com.github.ajalt.colormath.transform.interpolator
@@ -56,6 +58,14 @@ object DotStar : FalconSubsystem() {
         stop(RGB.from255(255, 0, 0))
     }, 4.0)
 
+    private val redPurpleBlueAnimation = GradientAnimation(Oklab.interpolator {
+        stop(RGB.from255(0, 0, 255).toOklab())
+        stop(RGB.from255(255, 255, 255).toOklab())
+        stop(RGB.from255(255, 0, 0).toOklab())
+        stop(RGB.from255(0, 0, 255).toOklab())
+        stop(RGB.from255(255, 255, 255).toOklab())
+    }, 4.0)
+
     /**
      * Gradiant Animation by interpolating between colors over a given time interval.
      * Call start() to start the timer, then call get() to get the current RGB value.
@@ -63,12 +73,14 @@ object DotStar : FalconSubsystem() {
      * @property interpolator
      * @param totalTime
      */
-    class GradientAnimation(private val interpolator: Interpolator<RGB>, private val totalTime: Double) {
+    class  GradientAnimation<T: Color>(private val interpolator: Interpolator<T>, private val totalTime: Double) {
         private val timer = Timer()
+
+
         init { timer.start() }
         fun get(): RGB {
             val interp = abs(sin(PI * timer.get() / totalTime))
-            return interpolator.interpolate(interp)
+            return interpolator.interpolate(interp).toSRGB()
         }
     }
 
