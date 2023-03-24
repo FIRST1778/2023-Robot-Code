@@ -1,5 +1,6 @@
 package org.frc1778.subsystems
 
+import com.github.ajalt.colormath.Color
 import com.github.ajalt.colormath.model.Oklab
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.interpolator
@@ -19,9 +20,7 @@ object DotStar : FalconSubsystem() {
 	var pixels = MutableList<RGB>(LEDS) {RGB(0,0,0)}
 
     /**
-     * Red to blue animation using a color interpolator. Color interpreters take in a value form 0
-     * to 1 and interpolates between the colors to create smooth animations. Tool to create
-     * gradients [here](ajalt.github.io/colormath/gradient)
+     * Red to blue animation using a color interpolator.
      */
     private val redToBlueAnimation =
             GradientAnimation(
@@ -45,8 +44,8 @@ object DotStar : FalconSubsystem() {
                     4.0
             )
 
-    var currentAnimation: Animation = redPurpleBlueAnimation
-    var animationEnabled = true
+    private var currentAnimation: Animation = redPurpleBlueAnimation
+    private var animationEnabled = true
 
     fun animateOn() {
         animationEnabled = true
@@ -55,6 +54,18 @@ object DotStar : FalconSubsystem() {
     fun animateOff() {
 		animationEnabled = false
     }
+
+    fun setAnimation(animation: Animation) {
+        currentAnimation = animation
+        currentAnimation.reset()
+    }
+
+
+
+    fun fill(color: Color) {
+        pixels.fill(color.toSRGB())
+    }
+
 
     // Adafruit DotStars are addressable LEDs controlled via an SPI
     // interface.  We use them to display purple or yellow lights so that the
@@ -102,7 +113,7 @@ object DotStar : FalconSubsystem() {
         // The LEDs which are farthest from the source need to have their frames
         // emitted first.
         if (animationEnabled) {
-            val led = ledFrame(redToBlueAnimation.get())
+            val led = ledFrame(currentAnimation.get())
             repeat(LEDS) { emit(led) }
         } else {
 			pixels.forEach {
