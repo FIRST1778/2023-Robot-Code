@@ -10,7 +10,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 object DotStar : FalconSubsystem() {
-    private const val LEDS = 10 // ???
+    private const val LEDS = 7
     private const val ANIMATION_PER_TICK: Double = 0.1
     private const val TICK_SPEED: Int = 5  // 100 ms
     private var ledsNow: Int = 0
@@ -98,27 +98,12 @@ object DotStar : FalconSubsystem() {
         ByteArray((LEDS + 15) / 16) { 0xFF.toByte() }
 
     override fun periodic() {
-        executesTillAnimate--
-        if (executesTillAnimate != 0) {
-            return
-        } else {
-            executesTillAnimate = TICK_SPEED
-        }
-
         emit(startFrame())
 
-        // Calculate animation.
-        val dx: Double = (ledsGoal - ledsNow).toDouble() * ANIMATION_PER_TICK
-        ledsNow += (if (dx >= 0) ceil(dx) else floor(dx)).toInt()
-
         val led: ByteArray = ledFrame(0x80, 0x00, 0x80, 0xFF)
-        val off: ByteArray = ledFrame(0, 0, 0, 0)
         // The LEDs which are farthest from the source need to have their frames
         // emitted first.
-        repeat(LEDS - ledsNow) {
-            emit(off)
-        }
-        repeat(ledsNow) {
+        repeat(LEDS) {
             emit(led)
         }
 
