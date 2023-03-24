@@ -11,6 +11,8 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Transform2d
 import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.geometry.Translation3d
+import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
@@ -35,6 +37,8 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.utils.Source
 import kotlin.math.hypot
+import kotlin.math.atan
+import kotlin.math.sin
 
 object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     var aprilTagsEnabled: Boolean = false
@@ -222,6 +226,34 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         )
     }
 
+	fun boardInclination(): Double {
+            // Our robot is conceptually a rectangle, and a rectangle is basically a square,
+            // and squares are planes.  So think of robot rotation as defining a plane.
+            // Our goal is to find the angle between the robot plane and the ground, going in the
+            // X direction.
+            //
+            // A plane is defined uniquely by a point on it and a vector (starting at the point)
+            // perpendicular to the plane --- that is, pointing up.  The point will be (0,0,0)
+            // and the vector will be (0,0,1).  We rotate by yaw, pitch, and roll to find the
+            // actual current value of the vector.
+            //
+            // To find the angle of the plane along the X axis, we calculate a point on the plane
+            // (1, 0, z).  If the rotated vector ends at (a, b, c):
+            //     ax + by + cz = 0
+            // Substituting and rearranging:
+            //     a(1) + b(0) + cz = 0
+            //     a + cz = 0
+            //     cz = -a
+            //     z = -a/c
+            val yaw = Drive.robotPosition.rotation.radians
+            val pitch = Math.toRadians(Drive.pigeon.pitch)
+            val roll = Math.toRadians(Drive.pigeon.roll)
+            val rotation = Rotation3d(roll, pitch, yaw)
+            val upVector = Translation3d(0.0, 0.0, 1.0).rotateBy(rotation)
+            val z: Double = -upVector.x/upVector.z
+            return atan(z)
+        }
+
 
 //    override fun periodic() {
 //        super.periodic() //DONT REMOVE
@@ -237,7 +269,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         builder.addDoubleProperty("Yaw", {pigeon.yaw}, {})
         builder.addDoubleProperty("Pitch", {pigeon.pitch}, {})
         builder.addDoubleProperty("Roll", {pigeon.roll}, {})
-        builder.addDoubleProperty("Inclination", {Math.toRadians(BalanceCommand.boardInclination())}, {})
+        builder.addDoubleProperty("Inclination", {Math.toRadians(boardInclination())}, {})
     }
 }
 
