@@ -64,7 +64,9 @@ object Controls {
             // intake suck
         }
         button(5) {
-            IntakeLowerCommand()
+            change(
+                IntakeLowerCommand()
+            )
         } // intake spit
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {

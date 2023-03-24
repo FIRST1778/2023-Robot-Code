@@ -21,7 +21,6 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
     val maxVelocity: Double = 0.25
     override fun initialize() {
         val endPos = scoringLevel.shooterPosition
-        Shooter.setScoringLevel(scoringLevel)
         timer.reset()
         timer.start()
 
