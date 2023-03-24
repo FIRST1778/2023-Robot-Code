@@ -10,6 +10,7 @@ import org.ghrobotics.lib.commands.FalconSubsystem
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.PI
+import kotlin.math.abs
 import kotlin.math.sin
 
 object DotStar : FalconSubsystem() {
@@ -49,10 +50,10 @@ object DotStar : FalconSubsystem() {
      * to create smooth animations.
      * Tool to create gradients [here](ajalt.github.io/colormath/gradient)
      */
-    val redToBlueAnimation = GradientAnimation(RGB.interpolator {
-        stop(RGB(51, 51, 221))
-        stop(RGB(255, 255, 255))
-        stop(RGB(255, 0, 0))
+    private val redToBlueAnimation = GradientAnimation(RGB.interpolator {
+        stop(RGB.from255(51, 51, 221))
+        stop(RGB.from255(255, 255, 255))
+        stop(RGB.from255(255, 0, 0))
     }, 4.0)
 
     /**
@@ -64,11 +65,9 @@ object DotStar : FalconSubsystem() {
      */
     class GradientAnimation(private val interpolator: Interpolator<RGB>, private val totalTime: Double) {
         private val timer = Timer()
-        fun start() {
-            timer.start()
-        }
+        init { timer.start() }
         fun get(): RGB {
-            val interp = sin(PI * timer.get() / totalTime)
+            val interp = abs(sin(PI * timer.get() / totalTime))
             return interpolator.interpolate(interp)
         }
     }
@@ -95,10 +94,6 @@ object DotStar : FalconSubsystem() {
         // the actual requirement seems to be a 1 bit for every two LEDs in
         // the chain, ergo at least one 0xFF byte for every 16 LEDs.
         ByteArray((LEDS + 15) / 16) { 0xFF.toByte() }
-
-    init {
-        redToBlueAnimation.start()
-    }
 
     override fun periodic() {
         emit(startFrame())
