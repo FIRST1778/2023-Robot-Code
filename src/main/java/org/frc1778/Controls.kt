@@ -124,12 +124,7 @@ object Controls {
             change(BalanceCommand())
         } // balance
         axisButton(0, -1.0) {
-            changeOn {
-                Robot.scoringSide = Side.Left
-            }
-            changeOff {
-                Robot.scoringSide = Side.Right
-            }
+
         }// left/right (cone mode)
     }
 

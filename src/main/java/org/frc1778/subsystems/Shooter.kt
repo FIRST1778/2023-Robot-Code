@@ -63,9 +63,9 @@ object Shooter : FalconSubsystem(), Sendable {
 
     //TODO: Update to new weights
     private var feedforwardVoltage = 0.0
-    private const val angle_kS: Double = 6.427248300685566
-    private const val angle_kA: Double = 0.9399999999999998
-    private const val angle_kV: Double = 0.05952808261099462
+    private const val angle_kS: Double = 0.0
+    private const val angle_kA: Double = 0.038755
+    private const val angle_kV: Double = 1.4431050329938087
     private val anglePlant = LinearSystemId.identifyPositionSystem(angle_kV, angle_kA)
 
     private var desiredAngleVelocity: Double = 0.0 // rad/s
@@ -75,7 +75,7 @@ object Shooter : FalconSubsystem(), Sendable {
 
     val angleControlEnabled = true
 
-    var dataLogger = DataLogger("Manipulator")
+    var dataLogger = DataLogger("Shooter")
 
     init {
         dataLogger.add("position", { getCurrentAngle().inDegrees() })
@@ -112,7 +112,8 @@ object Shooter : FalconSubsystem(), Sendable {
     private val angleLoop = LinearSystemLoop(
         anglePlant, angleController, angleObserver, 12.0, 0.020
     )
-
+    //TODO Get angle offset for gravity/feedforward
+    val angleOffset : SIUnit<Radian> = 0.0.degrees
     fun angleControl() {
         if (angleControlEnabled) {
             angleLoop.setNextR(VecBuilder.fill(desiredAngle.value, desiredAngleVelocity))
@@ -121,7 +122,7 @@ object Shooter : FalconSubsystem(), Sendable {
 
             var nextVoltage = angleLoop.getU(0)
 
-            feedforwardVoltage = angle_kS * sin(getCurrentAngle().value)
+            feedforwardVoltage = angle_kS * sin(getCurrentAngle().value + angleOffset.value)
             nextVoltage += feedforwardVoltage
             if (nextVoltage > 12) {
                 nextVoltage = 12.0
@@ -138,15 +139,13 @@ object Shooter : FalconSubsystem(), Sendable {
         desiredAngle = getCurrentAngle()
         desiredAngleVelocity = 0.0
     }
-
+    //TODO Get encoder offset
     fun initialize() {
         encoder.resetPosition(130.degrees)
     }
 
     override fun periodic() {
-
         angleControl()
-
         dataLogger.log()
     }
 

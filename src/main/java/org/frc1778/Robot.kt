@@ -1,29 +1,15 @@
 package org.frc1778
 
-import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
-import edu.wpi.first.wpilibj.smartdashboard.Field2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.commands.PlaceGameObjectCommand
 import org.frc1778.lib.FalconTimedRobot
-import org.frc1778.subsystems.Arm
-import org.frc1778.subsystems.DotStar
-import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Drive.positions
-import org.frc1778.subsystems.Intake
-import org.frc1778.subsystems.Manipulator
-import org.frc1778.subsystems.Shooter
-import org.frc1778.subsystems.Vision
-import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
-import org.ghrobotics.lib.mathematics.units.derived.volts
+import org.frc1778.subsystems.*
 import kotlin.properties.Delegates
 
 /**
@@ -56,43 +42,6 @@ object Robot : FalconTimedRobot() {
         Alliance.Red -> -1
         else -> 1
     }
-
-
-    var scoringLevel by Delegates.observable(Level.Top) { _, oldValue, newValue ->
-        if (oldValue != newValue) {
-            placeGameObjectCommand.level = newValue
-        }
-    }
-
-    //TODO: We will probably need to perform more actions on this state Change
-    var gamePiece: GamePiece by Delegates.observable(GamePiece.Cone) { _, oldValue, newValue ->
-        if (oldValue != newValue) {
-            placeGameObjectCommand = PlaceGameObjectCommand(scoringLevel, newValue, scoringStation, scoringSide)
-        }
-    }
-
-    var scoringStation: Station by Delegates.observable(
-        when (DriverStation.getLocation()) {
-            1 -> Station.Left
-            2 -> Station.Center
-            3 -> Station.Right
-            else -> Station.Center
-        }
-    ) { _, oldValue, newValue ->
-        if (oldValue != newValue) {
-            placeGameObjectCommand = PlaceGameObjectCommand(scoringLevel, gamePiece, newValue, scoringSide)
-        }
-    }
-
-    var scoringSide: Side by Delegates.observable(Side.Right) { _, oldValue, newValue ->
-        if (oldValue != newValue) {
-            placeGameObjectCommand = PlaceGameObjectCommand(scoringLevel, gamePiece, scoringStation, newValue)
-        }
-    }
-
-    var placeGameObjectCommand: PlaceGameObjectCommand =
-        PlaceGameObjectCommand(scoringLevel, gamePiece, scoringStation, scoringSide)
-
 
     init {
         +Vision

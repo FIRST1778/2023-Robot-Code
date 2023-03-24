@@ -185,7 +185,7 @@ object Constants {
     }
 
     object ShooterConstants {
-        private const val ANGLE_MOTOR_GEAR_REDUCTION: Double = ((22.0 / 64.0) * (1.0 / 5.0) * (1.0 / 5.0))
+        const val ANGLE_MOTOR_GEAR_REDUCTION: Double = ((22.0 / 64.0) * (1.0 / 5.0) * (1.0 / 5.0))
         val ANGLE_MOTOR_UNIT_MODEL = NativeUnitRotationModel((42.0 * (1 / ANGLE_MOTOR_GEAR_REDUCTION)).nativeUnits)
         const val ANGLE_MOTOR_ID: Int = 15
         val shooterTab = Shuffleboard.getTab("Shooter")!!
@@ -236,22 +236,25 @@ object Constants {
 
 
 }
-
-enum class Level(val transform: Transform3d) {
+//TODO Get shooter position values
+enum class Level(val transform: Transform3d, val shooterPosition : SIUnit<Radian>) {
     Top(
         Transform3d(
             Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
-        )
+        ),
+        0.0.degrees
     ),
     Middle(
         Transform3d(
             Translation3d((22.7.inches).value, 0.0, 34.0.inches.value), Rotation3d()
-        )
+        ),
+        0.0.degrees
     ),
     Bottom(
         Transform3d(
             Translation3d(), Rotation3d()
-        )
+        ),
+        0.0.degrees
     );
 
 

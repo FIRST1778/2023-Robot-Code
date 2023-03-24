@@ -11,6 +11,7 @@ class WristTests {
         System.out.printf("Ka: %s\n", wristSim.Ka())
         System.out.printf("Kv: %s\n", wristSim.Kv())
         System.out.printf("Ks: %s\n", wristSim.Ks())
+        println(1 / Constants.ShooterConstants.ANGLE_MOTOR_GEAR_REDUCTION)
     }
 
     /*

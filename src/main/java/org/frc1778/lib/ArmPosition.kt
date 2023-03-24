@@ -1,6 +1,5 @@
 package org.frc1778.lib
 
-import org.frc1778.subsystems.Manipulator
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian

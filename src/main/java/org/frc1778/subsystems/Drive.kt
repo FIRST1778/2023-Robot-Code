@@ -21,7 +21,6 @@ import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.Constants
-import org.frc1778.commands.PlaceGameObjectDriveCommand
 import org.frc1778.commands.drive.TeleOpDriveCommand
 import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.lib.DataLogger
@@ -100,7 +99,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
 
     override val gyro: Source<Rotation2d> = { Rotation2d.fromDegrees(pigeon.yaw) }
 
-    var gamePiecePlacementTrajectoryFollowCommand: PlaceGameObjectDriveCommand? = null
 
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
         if (!aprilTagsEnabled)
