@@ -51,6 +51,7 @@ object Shooter : FalconSubsystem(), Sendable {
     }
 
     val limitSwitch = DigitalInput(1)
+    val brakeModeSwitch = DigitalInput(4)
 
     val angleMotor = falconMAX(
         Constants.ShooterConstants.ANGLE_MOTOR_ID,
@@ -142,10 +143,17 @@ object Shooter : FalconSubsystem(), Sendable {
         desiredAngle = getCurrentAngle()
         desiredAngleVelocity = 0.0
     }
+
+    fun setBrakeMode(brakeMode: Boolean) {
+        angleMotor.brakeMode = brakeMode
+    }
+
     //TODO Get encoder offset
     fun initialize() {
 //        encoder.resetPosition(130.degrees)
     }
+
+
 
     override fun periodic() {
         angleControl()

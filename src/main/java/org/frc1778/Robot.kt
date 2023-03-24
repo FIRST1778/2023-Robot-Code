@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PowerDistribution
+import edu.wpi.first.wpilibj.event.BooleanEvent
+import edu.wpi.first.wpilibj.event.EventLoop
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
@@ -24,6 +26,10 @@ import kotlin.properties.Delegates
  */
 object Robot : FalconTimedRobot() {
     var alliance: Alliance = DriverStation.getAlliance()
+    private val eventLoop = EventLoop()
+    private val brakeModeLimitSwitchHit = BooleanEvent(
+        eventLoop, Shooter.brakeModeSwitch::get
+    )
 
     //    val alliance: DriverStation.Alliance = Alliance.Red
 
@@ -60,6 +66,14 @@ object Robot : FalconTimedRobot() {
         // button bindings, and put our autonomous chooser on the dashboard.
         RobotContainer
 
+        //TODO: These might be backwards
+        brakeModeLimitSwitchHit.rising().ifHigh {
+            Shooter.setBrakeMode(false)
+        }
+        brakeModeLimitSwitchHit.falling().ifHigh {
+            Shooter.setBrakeMode(false)
+        }
+
 
 //        Drive.pigeon.yaw = 0.0
 //        field.getObject("traj").setTrajectory(trajectory)
@@ -78,6 +92,7 @@ object Robot : FalconTimedRobot() {
         Controls.driverController.update()
         Controls.operatorControllerRed.update()
         Controls.operatorControllerBlue.update()
+        eventLoop.poll()
     }
 
     override fun disabledInit() {
