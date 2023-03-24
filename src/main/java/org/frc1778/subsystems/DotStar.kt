@@ -62,7 +62,7 @@ object DotStar : FalconSubsystem() {
      * @property interpolator
      * @param totalTime
      */
-    class GradientAnimation(private val interpolator: Interpolator<RGB>, totalTime: Double) {
+    class GradientAnimation(private val interpolator: Interpolator<RGB>, private val totalTime: Double) {
         private val timer = Timer()
         fun start() {
             timer.start()
