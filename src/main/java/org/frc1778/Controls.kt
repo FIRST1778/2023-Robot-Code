@@ -2,8 +2,12 @@ package org.frc1778
 
 import edu.wpi.first.wpilibj.Joystick
 import org.frc1778.commands.drive.BalanceCommand
+import org.frc1778.commands.intake.IntakeLowerCommand
 import org.frc1778.commands.intake.IntakeSpitCommand
 import org.frc1778.commands.intake.IntakeSuckCommand
+import org.frc1778.commands.shooter.ShooterShootCommand
+import org.frc1778.commands.shooter.ShooterSuckCommand
+import org.frc1778.subsystems.Intake
 import org.ghrobotics.lib.wrappers.hid.mapControls
 import kotlin.math.abs
 import kotlin.math.withSign
@@ -35,20 +39,20 @@ object Controls {
         //TODO: Confirm these are the correct
         //charging station selection
         button(1) {
-            changeOn {
-//                Robot.scoringStation = Station.Left
-            }
+            change(
+                IntakeSpitCommand()
+            )
         }// station 1
 
         button(2) {
-            changeOn {
-//                Robot.scoringStation = Station.Center
-            }
+            change(
+                ShooterShootCommand()
+            )
         }// station 2
         button(3) {
-            changeOn {
-//                Robot.scoringStation = Station.Right
-            }
+            change (
+                ShooterSuckCommand()
+            )
         }// station 3
         // Intake
 
@@ -60,7 +64,7 @@ object Controls {
             // intake suck
         }
         button(5) {
-            change(IntakeSpitCommand())
+            IntakeLowerCommand()
         } // intake spit
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {

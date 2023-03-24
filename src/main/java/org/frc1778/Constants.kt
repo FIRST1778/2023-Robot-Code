@@ -11,11 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import org.frc1778.lib.SwerveModuleConstants
 import org.ghrobotics.lib.mathematics.units.*
-import org.ghrobotics.lib.mathematics.units.derived.Acceleration
-import org.ghrobotics.lib.mathematics.units.derived.Radian
-import org.ghrobotics.lib.mathematics.units.derived.Velocity
-import org.ghrobotics.lib.mathematics.units.derived.degrees
-import org.ghrobotics.lib.mathematics.units.derived.radians
+import org.ghrobotics.lib.mathematics.units.derived.*
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
@@ -238,27 +234,32 @@ object Constants {
 
 }
 //TODO Get shooter position values
-enum class Level(val transform: Transform3d, val shooterPosition : SIUnit<Radian>) {
+enum class Level(val shooterPosition : SIUnit<Radian>, val shooterVoltage : SIUnit<Volt>) {
     Top(
-        Transform3d(
-            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
-        ),
-        0.0.degrees
+//        Transform3d(
+//            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
+//        ),
+        150.0.degrees,
+        5.0.volts
     ),
     Middle(
-        Transform3d(
-            Translation3d((22.7.inches).value, 0.0, 34.0.inches.value), Rotation3d()
-        ),
-        0.0.degrees
+//        Transform3d(
+//            Translation3d((22.7.inches).value, 0.0, 34.0.inches.value), Rotation3d()
+//        ),
+        135.0.degrees,
+        4.0.volts
     ),
     Bottom(
-        Transform3d(
-            Translation3d(), Rotation3d()
-        ),
-        0.0.degrees
-    );
-
-
+//        Transform3d(
+//            Translation3d(), Rotation3d()
+//        ),
+        120.0.degrees,
+        3.0.volts
+    ),
+    None(
+        90.0.degrees,
+        0.0.volts
+    )
 }
 
 enum class GamePiece(val heightOffset: Double) {

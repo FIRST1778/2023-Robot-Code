@@ -30,6 +30,5 @@ class TeleOpDriveCommand : FalconCommand(Drive) {
         val translationX = Controls.driverController.getRawAxis(1)
         val translationY = Controls.driverController.getRawAxis(0)
         val rotation = Controls.driverController.getRawAxis(2)
-
     }
 }

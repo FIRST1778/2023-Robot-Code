@@ -1,6 +1,7 @@
 package org.frc1778.subsystems
 
 import com.revrobotics.CANSparkMaxLowLevel
+import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.PneumaticsModuleType
 import edu.wpi.first.wpilibj.Solenoid
 import org.ghrobotics.lib.commands.FalconSubsystem
@@ -15,6 +16,8 @@ import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 object Intake : FalconSubsystem() {
+    //TODO Get linebreak channel
+    val lineBreak: DigitalInput = DigitalInput(3)
 
     var beltMotor = falconMAX(15, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)) {
         brakeMode = true

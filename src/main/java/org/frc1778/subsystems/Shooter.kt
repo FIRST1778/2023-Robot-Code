@@ -49,7 +49,7 @@ object Shooter : FalconSubsystem(), Sendable {
         parentShooterMotor.setVoltage(volts)
 //        childShooterMotor.setVoltage(volts)
     }
-
+    //TODO Get DIO
     val limitSwitch = DigitalInput(1)
     val brakeModeSwitch = DigitalInput(4)
 
@@ -80,6 +80,8 @@ object Shooter : FalconSubsystem(), Sendable {
     val angleControlEnabled = true
 
     var dataLogger = DataLogger("Shooter")
+
+    var cubeStored = false
 
     init {
         dataLogger.add("position", { getCurrentAngle().inDegrees() })
@@ -148,18 +150,21 @@ object Shooter : FalconSubsystem(), Sendable {
         angleMotor.brakeMode = brakeMode
     }
 
-    //TODO Get encoder offset
-    fun initialize() {
-//        encoder.resetPosition(130.degrees)
+    fun shoot(voltage : SIUnit<Volt>){
+        parentShooterMotor.setVoltage(voltage)
     }
-
-
+    //TODO Get best intake speed
+    fun suck(){
+       parentShooterMotor.setVoltage((-3.0).volts)
+    }
 
     override fun periodic() {
         angleControl()
         dataLogger.log()
+        if(limitSwitch.get()){
+            cubeStored = true
+        }
     }
-
     override fun lateInit() {
         Constants.ShooterConstants.shooterTab.add(
             this
@@ -178,5 +183,16 @@ object Shooter : FalconSubsystem(), Sendable {
         builder!!.addDoubleProperty("Shooter Voltage", {
             parentShooterMotor.voltageOutput.value
         }, {})
+    }
+
+    fun stopWheels() {
+        parentShooterMotor.setVoltage(0.0.volts)
+    }
+
+    fun setScoringLevel(level: Level) {
+        scoringLevel = level
+    }
+    fun getScoringLevel(): Level{
+        return scoringLevel
     }
 }
