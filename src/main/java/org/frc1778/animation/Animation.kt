@@ -33,11 +33,9 @@ class GradientAnimation<T : Color>(
 ) : Animation {
     private val timer = Timer()
 
-    init {
-        timer.start()
-    }
 
     override fun get(): RGB {
+        timer.start()
         val interp = (timer.get() / totalTime) % 1
         return interpolator.interpolate(interp).toSRGB()
     }
@@ -48,14 +46,11 @@ class GradientAnimation<T : Color>(
 }
 
 class BlinkAnimation<T : Color>(
-    private val color: T, private val colorSpace: ColorSpace<T>, private val frequency: Int
+    private val color: T, colorSpace: ColorSpace<T>, frequency: Int, private val count: Int? = null
 ) : Animation {
 
     val timer = Timer()
 
-    init {
-        timer.start()
-    }
 
     private val interpolator = colorSpace.interpolator {
         stop(color)
@@ -68,11 +63,17 @@ class BlinkAnimation<T : Color>(
      */
     private val timePerAnimation = (1.0 / frequency) / 2.0
 
+    @Suppress("NullableBooleanElvis")
     override fun get(): RGB {
-        val interp = (timer.get() / timePerAnimation) % 1
-        return interpolator.interpolate(interp).toSRGB()
+        timer.start()
+        return if (count?.let { timer.get() < it * timePerAnimation } ?: true) {
+            val interp = (timer.get() / timePerAnimation) % 1
+            interpolator.interpolate(interp).toSRGB()
+        } else color.toSRGB()
     }
 
+
+    
     override fun reset() {
         timer.reset()
     }

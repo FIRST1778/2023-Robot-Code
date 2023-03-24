@@ -22,7 +22,7 @@ object DotStar : FalconSubsystem() {
     /**
      * Red to blue animation using a color interpolator.
      */
-    private val redToBlueAnimation =
+    val redToBlueAnimation =
             GradientAnimation(
                     RGB.interpolator {
                         stop(RGB.from255(51, 51, 221))
@@ -32,7 +32,7 @@ object DotStar : FalconSubsystem() {
                     4.0
             )
 
-    private val redPurpleBlueAnimation =
+    val redPurpleBlueAnimation =
             GradientAnimation(
                     Oklab.interpolator {
                         stop(RGB.from255(0, 0, 255).toOklab())
