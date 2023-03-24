@@ -48,6 +48,7 @@ object DotStar : FalconSubsystem() {
     private var animationEnabled = true
 
     fun animateOn() {
+        currentAnimation.reset()
         animationEnabled = true
     }
 

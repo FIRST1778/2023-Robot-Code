@@ -73,10 +73,8 @@ class BlinkAnimation<T : Color>(
     }
 
 
-    
+
     override fun reset() {
         timer.reset()
     }
-
-
 }
