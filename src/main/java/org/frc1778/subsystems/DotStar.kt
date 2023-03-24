@@ -5,9 +5,12 @@ import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.Interpolator
 import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.wpilibj.SPI
+import edu.wpi.first.wpilibj.Timer
 import org.ghrobotics.lib.commands.FalconSubsystem
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.PI
+import kotlin.math.sin
 
 object DotStar : FalconSubsystem() {
     private const val LEDS = 7
@@ -53,23 +56,20 @@ object DotStar : FalconSubsystem() {
     }, 4.0)
 
     /**
-     * Gradiant Animation by interpolating between colors over a given time interval. Get sequence by calling the [next] function
+     * Gradiant Animation by interpolating between colors over a given time interval.
+     * Call start() to start the timer, then call get() to get the current RGB value.
      *
      * @property interpolator
      * @param totalTime
      */
     class GradientAnimation(private val interpolator: Interpolator<RGB>, totalTime: Double) {
-        //Step amount for interpolation & Convert time to the closest periodic step
-        private val interpolatorStep = 1 / (totalTime - (totalTime % .02))
-        private var currentInterpolationValue = 0.0
-
-        fun next(): RGB {
-            currentInterpolationValue += interpolatorStep
-            if (currentInterpolationValue > 1.0) {
-                currentInterpolationValue = 0.0
-            }
-
-            return interpolator.interpolate(currentInterpolationValue)
+        private val timer = Timer()
+        fun start() {
+            timer.start()
+        }
+        fun get(): RGB {
+            val interp = sin(PI * timer.get() / totalTime)
+            return interpolator.interpolate(interp)
         }
     }
 
@@ -81,13 +81,13 @@ object DotStar : FalconSubsystem() {
         // The start frame is at least 4 0x00 bytes.
         ByteArray(4) { 0x00.toByte() }
 
-    private fun ledFrame(r: Int, g: Int, b: Int) = byteArrayOf(
+    private fun ledFrame(rgb: RGB) = byteArrayOf(
         // The first 3 bits (111) begin an LED frame.  The next 5 bits
         // are the brightness, which we always set to full (31 out of 31).
         0xFF.toByte(),
         // Blue-green-red seems to be the norm for color order, but we might
         // need to change this.
-        b.toByte(), g.toByte(), r.toByte()
+        rgb.blueInt.toByte(), rgb.greenInt.toByte(), rgb.redInt.toByte()
     )
 
     private fun endFrame() =
@@ -96,13 +96,18 @@ object DotStar : FalconSubsystem() {
         // the chain, ergo at least one 0xFF byte for every 16 LEDs.
         ByteArray((LEDS + 15) / 16) { 0xFF.toByte() }
 
+    init {
+        redToBlueAnimation.start()
+    }
+
     override fun periodic() {
         emit(startFrame())
 
         // The LEDs which are farthest from the source need to have their frames
         // emitted first.
+        val led = ledFrame(redToBlueAnimation.get())
         repeat(LEDS) {
-            emit(ledFrame((LEDS-it)*(256/LEDS), 0x00, 0x80))
+            emit(led)
         }
 
         emit(endFrame())
