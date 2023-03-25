@@ -1,10 +1,11 @@
 package org.frc1778.subsystems
 
 import com.ctre.phoenix.sensors.Pigeon2
+import edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.math.geometry.Translation3d
-import edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import org.frc1778.Constants
 import org.ghrobotics.lib.commands.FalconSubsystem
 
@@ -54,6 +55,10 @@ object Gyro: FalconSubsystem(), Sendable {
         val upVector = Translation3d(0.0, 0.0, 1.0).rotateBy(rotation)
         val z: Double = -upVector.x/upVector.z
         return Math.atan(z)
+    }
+
+    init {
+        Shuffleboard.getTab("Gyro").add(this)
     }
 
     override fun initSendable(builder: SendableBuilder?) {
