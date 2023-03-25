@@ -269,7 +269,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         builder.addDoubleProperty("Yaw", {pigeon.yaw}, {})
         builder.addDoubleProperty("Pitch", {pigeon.pitch}, {})
         builder.addDoubleProperty("Roll", {pigeon.roll}, {})
-        builder.addDoubleProperty("Inclination", {Math.toRadians(boardInclination())}, {})
+        builder.addDoubleProperty("Inclination", {Math.toDegrees(boardInclination())}, {})
     }
 }
 

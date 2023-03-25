@@ -4,7 +4,9 @@ import com.github.ajalt.colormath.Color
 import com.github.ajalt.colormath.model.Oklab
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.interpolator
+import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.SPI
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import org.frc1778.Constants
 import org.frc1778.animation.Animation
 import org.frc1778.animation.GradientAnimation
@@ -34,14 +36,14 @@ object DotStar : FalconSubsystem() {
 
     val redPurpleBlueAnimation =
             GradientAnimation(
-                    Oklab.interpolator {
-                        stop(RGB.from255(0, 0, 255).toOklab())
-                        stop(RGB.from255(255, 255, 255).toOklab())
-                        stop(RGB.from255(255, 0, 0).toOklab())
-                        stop(RGB.from255(0, 0, 255).toOklab())
-                        stop(RGB.from255(255, 255, 255).toOklab())
+                    RGB.interpolator {
+                        stop(RGB.from255(0, 0, 255))
+                        stop(RGB.from255(255, 0, 255))
+                        stop(RGB.from255(255, 0, 0))
+                        stop(RGB.from255(255, 0, 255))
+                        stop(RGB.from255(0, 0, 255))
                     },
-                    4.0
+                    8.0
             )
 
     private var currentAnimation: Animation = redPurpleBlueAnimation
@@ -123,5 +125,13 @@ object DotStar : FalconSubsystem() {
 		}
 
         emit(endFrame())
+    }
+    init {
+        Shuffleboard.getTab("Lights").add(this)
+    }
+
+    override fun initSendable(builder: SendableBuilder?) {
+        super.initSendable(builder)
+        builder!!.addBooleanProperty("Animation Enabled", { animationEnabled}, {})
     }
 }

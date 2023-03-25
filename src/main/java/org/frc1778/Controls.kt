@@ -5,6 +5,7 @@ import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.commands.intake.IntakeLowerCommand
 import org.frc1778.commands.intake.IntakeSpitCommand
 import org.frc1778.commands.intake.IntakeSuckCommand
+import org.frc1778.commands.shooter.ShooterAngleCommand
 import org.frc1778.commands.shooter.ShooterShootCommand
 import org.frc1778.commands.shooter.ShooterSuckCommand
 import org.frc1778.subsystems.Intake
@@ -50,7 +51,7 @@ object Controls {
             )
         }// station 2
         button(3) {
-            change (
+            change(
                 ShooterSuckCommand()
             )
         }// station 3
@@ -76,28 +77,14 @@ object Controls {
 //        button(3) {changeOn(sequential{+BalanceCommand()})}// other
         // level of placement
         button(4) {
-//            changeOn {
-////                Robot.scoringLevel = Level.Bottom
-////                ArmAngleCommand(40.0.degrees).schedule()
-//            }
+            changeOn(ShooterAngleCommand(Level.Bottom))
         }// bottom
         button(5) {
-//            changeOn (
-//                Robot.scoringLevel = Level.Middle
-//                sequential {
-//                    +ConditionalCommand(ArmExtensionCommand(0.5.meters), WaitCommand(0.0), {Arm.getCurrentExtension() > 0.52.meters})
-//                    +ArmAngleCommand(85.0.degrees)
-//                    +ArmExtensionCommand(0.5.meters)
-//                }
-//            )
+            changeOn(ShooterAngleCommand(Level.Middle))
         }// middle
         button(6) {
-//            changeOn (sequential {
-////                Robot.scoringLevel = Level.Top
-//                +ArmExtensionCommand(0.0.meters)
-//                +ArmAngleCommand(100.0.degrees)
-//                +ArmExtensionCommand(0.9.meters)
-//            })
+            changeOn(ShooterAngleCommand(Level.Top))
+
         }// top
         // manipulator open/close toggle
         button(7) {
@@ -108,7 +95,7 @@ object Controls {
 
         // toggle manipulator
         button(8) {
-//            changeOn(ArmToHopperCommand())
+            changeOn(ShooterAngleCommand(Level.None))
         } // manipulator to hopper
 
         // switches

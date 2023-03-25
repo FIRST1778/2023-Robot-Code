@@ -15,4 +15,16 @@ class ShooterSuckCommand : FalconCommand(Shooter, Intake){
             Shooter.stopWheels()
         }
     }
+
+    override fun end(interrupted: Boolean) {
+        Shooter.stopWheels()
+        Intake.stop()
+    }
+
+    override fun cancel() {
+        end(true)
+    }
+    override fun isFinished(): Boolean {
+        return Shooter.cubeStored
+    }
 }

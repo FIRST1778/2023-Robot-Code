@@ -6,9 +6,6 @@ import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.FalconCommand
 
 class IntakeSuckCommand() : FalconCommand(Intake) {
-    companion object{
-        var shooterSuckPressed = Controls.operatorControllerRed.getRawButton(3)
-    }
     override fun initialize() {
         Intake.extend()
     }

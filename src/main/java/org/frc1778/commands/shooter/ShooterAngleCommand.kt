@@ -17,8 +17,8 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
 
     lateinit var profile: TrapezoidProfile
     var timer = Timer()
-    val maxAcceleration : Double = 0.25 // rad/sec
-    val maxVelocity: Double = 0.25
+    val maxAcceleration : Double = 3.5 // rad/sec
+    val maxVelocity: Double = 2.125
     override fun initialize() {
         val endPos = scoringLevel.shooterPosition
         timer.reset()

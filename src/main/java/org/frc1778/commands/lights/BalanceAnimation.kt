@@ -1,10 +1,6 @@
 package org.frc1778.commands.lights
 
-import com.github.ajalt.colormath.Color
-import com.github.ajalt.colormath.model.HSV
-import com.github.ajalt.colormath.model.Oklab
 import com.github.ajalt.colormath.model.RGB
-import com.github.ajalt.colormath.transform.Interpolator
 import com.github.ajalt.colormath.transform.interpolator
 import org.frc1778.subsystems.DotStar
 import org.frc1778.subsystems.Drive
@@ -16,12 +12,15 @@ import kotlin.math.ceil
 
 class BalanceAnimation() : FalconCommand(DotStar) {
 
-    private val MAX_INCLINTATION = 15.0
+    private val MAX_INCLINATION = 20.0
+    var currentPixels = DotStar.pixels
+    val numLedsPerSection: Int = Constants.LedConstants.NUM_LEDS_PER_SECTION
 
-    private val interpolator = Oklab.interpolator {
-        stop(RGB(255, 0, 0).toOklab())
-        stop(RGB(255, 255, 0).toOklab())
-        stop(RGB(0, 255, 0).toOklab())
+
+    private val interpolator = RGB.interpolator {
+        stop(RGB.from255(255, 0, 0))
+        stop(RGB.from255(255, 255, 0))
+        stop(RGB.from255(0, 255, 0))
     }
 
     override fun initialize() {
@@ -29,16 +28,17 @@ class BalanceAnimation() : FalconCommand(DotStar) {
     }
 
     override fun execute() {
-        var currentPixels = DotStar.pixels
-        val numLedsPerSection: Int = Constants.LedConstants.NUM_LEDS_PER_SECTION
+        //Second abs is to deal with edge cases were read inclination is greater than expected max inclination
         val numLedsLit: Int =
-            ceil(numLedsPerSection * (abs(MAX_INCLINTATION - Drive.boardInclination()) / MAX_INCLINTATION)).toInt()
+            ceil(numLedsPerSection * abs(MAX_INCLINATION - abs(Math.toDegrees(Drive.boardInclination()))) / MAX_INCLINATION).toInt()
         //When we have more lights:
-        //val currentPixelSections = currentPixels.chunked(Constants.LedConstants.NUM_LEDS_PER_SECTION)
+//        val currentPixelSections = currentPixels.chunked(Constants.LedConstants.NUM_LEDS_PER_SECTION).mapIndexed { index, section ->
+//            if (index % 2 != 0) section.reversed() else section
+//        }
 
         currentPixels = List(currentPixels.size) { index: Int ->
-            if (index <= numLedsLit) {
-                interpolator.interpolate(index / numLedsPerSection).toSRGB()
+            if (index+1 <= numLedsLit) {
+                interpolator.interpolate((index.toDouble() / (numLedsPerSection-1)))
             } else {
                 RGB(0, 0, 0)
             }
@@ -51,7 +51,7 @@ class BalanceAnimation() : FalconCommand(DotStar) {
         if (!interrupted) {
             DotStar.setAnimation(
                 BlinkAnimation(
-                    RGB(0, 255, 0).toOklab(), Oklab, 6
+                    RGB.from255(0,255,0), RGB, 6
                 )
             )
             DotStar.animateOn()

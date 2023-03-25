@@ -31,9 +31,10 @@ object Shooter : FalconSubsystem(), Sendable {
 
 
     private val nativeModel: NativeUnitRotationModel = NativeUnitRotationModel(42.nativeUnits)
-    val parentShooterMotor = falconMAX(11, CANSparkMaxLowLevel.MotorType.kBrushless, nativeModel) {
+    private val parentShooterMotor = falconMAX(11, CANSparkMaxLowLevel.MotorType.kBrushless, nativeModel) {
         outputInverted = false
         brakeMode = false
+
     }
 
     private val childShooterMotor = falconMAX(12, CANSparkMaxLowLevel.MotorType.kBrushless, nativeModel) {
@@ -45,10 +46,6 @@ object Shooter : FalconSubsystem(), Sendable {
         )
     }
 
-    fun setVoltage(volts: SIUnit<Volt>) {
-        parentShooterMotor.setVoltage(volts)
-//        childShooterMotor.setVoltage(volts)
-    }
     //TODO Get DIO
     val limitSwitch = DigitalInput(1)
     val brakeModeSwitch = DigitalInput(4)
@@ -61,6 +58,9 @@ object Shooter : FalconSubsystem(), Sendable {
         brakeMode = true
         outputInverted = true
     }
+
+
+    var shooterSetVoltage = 0.0.volts
 
     //TODO: Update to new weights
     private var feedforwardVoltage = 0.0
@@ -113,7 +113,7 @@ object Shooter : FalconSubsystem(), Sendable {
         Nat.N2(), Nat.N1(), anglePlant, VecBuilder.fill(0.5, 0.5), VecBuilder.fill(0.01), 0.02
     )
     private val angleController = LinearQuadraticRegulator(
-        anglePlant, VecBuilder.fill(0.1, 4.0), VecBuilder.fill(2.0), 0.020
+        anglePlant, VecBuilder.fill(0.1, 2.0), VecBuilder.fill(.5), 0.020
     )
     private val angleLoop = LinearSystemLoop(
         anglePlant, angleController, angleObserver, 12.0, 0.020
@@ -151,17 +151,18 @@ object Shooter : FalconSubsystem(), Sendable {
     }
 
     fun shoot(voltage : SIUnit<Volt>){
+        shooterSetVoltage = voltage
         parentShooterMotor.setVoltage(voltage)
     }
     //TODO Get best intake speed
     fun suck(){
-       parentShooterMotor.setVoltage((-3.0).volts)
+       parentShooterMotor.setVoltage((-.5).volts)
     }
 
     override fun periodic() {
-        angleControl()
+//        angleControl()
         dataLogger.log()
-        if(limitSwitch.get()){
+        if(!limitSwitch.get()){
             cubeStored = true
         }
     }
@@ -177,12 +178,21 @@ object Shooter : FalconSubsystem(), Sendable {
             "Limit Switch",
             limitSwitch
         ).withSize(2, 2)
+        Constants.ShooterConstants.shooterTab.add(
+            "Brake Mode Switch",
+            brakeModeSwitch
+        ).withSize(2, 2)
     }
 
     override fun initSendable(builder: SendableBuilder?) {
+        super.initSendable(builder)
         builder!!.addDoubleProperty("Shooter Voltage", {
             parentShooterMotor.voltageOutput.value
         }, {})
+        builder.addDoubleProperty("Angle Voltage", { angleMotor.voltageOutput.value}, {})
+        builder.addBooleanProperty("Shooter Loaded", { cubeStored}, {})
+        builder.addStringProperty("Level", { scoringLevel.name}, {})
+        builder.addDoubleProperty("Shooter Set Voltage", { shooterSetVoltage.value}, {})
     }
 
     fun stopWheels() {
@@ -195,4 +205,7 @@ object Shooter : FalconSubsystem(), Sendable {
     fun getScoringLevel(): Level{
         return scoringLevel
     }
+
+
+
 }

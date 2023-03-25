@@ -6,7 +6,11 @@ import org.ghrobotics.lib.commands.FalconCommand
 class ShooterShootCommand : FalconCommand(Shooter) {
     override fun initialize() {
         Shooter.cubeStored = false
+    }
+
+    override fun execute() {
         Shooter.shoot(Shooter.getScoringLevel().shooterVoltage)
+
     }
 
     override fun cancel() {

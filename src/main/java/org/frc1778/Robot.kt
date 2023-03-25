@@ -1,5 +1,6 @@
 package org.frc1778
 
+import com.github.ajalt.colormath.model.RGB
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
@@ -10,6 +11,8 @@ import edu.wpi.first.wpilibj.event.EventLoop
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import org.frc1778.animation.BlinkAnimation
+import org.frc1778.commands.lights.BalanceAnimation
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.*
 import kotlin.properties.Delegates
@@ -68,7 +71,7 @@ object Robot : FalconTimedRobot() {
 
         //TODO: These might be backwards
         brakeModeLimitSwitchHit.rising().ifHigh {
-            Shooter.setBrakeMode(false)
+            Shooter.setBrakeMode(true)
         }
         brakeModeLimitSwitchHit.falling().ifHigh {
             Shooter.setBrakeMode(false)
@@ -96,7 +99,6 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun disabledInit() {
-        Shooter.parentShooterMotor.setNeutral()
         Shooter.resetDesiredAngle()
     }
 
@@ -128,6 +130,13 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
 //        Shooter.setVoltage(3.0.volts)
+        BalanceAnimation().schedule()
+//        DotStar.setAnimation(
+//                BlinkAnimation(
+//                    RGB.from255(0,255,0), RGB, 3
+//                )
+//            )
+//            DotStar.animateOn()
         Shooter.resetDesiredAngle()
     }
 
