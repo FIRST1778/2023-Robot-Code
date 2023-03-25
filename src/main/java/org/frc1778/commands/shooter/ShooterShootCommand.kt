@@ -2,7 +2,7 @@ package org.frc1778.commands.shooter
 
 import com.github.ajalt.colormath.model.RGB
 import org.frc1778.animation.BlinkAnimation
-import org.frc1778.subsystems.DotStar
+import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.FalconCommand
 
@@ -16,8 +16,8 @@ class ShooterShootCommand : FalconCommand(Shooter) {
             Shooter.shoot(Shooter.getScoringLevel().shooterVoltage)
             Shooter.cubeStored = false
         } else {
-            DotStar.setAnimation(rebBlink)
-            DotStar.animateOn()
+            Lights.setAnimation(rebBlink)
+            Lights.animateOn()
         }
     }
 

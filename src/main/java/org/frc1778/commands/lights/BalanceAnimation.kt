@@ -2,7 +2,7 @@ package org.frc1778.commands.lights
 
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.interpolator
-import org.frc1778.subsystems.DotStar
+import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Gyro
 import org.frc1778.Constants
 import org.frc1778.animation.BlinkAnimation
@@ -10,10 +10,10 @@ import org.ghrobotics.lib.commands.FalconCommand
 import kotlin.math.abs
 import kotlin.math.ceil
 
-class BalanceAnimation() : FalconCommand(DotStar) {
+class BalanceAnimation() : FalconCommand(Lights) {
 
     private val MAX_INCLINATION = 20.0
-    var currentPixels = DotStar.pixels
+    var currentPixels = Lights.pixels
     val numLedsPerSection: Int = Constants.LedConstants.NUM_LEDS_PER_SECTION
 
 
@@ -24,7 +24,7 @@ class BalanceAnimation() : FalconCommand(DotStar) {
     }
 
     override fun initialize() {
-        DotStar.animateOff()
+        Lights.animateOff()
     }
 
     override fun execute() {
@@ -44,17 +44,17 @@ class BalanceAnimation() : FalconCommand(DotStar) {
             }
         }.toMutableList()
 
-        DotStar.pixels = currentPixels
+        Lights.pixels = currentPixels
     }
 
     override fun end(interrupted: Boolean) {
         if (!interrupted) {
-            DotStar.setAnimation(
+            Lights.setAnimation(
                 BlinkAnimation(
                     RGB.from255(0,255,0), RGB, 6
                 )
             )
-            DotStar.animateOn()
+            Lights.animateOn()
 
         }
     }

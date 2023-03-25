@@ -1,6 +1,5 @@
 package org.frc1778
 
-import com.github.ajalt.colormath.model.RGB
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
@@ -11,12 +10,9 @@ import edu.wpi.first.wpilibj.event.EventLoop
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.animation.BlinkAnimation
-import org.frc1778.commands.lights.BalanceAnimation
 import org.frc1778.commands.lights.TeleopLightCommand
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.*
-import kotlin.properties.Delegates
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -57,7 +53,7 @@ object Robot : FalconTimedRobot() {
         +Vision
         +Drive
         +Shooter
-        +DotStar
+        +Lights
         +Intake
     }
 
@@ -99,8 +95,8 @@ object Robot : FalconTimedRobot() {
 
     override fun disabledInit() {
         Shooter.resetDesiredAngle()
-        DotStar.setAnimation(DotStar.redPurpleBlueAnimation)
-        DotStar.animateOn()
+        Lights.setAnimation(Lights.redPurpleBlueAnimation)
+        Lights.animateOn()
     }
 
     override fun disabledPeriodic() {

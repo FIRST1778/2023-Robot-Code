@@ -1,7 +1,6 @@
 package org.frc1778.subsystems
 
 import com.github.ajalt.colormath.Color
-import com.github.ajalt.colormath.model.Oklab
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.util.sendable.SendableBuilder
@@ -24,7 +23,7 @@ import org.ghrobotics.lib.commands.FalconSubsystem
 // A helpful blog post which seems more factually correct (and has better
 // English) than the datasheets:
 //     https://cpldcpu.wordpress.com/2014/11/30/understanding-the-apa102-superled/
-object DotStar : FalconSubsystem() {
+object Lights : FalconSubsystem() {
 	var pixels = MutableList<RGB>(LedConstants.NUM_LEDS) { RGB(0,0,0) }
 
     val redPurpleBlueAnimation =
