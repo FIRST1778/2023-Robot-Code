@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.animation.BlinkAnimation
 import org.frc1778.commands.lights.BalanceAnimation
+import org.frc1778.commands.lights.TeleopLightCommand
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.*
 import kotlin.properties.Delegates
@@ -98,6 +99,8 @@ object Robot : FalconTimedRobot() {
 
     override fun disabledInit() {
         Shooter.resetDesiredAngle()
+        DotStar.setAnimation(DotStar.redPurpleBlueAnimation)
+        DotStar.animateOn()
     }
 
     override fun disabledPeriodic() {
@@ -128,13 +131,7 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
 //        Shooter.setVoltage(3.0.volts)
-        BalanceAnimation().schedule()
-//        DotStar.setAnimation(
-//                BlinkAnimation(
-//                    RGB.from255(0,255,0), RGB, 3
-//                )
-//            )
-//            DotStar.animateOn()
+        TeleopLightCommand().schedule()
         Shooter.resetDesiredAngle()
     }
 

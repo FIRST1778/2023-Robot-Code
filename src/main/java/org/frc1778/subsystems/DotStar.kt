@@ -118,6 +118,7 @@ object DotStar : FalconSubsystem() {
         if (animationEnabled) {
             val led = ledFrame(currentAnimation.get())
             repeat(LEDS) { emit(led) }
+            if(currentAnimation.isDone()) animateOff()
         } else {
 			pixels.forEach {
 				emit(ledFrame(it))

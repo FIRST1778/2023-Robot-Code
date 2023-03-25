@@ -17,6 +17,8 @@ import kotlin.math.abs
 interface Animation {
     fun get(): RGB
     fun reset()
+
+    fun isDone(): Boolean
 }
 
 /**
@@ -43,6 +45,10 @@ class GradientAnimation<T : Color>(
     override fun reset() {
         timer.reset()
     }
+
+    override fun isDone(): Boolean {
+        return false
+    }
 }
 
 class BlinkAnimation<T : Color>(
@@ -51,6 +57,7 @@ class BlinkAnimation<T : Color>(
 
     val timer = Timer()
 
+    private var done = false
 
     private val interpolator = colorSpace.interpolator {
         stop(color)
@@ -69,12 +76,20 @@ class BlinkAnimation<T : Color>(
         return if (count?.let { timer.get() < it * timePerAnimation } ?: true) {
             val interp = (timer.get() / timePerAnimation) % 1
             interpolator.interpolate(interp).toSRGB()
-        } else color.toSRGB()
+        } else {
+            done = true
+            color.toSRGB()
+        }
     }
 
 
 
     override fun reset() {
+        done = false
         timer.reset()
+    }
+
+    override fun isDone(): Boolean {
+        return done
     }
 }

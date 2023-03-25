@@ -227,7 +227,7 @@ object Constants {
     }
 
 	object LedConstants {
-		const val NUM_LEDS: Int = 7
+		const val NUM_LEDS: Int = 7 * 4
 		const val NUM_LEDS_PER_SECTION: Int = 7
 	}
 
