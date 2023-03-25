@@ -11,7 +11,7 @@ import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
 
-class AlignTo180Command : FalconCommand(Drive) {
+class UnusedAlignTo180Command : FalconCommand(Drive) {
     private lateinit var targetRotation: Rotation2d
 
     override fun initialize() {
@@ -46,5 +46,4 @@ class AlignTo180Command : FalconCommand(Drive) {
     override fun isFinished(): Boolean {
         return Drive.controller.thetaController.atGoal()
     }
-
 }

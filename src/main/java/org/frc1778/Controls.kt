@@ -22,9 +22,7 @@ object Controls {
     private val operatorControllerGenericHID1 = Joystick(1)
     private val operatorControllerGenericHID2 = Joystick(2)
 
-
 //    private val runIntakeCommand = RunIntake()
-
 
     val driverController = driverControllerGenericHID.mapControls {
         //TODO: Find Correct Button ID
