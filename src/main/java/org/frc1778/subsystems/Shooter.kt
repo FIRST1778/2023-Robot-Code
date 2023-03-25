@@ -33,12 +33,12 @@ object Shooter : FalconSubsystem(), Sendable {
     private val nativeModel: NativeUnitRotationModel = NativeUnitRotationModel(42.nativeUnits)
     private val parentShooterMotor = falconMAX(11, CANSparkMaxLowLevel.MotorType.kBrushless, nativeModel) {
         outputInverted = false
-        brakeMode = false
+        brakeMode = true
 
     }
 
     private val childShooterMotor = falconMAX(12, CANSparkMaxLowLevel.MotorType.kBrushless, nativeModel) {
-        brakeMode = false
+        brakeMode = true
         outputInverted = false
         canSparkMax.follow(
             parentShooterMotor.canSparkMax,
