@@ -3,7 +3,7 @@ package org.frc1778.commands.lights
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.interpolator
 import org.frc1778.subsystems.DotStar
-import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.Gyro
 import org.frc1778.Constants
 import org.frc1778.animation.BlinkAnimation
 import org.ghrobotics.lib.commands.FalconCommand
@@ -30,7 +30,7 @@ class BalanceAnimation() : FalconCommand(DotStar) {
     override fun execute() {
         //Second abs is to deal with edge cases were read inclination is greater than expected max inclination
         val numLedsLit: Int =
-            ceil(numLedsPerSection * abs(MAX_INCLINATION - abs(Math.toDegrees(Drive.boardInclination()))) / MAX_INCLINATION).toInt()
+            ceil(numLedsPerSection * abs(MAX_INCLINATION - abs(Math.toDegrees(Gyro.boardInclination()))) / MAX_INCLINATION).toInt()
         //When we have more lights:
 //        val currentPixelSections = currentPixels.chunked(Constants.LedConstants.NUM_LEDS_PER_SECTION).mapIndexed { index, section ->
 //            if (index % 2 != 0) section.reversed() else section

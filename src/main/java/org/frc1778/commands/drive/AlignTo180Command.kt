@@ -8,29 +8,30 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.DriverStation
 import org.frc1778.Robot
 import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
 
 class AlignTo180Command : FalconCommand(Drive) {
     private lateinit var targetRotation: Rotation2d
 
     override fun initialize() {
-        val initialState = Drive.robotPosition.rotation
+        val initialState = Gyro.odometryYaw()
         val initialSpeeds = Drive.kinematics.toChassisSpeeds(*Drive.swerveModuleStates().toTypedArray())
 
         // Round to 180
-        val goal = PI * round(initialState.radians / PI)
+        val goal = PI * round(initialState / PI)
         targetRotation = Rotation2d(goal)
 
         Drive.controller.thetaController.reset(
             TrapezoidProfile.State(
-                initialState.radians, initialSpeeds.omegaRadiansPerSecond
+                initialState, initialSpeeds.omegaRadiansPerSecond
             )
         )
     }
 
     override fun execute() {
         val omegaRadiansPerSecond = Drive.controller.thetaController.calculate(
-            Drive.robotPosition.rotation.radians, targetRotation.radians
+            Gyro.odometryYaw(), targetRotation.radians
         )
 
         val wheelStates = Drive.kinematics.toSwerveModuleStates(ChassisSpeeds(0.0, 0.0, omegaRadiansPerSecond))
