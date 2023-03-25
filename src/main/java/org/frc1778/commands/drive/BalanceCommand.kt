@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Translation3d
 import org.frc1778.Robot
 import org.frc1778.commands.lights.BalanceAnimation
 import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
 import kotlin.math.atan
 import kotlin.math.sin
@@ -32,7 +33,7 @@ class BalanceCommand: FalconCommand(Drive) {
     }
 
     override fun execute() {
-        val inclination = Drive.boardInclination()
+        val inclination = Gyro.boardInclination()
         val velocity = pid.calculate(sin(inclination), 0.0)
         Drive.swerveDrive(-velocity, 0.0, 0.0, true)
         balanceAnimation.execute()

@@ -9,6 +9,7 @@ import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPoint
 import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
 import kotlin.math.abs

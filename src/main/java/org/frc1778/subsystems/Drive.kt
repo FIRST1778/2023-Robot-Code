@@ -1,6 +1,5 @@
 package org.frc1778.subsystems
 
-import com.ctre.phoenix.sensors.Pigeon2
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.controller.HolonomicDriveController
 import edu.wpi.first.math.controller.PIDController
@@ -11,8 +10,6 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Transform2d
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.geometry.Translation3d
-import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
@@ -45,9 +42,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
 
     var scoringPose: Pose2d? = null
 
-    val pigeon = Pigeon2(Constants.DriveConstants.pigeonCanID)
-
-
     private const val maxVoltage = 12.0
 
     private var motorOutputLimiterEntry: GenericEntry =
@@ -60,9 +54,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
 
     val driveLogger = DataLogger("Drive")
     init {
-        driveLogger.add("yaw") { -> pigeon.yaw }
-        driveLogger.add("pitch") { -> pigeon.pitch }
-        driveLogger.add("roll") { -> pigeon.roll }
         driveLogger.add("X") { robotPosition.translation.x }
         driveLogger.add("Y") { robotPosition.translation.y }
         driveLogger.add("Rotation") {robotPosition.rotation.degrees}
@@ -82,7 +73,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
             Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
         }
         Constants.DriveConstants.driveTab.add("Drive", this).withSize(3,4)
-        pigeon.configMountPose(Pigeon2.AxisDirection.PositiveY, Pigeon2.AxisDirection.PositiveZ, 500)
         modules.forEach {
             it.setAngle(0.0)
         }
@@ -101,8 +91,10 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
 
     override val motorCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
-    override val gyro: Source<Rotation2d> = { Rotation2d.fromDegrees(pigeon.yaw) }
-
+    // The gyro member is used for the SwerveDrivePoseEstimator and SwerveDriveOdometry.
+    // This means we must use the raw yaw from the gyro insteads of the odometry yaw (although
+    // in general we prefer the latter over the former).
+    override val gyro: Source<Rotation2d> = { Rotation2d(Gyro.rawYaw()) }
 
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
         if (!aprilTagsEnabled)
@@ -226,35 +218,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         )
     }
 
-	fun boardInclination(): Double {
-            // Our robot is conceptually a rectangle, and a rectangle is basically a square,
-            // and squares are planes.  So think of robot rotation as defining a plane.
-            // Our goal is to find the angle between the robot plane and the ground, going in the
-            // X direction.
-            //
-            // A plane is defined uniquely by a point on it and a vector (starting at the point)
-            // perpendicular to the plane --- that is, pointing up.  The point will be (0,0,0)
-            // and the vector will be (0,0,1).  We rotate by yaw, pitch, and roll to find the
-            // actual current value of the vector.
-            //
-            // To find the angle of the plane along the X axis, we calculate a point on the plane
-            // (1, 0, z).  If the rotated vector ends at (a, b, c):
-            //     ax + by + cz = 0
-            // Substituting and rearranging:
-            //     a(1) + b(0) + cz = 0
-            //     a + cz = 0
-            //     cz = -a
-            //     z = -a/c
-            val yaw = Drive.robotPosition.rotation.radians
-            val pitch = Math.toRadians(Drive.pigeon.pitch)
-            val roll = Math.toRadians(Drive.pigeon.roll)
-            val rotation = Rotation3d(roll, pitch, yaw)
-            val upVector = Translation3d(0.0, 0.0, 1.0).rotateBy(rotation)
-            val z: Double = -upVector.x/upVector.z
-            return atan(z)
-        }
-
-
 //    override fun periodic() {
 //        super.periodic() //DONT REMOVE
 //        driveLogger.log()
@@ -266,10 +229,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         }, {})
         builder.addDoubleProperty("Max Angular Accel", {Constants.DriveConstants.maxAngularAcceleration.value * 10.0
         }, {})
-        builder.addDoubleProperty("Yaw", {pigeon.yaw}, {})
-        builder.addDoubleProperty("Pitch", {pigeon.pitch}, {})
-        builder.addDoubleProperty("Roll", {pigeon.roll}, {})
-        builder.addDoubleProperty("Inclination", {Math.toDegrees(boardInclination())}, {})
     }
 }
 

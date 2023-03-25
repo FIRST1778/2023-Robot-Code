@@ -77,8 +77,6 @@ object Robot : FalconTimedRobot() {
             Shooter.setBrakeMode(false)
         }
 
-
-//        Drive.pigeon.yaw = 0.0
 //        field.getObject("traj").setTrajectory(trajectory)
 
         compressor.enableAnalog(95.0, 115.0)
