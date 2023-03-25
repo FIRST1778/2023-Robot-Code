@@ -9,6 +9,8 @@ import org.frc1778.commands.shooter.ShooterAngleCommand
 import org.frc1778.commands.shooter.ShooterShootCommand
 import org.frc1778.commands.shooter.ShooterSuckCommand
 import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.Shooter
+import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.wrappers.hid.mapControls
 import kotlin.math.abs
 import kotlin.math.withSign
@@ -51,8 +53,11 @@ object Controls {
             )
         }// station 2
         button(3) {
+            changeOn(ShooterAngleCommand(Level.None))
             change(
-                ShooterSuckCommand()
+                sequential {
+                    +ShooterSuckCommand()
+                }
             )
         }// station 3
         // Intake

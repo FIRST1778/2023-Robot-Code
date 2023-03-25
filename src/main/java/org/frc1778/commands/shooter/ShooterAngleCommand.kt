@@ -23,7 +23,7 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
         val endPos = scoringLevel.shooterPosition
         timer.reset()
         timer.start()
-
+        Shooter.setNextLevel(scoringLevel)
         var startPosition: SIUnit<Radian> = Shooter.getCurrentAngle()
 
         val constraints = TrapezoidProfile.Constraints(maxVelocity, maxAcceleration)

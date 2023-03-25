@@ -39,13 +39,14 @@ object Intake : FalconSubsystem() {
         beltMotor.setVoltage(voltage)
         wheelMotor.setVoltage(voltage/5)
     }
-
+    fun cubeStored() : Boolean{
+        return !lineBreak.get()
+    }
     fun suck() {
 //        if (Manipulator.lineBreak.get()){
 //            intakeMotor.setVoltage(-intakeVoltage)
 //        }
         setMotorVoltage(intakeVoltage + 2.0.volts)
-        solenoid.state = FalconSolenoid.State.Forward
     }
     fun extend(){
         solenoid.state = FalconSolenoid.State.Forward

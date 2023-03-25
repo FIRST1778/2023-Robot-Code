@@ -6,11 +6,10 @@ import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.FalconCommand
 
-class ShooterSuckCommand : FalconCommand(Shooter, Intake){
+class ShooterSuckCommand : FalconCommand(Shooter){
     override fun execute() {
         if(!Shooter.cubeStored && Shooter.getScoringLevel() == Level.None){
             Shooter.suck()
-            Intake.suck()
         }else{
             Shooter.stopWheels()
         }
@@ -18,7 +17,6 @@ class ShooterSuckCommand : FalconCommand(Shooter, Intake){
 
     override fun end(interrupted: Boolean) {
         Shooter.stopWheels()
-        Intake.stop()
     }
 
     override fun cancel() {

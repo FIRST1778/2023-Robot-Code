@@ -92,6 +92,7 @@ object Shooter : FalconSubsystem(), Sendable {
     }
 
     private var scoringLevel: Level = Level.Top
+    private var nextLevel : Level? = null
 
     fun setDesiredAngleVelocity(velocity: Double) {
         desiredAngleVelocity = velocity
@@ -121,7 +122,7 @@ object Shooter : FalconSubsystem(), Sendable {
     //TODO Get angle offset for gravity/feedforward
     val angleOffset : SIUnit<Radian> = 36.0.degrees
     fun angleControl() {
-        if (angleControlEnabled) {
+        if (angleControlEnabled && ((scoringLevel != Level.None) || (nextLevel != Level.None))){
             angleLoop.setNextR(VecBuilder.fill(desiredAngle.value, desiredAngleVelocity))
             angleLoop.correct(VecBuilder.fill(getCurrentAngle().value))
             angleLoop.predict(0.020) // 20 ms
@@ -139,6 +140,9 @@ object Shooter : FalconSubsystem(), Sendable {
             resetDesiredAngle()
             angleMotor.setVoltage(0.0.volts)
         }
+    }
+    fun setNextLevel(level : Level){
+        nextLevel = level
     }
 
     fun resetDesiredAngle() {
@@ -205,7 +209,4 @@ object Shooter : FalconSubsystem(), Sendable {
     fun getScoringLevel(): Level{
         return scoringLevel
     }
-
-
-
 }
