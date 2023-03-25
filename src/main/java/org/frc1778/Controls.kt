@@ -75,7 +75,7 @@ object Controls {
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
-//        button(1) {changeOn(ZeroExtensionCommand()) } // reset extension
+        button(1) {} // reset extension
         button(2) {}
 //        button(3) {changeOn(sequential{+BalanceCommand()})}// other
         // level of placement

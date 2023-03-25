@@ -187,36 +187,6 @@ object Constants {
         val shooterTab = Shuffleboard.getTab("Shooter")!!
     }
 
-    //<editor-fold desc="Old Constants">
-    object ManipulatorConstants {
-        val ANGLE_MOTOR_MAIN_ID: Int = 15
-        val ANGLE_MOTOR_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(2048.nativeUnits)
-        val DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(1.nativeUnits)
-        val manipulatorShuffleboardTab = Shuffleboard.getTab("Manipulator")
-    }
-
-    object ArmConstants {
-
-        val DUTY_CYCLE_ABSOLUTE_ENCODER_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(1.nativeUnits)
-        val armShuffleboardTab = Shuffleboard.getTab("Arm")
-        const val ANGLE_ENCODER_ID: Int = 23
-        val ANGLE_ENCODER_UNIT_MODEL: NativeUnitModel<Radian> = NativeUnitRotationModel(4096.nativeUnits) //TODO
-        val EXTENSION_MOTOR_UNIT_MODEL: NativeUnitLengthModel =
-            NativeUnitLengthModel((42 / 4).nativeUnits, (1.128).inches) //TODO
-        const val ANGLE_MOTOR_OTHER_ID: Int = 12
-        const val EXTENSION_MOTOR_ID: Int = 13
-        const val ANGLE_MOTOR_MAIN_ID: Int = 11
-        val ANGLE_ENCODER_OFFSET = -(430.0 - 90.0).degrees
-        val ANGLE_MOTOR_UNIT_MODEL: NativeUnitRotationModel = NativeUnitRotationModel(2048.nativeUnits) //TODO
-        val ZEROED_EXTENSION_DISTANCE_READING: SIUnit<Meter> = 7.9.inches
-        val AORTransform: Transform3d = Transform3d(
-            Translation3d((-10.5).inches.value, 0.0, 49.5.inches.value), Rotation3d()
-        )
-        val ARM_EXTENSION_OFFSET = 36.5.inches
-        val AllianceXOffset = 18.inches.value
-    }
-    //</editor-fold>
-
     object VisionConstants {
         const val cameraName = "The Eye of Sauron"
         val APRIL_TAG_FIELD_LAYOUT =
@@ -234,29 +204,38 @@ object Constants {
 
 }
 //TODO Get shooter position values
-enum class Level(val shooterPosition : SIUnit<Radian>, val shooterVoltage : SIUnit<Volt>) {
+enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltage : SIUnit<Volt>, val frontShooterPosition : SIUnit<Radian>, val frontShooterVoltage : SIUnit<Volt>) {
     Top(
 //        Transform3d(
 //            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
 //        ),
         230.0.degrees,
+        5.0.volts,
+        150.degrees,
         5.0.volts
+
     ),
     Middle(
 //        Transform3d(
 //            Translation3d((22.7.inches).value, 0.0, 34.0.inches.value), Rotation3d()
 //        ),
-        135.0.degrees,
+        240.0.degrees,
+        4.0.volts,
+        140.0.degrees,
         4.0.volts
     ),
     Bottom(
 //        Transform3d(
 //            Translation3d(), Rotation3d()
 //        ),
-        120.0.degrees,
+        250.0.degrees,
+        3.0.volts,
+        130.0.degrees,
         3.0.volts
     ),
     None(
+        90.0.degrees,
+        0.0.volts,
         90.0.degrees,
         0.0.volts
     )

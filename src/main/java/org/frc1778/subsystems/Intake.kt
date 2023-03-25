@@ -8,6 +8,7 @@ import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.amps
 import org.ghrobotics.lib.mathematics.units.derived.Volt
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
@@ -49,7 +50,11 @@ object Intake : FalconSubsystem() {
         setMotorVoltage(intakeVoltage + 2.0.volts)
     }
     fun extend(){
-        solenoid.state = FalconSolenoid.State.Forward
+        if(Shooter.getCurrentAngle() < 180.0.degrees && !cubeStored()){
+            solenoid.state = FalconSolenoid.State.Forward
+        }else{
+            retract()
+        }
     }
     fun retract(){
         solenoid.state = FalconSolenoid.State.Reverse

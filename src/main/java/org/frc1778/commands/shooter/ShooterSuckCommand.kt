@@ -8,7 +8,7 @@ import org.ghrobotics.lib.commands.FalconCommand
 
 class ShooterSuckCommand : FalconCommand(Shooter){
     override fun execute() {
-        if(!Shooter.cubeStored && Shooter.getScoringLevel() == Level.None){
+        if(!Shooter.cubeStored){
             Shooter.suck()
         }else{
             Shooter.stopWheels()

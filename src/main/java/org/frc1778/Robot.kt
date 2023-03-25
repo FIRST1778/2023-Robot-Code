@@ -90,7 +90,6 @@ object Robot : FalconTimedRobot() {
         Controls.driverController.update()
         Controls.operatorControllerRed.update()
         Controls.operatorControllerBlue.update()
-        eventLoop.poll()
     }
 
     override fun disabledInit() {
@@ -104,6 +103,7 @@ object Robot : FalconTimedRobot() {
 //        Arm.resetDesiredAngle()
 //        Manipulator.resetDesiredAngle()
         Shooter.resetDesiredAngle()
+        eventLoop.poll()
     }
 
     override fun autonomousInit() {
