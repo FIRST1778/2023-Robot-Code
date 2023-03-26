@@ -31,20 +31,29 @@ class BalanceAnimation() : FalconCommand(Lights) {
         //Second abs is to deal with edge cases were read inclination is greater than expected max inclination
         val numLedsLit: Int =
             ceil(numLedsPerSection * abs(MAX_INCLINATION - abs(Math.toDegrees(Gyro.boardInclination()))) / MAX_INCLINATION).toInt()
-        //When we have more lights:
-//        val currentPixelSections = currentPixels.chunked(Constants.LedConstants.NUM_LEDS_PER_SECTION).mapIndexed { index, section ->
-//            if (index % 2 != 0) section.reversed() else section
-//        }
 
-        currentPixels = List(currentPixels.size) { index: Int ->
-            if (index+1 <= numLedsLit) {
-                interpolator.interpolate((index.toDouble() / (numLedsPerSection-1)))
-            } else {
-                RGB(0, 0, 0)
+        /**
+         * This is a bit of a hack to get the lights to light up in the correct order.
+         *  - The lights are split into sections based on the number of LEDs you have in a strip.
+         *    (This only will work if you have the same number of LEDs per strip)
+         *  - The LEDs are then set to the correct color based on an interpolation from red to green
+         *  - The sections are then reversed every other section to get the correct order
+         */
+        Lights.pixels = currentPixels.chunked(Constants.LedConstants.NUM_LEDS_PER_SECTION).mapIndexed {index, section ->
+            List(section.size) { sectionIndex: Int ->
+                if (sectionIndex + 1 <= numLedsLit) {
+                    interpolator.interpolate((sectionIndex.toDouble() / (numLedsPerSection - 1)))
+                } else {
+                    RGB(0, 0, 0)
+                }
+            }.toMutableList().apply {
+                if(index % 2 == 1) {
+                    this.reverse()
+                }
             }
-        }.toMutableList()
+        }.flatten().toMutableList()
 
-        Lights.pixels = currentPixels
+
     }
 
     override fun end(interrupted: Boolean) {
