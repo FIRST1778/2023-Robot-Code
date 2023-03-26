@@ -65,8 +65,8 @@ object Shooter : FalconSubsystem(), Sendable {
     //TODO: Update to new weights
     private var feedforwardVoltage = 0.0
     private const val angle_kS: Double = 0.0
-    private const val angle_kA: Double = 0.038755
-    private const val angle_kV: Double = 1.4431050329938087
+    private const val angle_kA: Double = 0.05222222222222221
+    private const val angle_kV: Double = 1.071505486997903
     private val anglePlant = LinearSystemId.identifyPositionSystem(angle_kV, angle_kA)
 
     private var desiredAngleVelocity: Double = 0.0 // rad/s
