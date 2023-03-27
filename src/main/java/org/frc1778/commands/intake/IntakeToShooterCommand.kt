@@ -27,6 +27,11 @@ class IntakeToShooterCommand : FalconCommand(Intake) {
         Intake.stop()
     }
 
+    override fun cancel() {
+        super.cancel()
+        end(true)
+    }
+
     override fun isFinished(): Boolean {
         return Shooter.cubeStored
     }

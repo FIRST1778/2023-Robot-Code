@@ -15,6 +15,11 @@ class ShooterSuckCommand : FalconCommand(Shooter) {
         Shooter.suck()
     }
 
+    override fun cancel() {
+        super.cancel()
+        end(true)
+    }
+
 
     override fun end(interrupted: Boolean) {
         Shooter.stopWheels()
