@@ -1,9 +1,11 @@
 package org.frc1778.subsystems
 
 import com.revrobotics.CANSparkMaxLowLevel
+import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.PneumaticsModuleType
 import edu.wpi.first.wpilibj.Solenoid
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.amps
@@ -18,7 +20,7 @@ import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 object Intake : FalconSubsystem() {
     //TODO Get linebreak channel
-    val lineBreak: DigitalInput = DigitalInput(3)
+    val lineBreak: DigitalInput = DigitalInput(1)
 
     var beltMotor = falconMAX(15, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)) {
         brakeMode = true
@@ -29,8 +31,8 @@ object Intake : FalconSubsystem() {
         outputInverted = true
     }
     val solenoid = FalconDoubleSolenoid(
-        5,
-        3,
+        0,
+        1,
         PneumaticsModuleType.REVPH,
         30
     )
@@ -50,7 +52,7 @@ object Intake : FalconSubsystem() {
         setMotorVoltage(intakeVoltage + 2.0.volts)
     }
     fun extend(){
-        if(Shooter.getCurrentAngle() < 180.0.degrees && !cubeStored()){
+        if(!cubeStored()){
             solenoid.state = FalconSolenoid.State.Forward
         }else{
             retract()
@@ -66,5 +68,13 @@ object Intake : FalconSubsystem() {
 
     fun stop() {
         setMotorVoltage(0.0.volts)
+    }
+
+    override fun initSendable(builder: SendableBuilder?) {
+        super.initSendable(builder)
+        builder!!.addBooleanProperty("Line Break", { lineBreak.get()}, {})
+    }
+    init {
+        Shuffleboard.getTab("Intake").add(this)
     }
 }

@@ -13,9 +13,9 @@ class WristSim (initialWristPosition: SIUnit<Radian>){
     private var accel = 0.0.radians
     private var input = 0.0.volts
     private var currentDraw = 0.0.amps
-    private val Ng = 54.0
+    private val Ng = ((64.0/22.0) * 4.0 * 5.0)
     private val motor = DCMotor.getNEO(1)
-    private val inertia = 0.611 // kg m^2
+    private val inertia = 0.0927805005 // kg m^2
     private val centerOfGravity = 3.90153.inches
     private val manipulatorMass = 10.0.pounds
     private val stopTop = 100.degrees

@@ -47,7 +47,7 @@ object Shooter : FalconSubsystem(), Sendable {
     }
 
     //TODO Get DIO
-    val limitSwitch = DigitalInput(1)
+    val limitSwitch = DigitalInput(2)
     val brakeModeSwitch = DigitalInput(4)
 
     val angleMotor = falconMAX(
@@ -164,7 +164,9 @@ object Shooter : FalconSubsystem(), Sendable {
     }
 
     override fun periodic() {
-//        angleControl()
+
+        angleControl()
+
         dataLogger.log()
         if(!limitSwitch.get()){
             cubeStored = true

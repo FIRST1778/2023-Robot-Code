@@ -1,15 +1,18 @@
 package org.frc1778
 
+import com.fasterxml.jackson.databind.JsonSerializer.None
 import edu.wpi.first.wpilibj.Joystick
 import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.commands.intake.IntakeLowerCommand
 import org.frc1778.commands.intake.IntakeSpitCommand
 import org.frc1778.commands.intake.IntakeSuckCommand
+import org.frc1778.commands.intake.IntakeToShooterCommand
 import org.frc1778.commands.shooter.ShooterAngleCommand
 import org.frc1778.commands.shooter.ShooterShootCommand
 import org.frc1778.commands.shooter.ShooterSuckCommand
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Shooter
+import org.ghrobotics.lib.commands.parallelDeadline
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.wrappers.hid.mapControls
 import kotlin.math.abs
@@ -49,12 +52,17 @@ object Controls {
             change(
                 ShooterShootCommand()
             )
+            changeOff {
+                ShooterAngleCommand(Level.None).schedule()
+            }
         }// station 2
         button(3) {
-            changeOn(ShooterAngleCommand(Level.None))
             change(
                 sequential {
-                    +ShooterSuckCommand()
+                    +ShooterAngleCommand(Level.None)
+                    +parallelDeadline(ShooterSuckCommand()) {
+                        +IntakeToShooterCommand()
+                    }
                 }
             )
         }// station 3
