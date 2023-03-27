@@ -211,4 +211,8 @@ object Shooter : FalconSubsystem(), Sendable {
     fun getScoringLevel(): Level{
         return scoringLevel
     }
+
+    fun spit() {
+        parentShooterMotor.setVoltage(0.75.volts)
+    }
 }

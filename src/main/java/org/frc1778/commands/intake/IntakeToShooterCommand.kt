@@ -21,13 +21,11 @@ class IntakeToShooterCommand: FalconCommand(Intake) {
         Intake.retract()
         if(Shooter.getScoringLevel() == Level.None) {
             Intake.suck()
-            Shooter.suck()
         }
     }
 
     override fun end(interrupted: Boolean) {
         Intake.stop()
-        Shooter.stopWheels()
     }
 
     override fun isFinished(): Boolean {
