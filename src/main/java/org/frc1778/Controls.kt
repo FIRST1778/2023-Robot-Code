@@ -61,7 +61,10 @@ object Controls {
                 sequential {
                     +ShooterAngleCommand(Level.None)
                     +parallelDeadline(ShooterSuckCommand()) {
-                        +IntakeToShooterCommand()
+                        sequential {
+                            IntakeSuckCommand()
+                            IntakeToShooterCommand()
+                        }
                     }
                 }
             )
