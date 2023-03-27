@@ -9,8 +9,10 @@ import org.ghrobotics.lib.mathematics.units.derived.degrees
 
 class IntakeSuckCommand() : FalconCommand(Intake) {
     override fun initialize() {
-        Intake.extend()
-        Intake.suck()
+        if(!Intake.cubeStored()) {
+            Intake.extend()
+            Intake.suck()
+        }
     }
 
     override fun execute() {
