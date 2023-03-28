@@ -2,6 +2,7 @@ package org.frc1778
 
 import com.fasterxml.jackson.databind.JsonSerializer.None
 import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.commands.intake.IntakeLowerCommand
 import org.frc1778.commands.intake.IntakeSpitCommand
@@ -63,6 +64,7 @@ object Controls {
                     +parallelDeadline(ShooterSuckCommand()) {
                         +sequential {
                             +IntakeSuckCommand()
+                            +WaitCommand(.125)
                             +IntakeToShooterCommand()
                         }
                     }
