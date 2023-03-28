@@ -38,7 +38,7 @@ object Constants {
         private val swerveDriveWheelOffsets = mapOf(
             "Top Left" to 272.3,
             "Top Right" to 17.6,
-            "Bottom Right" to 48.4,
+            "Bottom Right" to 46.5,
             "Bottom Left" to 273.45,
         )
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {

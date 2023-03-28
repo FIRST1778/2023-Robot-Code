@@ -7,6 +7,7 @@ import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.sequential
+import org.ghrobotics.lib.mathematics.units.derived.inDegrees
 
 class IntakeToShooterCommand : FalconCommand(Intake) {
 
@@ -17,7 +18,7 @@ class IntakeToShooterCommand : FalconCommand(Intake) {
 
     override fun execute() {
         Intake.retract()
-        if(Shooter.getScoringLevel() == Level.None) {
+        if(Shooter.getCurrentAngle().inDegrees() < 95.0) {
             Intake.suck()
         }
     }

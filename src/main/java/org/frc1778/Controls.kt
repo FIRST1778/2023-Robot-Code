@@ -61,9 +61,9 @@ object Controls {
                 sequential {
                     +ShooterAngleCommand(Level.None)
                     +parallelDeadline(ShooterSuckCommand()) {
-                        sequential {
-                            IntakeSuckCommand()
-                            IntakeToShooterCommand()
+                        +sequential {
+                            +IntakeSuckCommand()
+                            +IntakeToShooterCommand()
                         }
                     }
                 }
@@ -71,9 +71,6 @@ object Controls {
         }// station 3
         // Intake
 
-        //TODO: Change these two to Standard Commands
-        // The functionality you are looking for in this command could be housed in a standard FalconCommand
-        // That has the same init behavior but with the changeOff in the cancel portion of the command
         button(4) {
             change(IntakeSuckCommand())
             // intake suck

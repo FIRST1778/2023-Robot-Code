@@ -74,7 +74,7 @@ object Shooter : FalconSubsystem(), Sendable {
 
     val encoder = ShooterAbsoluteEncoder(angleMotor.canSparkMax, NativeUnitRotationModel(1.nativeUnits)).apply {
         setInverted(true)
-        resetPositionRaw(0.0.nativeUnits)
+        resetPosition((210.75 - 90.0).degrees)
     }
 
     val angleControlEnabled = true
@@ -91,7 +91,7 @@ object Shooter : FalconSubsystem(), Sendable {
         dataLogger.add("ff voltage", { feedforwardVoltage })
     }
 
-    private var scoringLevel: Level = Level.Top
+    private var scoringLevel: Level = Level.None
     private var nextLevel : Level? = null
 
     fun setDesiredAngleVelocity(velocity: Double) {
@@ -160,7 +160,7 @@ object Shooter : FalconSubsystem(), Sendable {
     }
     //TODO Get best intake speed
     fun suck(){
-       parentShooterMotor.setVoltage((-.5).volts)
+       parentShooterMotor.setVoltage((-1.5).volts)
     }
 
     override fun periodic() {
@@ -199,6 +199,7 @@ object Shooter : FalconSubsystem(), Sendable {
         builder.addBooleanProperty("Shooter Loaded", { cubeStored}, {})
         builder.addStringProperty("Level", { scoringLevel.name}, {})
         builder.addDoubleProperty("Shooter Set Voltage", { shooterSetVoltage.value}, {})
+        builder.addDoubleProperty("Angle", { getCurrentAngle().inDegrees() }, {})
     }
 
     fun stopWheels() {
