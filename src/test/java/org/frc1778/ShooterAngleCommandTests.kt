@@ -1,5 +1,6 @@
 package org.frc1778
 
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
@@ -22,7 +23,7 @@ class ShooterAngleCommandTests {
         Drive.robotPosition = Pose2d(0.0, 0.0, Rotation2d(angle.value))
 
         assertEquals(alliance, Robot.alliance)
-        assertEquals(angle.value, Gyro.odometryYaw(), 0.01)
+        assertEquals(MathUtil.angleModulus(angle.value), Gyro.odometryYaw(), 0.01)
 
         cmd.initialize()
         if(shouldBeFront) {

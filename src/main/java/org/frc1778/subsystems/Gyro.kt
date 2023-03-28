@@ -3,6 +3,7 @@ package org.frc1778.subsystems
 import kotlin.math.PI
 import kotlin.math.round
 import com.ctre.phoenix.sensors.Pigeon2
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.util.sendable.Sendable
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation
 import org.frc1778.Constants
 import org.frc1778.Robot
 import org.ghrobotics.lib.commands.FalconSubsystem
+import kotlin.math.abs
 
 object Gyro: FalconSubsystem(), Sendable {
     // Because the gyro subsystem only exposes read-only members, any number of
@@ -25,7 +27,7 @@ object Gyro: FalconSubsystem(), Sendable {
     }
 
     fun rawYaw() = Math.toRadians(pigeon.yaw)
-    fun odometryYaw() = Drive.robotPosition.rotation.radians
+    fun odometryYaw() = MathUtil.angleModulus(Drive.robotPosition.rotation.radians)
     fun pitch() = Math.toRadians(pigeon.pitch)
     fun roll() = Math.toRadians(pigeon.roll)
 
@@ -37,7 +39,7 @@ object Gyro: FalconSubsystem(), Sendable {
     }
 
     fun direction180(): Double {
-        return PI * round(odometryYaw() / PI)
+        return abs(PI * round(odometryYaw() / PI))
     }
 
     fun directionTowardsGrid(): Double {
