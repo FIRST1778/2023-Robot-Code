@@ -25,14 +25,26 @@
       "/LiveWindow/Ungrouped/PWMSparkMax[2]": "Motor Controller",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/Shuffleboard/Auto/Auto": "String Chooser",
+      "/Shuffleboard/Auto/Balance Location": "String Chooser",
       "/Shuffleboard/Auto/Balance?": "String Chooser",
       "/Shuffleboard/Drive/Drive": "Subsystem",
       "/Shuffleboard/Field/Field": "Field2d",
+      "/Shuffleboard/Gyro/Gyro": "Subsystem",
+      "/Shuffleboard/Intake/Intake": "Subsystem",
+      "/Shuffleboard/Lights/Lights": "Subsystem",
+      "/Shuffleboard/Shooter/Brake Mode Switch": "Digital Input",
+      "/Shuffleboard/Shooter/Limit Switch": "Digital Input",
+      "/Shuffleboard/Shooter/Shooter": "Subsystem",
       "/SmartDashboard/Auto choices": "String Chooser",
       "/SmartDashboard/Balance?": "String Chooser"
     },
     "windows": {
       "/Shuffleboard/Auto/Auto": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Auto/Balance Location": {
         "window": {
           "visible": true
         }

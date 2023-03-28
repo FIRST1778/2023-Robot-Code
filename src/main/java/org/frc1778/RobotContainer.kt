@@ -131,6 +131,12 @@ object RobotContainer {
         setDefaultOption("No", false)
     }
 
+    private val balanceLocationChooser = SendableChooser<Boolean>().apply {
+        addOption("Outside", true)
+        addOption("Inside", false)
+        setDefaultOption("Outside", true)
+    }
+
     init {
 //        SmartDashboard.putData("Auto choices", autoModeChooser)
 //        SmartDashboard.putData("Balance?", balanceChooser)
@@ -143,6 +149,10 @@ object RobotContainer {
             position(2, 0)
             size(1,1)
         }
+        autoTab.sendableChooser("Balance Location", balanceLocationChooser) {
+            position(4, 0)
+            size(1,1)
+        }
 
     }
 
@@ -151,7 +161,7 @@ object RobotContainer {
         return sequential {
             +autoModeChooser.selected!!.command()
             if (balanceChooser.selected!!) {
-                +DriveToChargeStation()
+                +DriveToChargeStation(balanceLocationChooser.selected)
                 +BalanceCommand()
             }
 
