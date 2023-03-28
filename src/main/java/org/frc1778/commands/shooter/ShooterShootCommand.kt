@@ -17,13 +17,9 @@ class ShooterShootCommand : FalconCommand(Shooter) {
     private val rebBlink = BlinkAnimation(RGB.from255(255,0,0), RGB, 4, 4)
 
     override fun execute() {
-        val directionTowardsGrid = when (Robot.alliance) {
-            DriverStation.Alliance.Red -> 0.0
-            else -> PI
-        }
         if(Shooter.cubeStored) {
             Shooter.shoot(
-                if (directionTowardsGrid == PI * round(Gyro.odometryYaw() / PI)) {
+                if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
                     Shooter.getScoringLevel().frontShooterVoltage
                 } else {
                     Shooter.getScoringLevel().rearShooterVoltage

@@ -1,12 +1,16 @@
 package org.frc1778.subsystems
 
+import kotlin.math.PI
+import kotlin.math.round
 import com.ctre.phoenix.sensors.Pigeon2
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj.DriverStation
 import org.frc1778.Constants
+import org.frc1778.Robot
 import org.ghrobotics.lib.commands.FalconSubsystem
 
 object Gyro: FalconSubsystem(), Sendable {
@@ -32,19 +36,33 @@ object Gyro: FalconSubsystem(), Sendable {
         // ).withSize(3, 4)
     }
 
+    fun direction180(): Double {
+        return PI * round(odometryYaw() / PI)
+    }
+
+    fun directionTowardsGrid(): Double {
+        return when (Robot.alliance) {
+            DriverStation.Alliance.Red -> 0.0
+            else -> PI
+        }
+    }
+
     fun boardInclination(): Double {
-        // Our robot is conceptually a rectangle, and a rectangle is basically a square,
-        // and squares are planes.  So think of robot rotation as defining a plane.
-        // Our goal is to find the angle between the robot plane and the ground, going in the
-        // X direction.
+        // Our robot is conceptually a rectangle, and a rectangle is
+        // basically a square, and squares are planes.  So think of
+        // robot rotation as defining a plane.  Our goal is to find the
+        // angle between the robot plane and the ground, going in the X
+        // direction.
         //
-        // A plane is defined uniquely by a point on it and a vector (starting at the point)
-        // perpendicular to the plane --- that is, pointing up.  The point will be (0,0,0)
-        // and the vector will be (0,0,1).  We rotate by yaw, pitch, and roll to find the
-        // actual current value of the vector.
+        // A plane is defined uniquely by a point on it and a vector
+        // (starting at the point) perpendicular to the plane --- that
+        // is, pointing up.  The point will be (0,0,0) and the vector
+        // will be (0,0,1).  We rotate by yaw, pitch, and roll to find
+        // the actual current value of the vector.
         //
-        // To find the angle of the plane along the X axis, we calculate a point on the plane
-        // (1, 0, z).  If the rotated vector ends at (a, b, c):
+        // To find the angle of the plane along the X axis, we calculate
+        // a point on the plane (1, 0, z).  If the rotated vector ends
+        // at (a, b, c):
         //     ax + by + cz = 0
         // Substituting and rearranging:
         //     a(1) + b(0) + cz = 0

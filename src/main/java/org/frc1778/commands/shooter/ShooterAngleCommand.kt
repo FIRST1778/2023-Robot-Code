@@ -27,11 +27,7 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
     val maxAcceleration : Double = 3.5 // rad/sec
     val maxVelocity: Double = 2.125
     override fun initialize() {
-        val directionTowardsGrid = when (Robot.alliance) {
-            DriverStation.Alliance.Red -> 0.0
-            else -> PI
-        }
-        val endPos = if (directionTowardsGrid == PI * round(Gyro.odometryYaw() / PI)) {
+        val endPos = if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
             scoringLevel.frontShooterPosition
         }else{
             scoringLevel.rearShooterPosition
