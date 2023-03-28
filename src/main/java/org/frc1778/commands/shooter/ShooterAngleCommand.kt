@@ -26,6 +26,8 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
     var timer = Timer()
     val maxAcceleration : Double = 3.5 // rad/sec
     val maxVelocity: Double = 2.125
+    var endPos: SIUnit<Radian>? = null
+
     override fun initialize() {
         val endPos = if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
             scoringLevel.frontShooterPosition
@@ -44,6 +46,7 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
         val startState = TrapezoidProfile.State(startPosition.value, Shooter.getDesiredAngleVelocity())
         val endState = TrapezoidProfile.State(endPos.value, END_VEL)
         profile = TrapezoidProfile(constraints, endState, startState)
+        this.endPos = endPos
     }
 
     override fun execute() {
