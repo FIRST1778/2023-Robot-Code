@@ -48,7 +48,7 @@ object Shooter : FalconSubsystem(), Sendable {
 
     //TODO Get DIO
     val limitSwitch = DigitalInput(2)
-    val brakeModeSwitch = DigitalInput(4)
+    val brakeModeSwitch = DigitalInput(3)
 
     val angleMotor = falconMAX(
         Constants.ShooterConstants.ANGLE_MOTOR_ID,
