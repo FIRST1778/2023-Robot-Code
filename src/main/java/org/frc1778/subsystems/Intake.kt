@@ -57,10 +57,13 @@ object Intake : FalconSubsystem() {
         setMotorVoltage(intakeVoltage + 2.0.volts)
     }
     fun extend(){
-        if(!cubeStored()){
-            solenoid.state = FalconSolenoid.State.Forward
-        }else{
+        if (Shooter.absolutePosition > 180.0.degrees) {
+            Shooter.retract()
+        }
+        if (cubeStored()) {
             retract()
+        } else {
+            solenoid.state = FalconSolenoid.State.Forward
         }
     }
     fun retract(){
