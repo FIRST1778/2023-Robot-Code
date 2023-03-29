@@ -1,18 +1,13 @@
 package org.frc1778.subsystems
 
-import org.frc1778.Level
-import org.frc1778.subsystems.Shooter
-import org.frc1778.subsystems.ShooterAbsoluteEncoder
-
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.PneumaticsModuleType
-import edu.wpi.first.wpilibj.Solenoid
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import org.frc1778.Level
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
-import org.ghrobotics.lib.mathematics.units.amps
 import org.ghrobotics.lib.mathematics.units.derived.Volt
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.volts

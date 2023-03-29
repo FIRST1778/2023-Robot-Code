@@ -2,16 +2,10 @@ package org.frc1778.animation
 
 import com.github.ajalt.colormath.Color
 import com.github.ajalt.colormath.ColorSpace
-import com.github.ajalt.colormath.model.HSV
-import com.github.ajalt.colormath.model.Oklab
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.Interpolator
 import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.wpilibj.Timer
-import org.ghrobotics.lib.mathematics.units.SIUnit
-import kotlin.math.sin
-import kotlin.math.PI
-import kotlin.math.abs
 
 
 interface Animation {

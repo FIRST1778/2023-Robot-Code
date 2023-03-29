@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.DigitalInput
 import org.frc1778.Constants
 import org.frc1778.Level
 import org.frc1778.lib.DataLogger
-import org.frc1778.lib.GameObject
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian

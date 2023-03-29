@@ -2,9 +2,7 @@ package org.frc1778.commands.drive
 
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
-import org.ejml.All
 import org.frc1778.Robot
 import org.frc1778.lib.SwerveTrajectoryTrackerCommand
 import org.frc1778.lib.pathplanner.PathConstraints
@@ -14,9 +12,7 @@ import org.frc1778.subsystems.Drive
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
 import org.ghrobotics.lib.mathematics.units.meters
-import kotlin.math.PI
 import kotlin.math.abs
-import kotlin.math.withSign
 
 class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Drive) {
     companion object {
@@ -30,7 +26,7 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
             Rotation2d.fromDegrees(if (abs(Drive.robotPosition.rotation.degrees) <= 90.0) 0.0 else 180.0)
 
         val balancePoint =
-            if (Robot.alliance == DriverStation.Alliance.Red) BalanceLocation.RED_BALANCE else BalanceLocation.BLUE_BALANCE
+            if (Robot.alliance == Alliance.Red) BalanceLocation.RED_BALANCE else BalanceLocation.BLUE_BALANCE
         val entryPoint = BalanceLocation.getLocationFromAlliance(Robot.alliance)
             .let { if (outerBalance) it.outerPoint else it.innerPoint }
         val trajectory = if (Drive.robotPosition.translation in entryPoint.qualifier) {
@@ -191,7 +187,7 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
                 -1
             }
             val currentPosition = this.position
-            val transformedPosition = Translation2d((16.54 / 2) + (transformDirection * abs((16.54 / 2) - currentPosition.x)), currentPosition.y);
+            val transformedPosition = Translation2d((16.54 / 2) + (transformDirection * abs((16.54 / 2) - currentPosition.x)), currentPosition.y)
 
 
             val currentRotation = this.heading

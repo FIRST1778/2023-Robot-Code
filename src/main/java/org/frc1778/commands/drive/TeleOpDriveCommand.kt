@@ -1,18 +1,17 @@
 package org.frc1778.commands.drive
 
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.trajectory.TrapezoidProfile
 import org.frc1778.Constants
 import org.frc1778.Controls
 import org.frc1778.Robot
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
-import edu.wpi.first.math.geometry.Rotation2d
-import edu.wpi.first.math.kinematics.ChassisSpeeds
-import edu.wpi.first.math.trajectory.TrapezoidProfile
-import kotlin.math.pow
-import kotlin.math.withSign
 import kotlin.math.PI
+import kotlin.math.pow
 import kotlin.math.round
+import kotlin.math.withSign
 
 class TeleOpDriveCommand: FalconCommand(Drive) {
     private var autoAlignWasActive = false

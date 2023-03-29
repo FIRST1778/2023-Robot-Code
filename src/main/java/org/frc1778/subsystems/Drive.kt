@@ -21,7 +21,6 @@ import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets
 import org.frc1778.Constants
 import org.frc1778.commands.drive.TeleOpDriveCommand
-import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconNeoSwerveModule
 import org.frc1778.lib.FalconSwerveDrivetrain
@@ -34,8 +33,6 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.utils.Source
 import kotlin.math.hypot
-import kotlin.math.atan
-import kotlin.math.sin
 
 object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     var aprilTagsEnabled: Boolean = false
@@ -92,13 +89,13 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     override val motorCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
     // The gyro member is used for the SwerveDrivePoseEstimator and SwerveDriveOdometry.
-    // This means we must use the raw yaw from the gyro insteads of the odometry yaw (although
+    // This means we must use the raw yaw from the gyro instead of the odometry yaw (although
     // in general we prefer the latter over the former).
     override val gyro: Source<Rotation2d> = { Rotation2d(Gyro.rawYaw()) }
 
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
         if (!aprilTagsEnabled)
-            return null;
+            return null
 
         val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
         if (result == null || !result.isPresent())

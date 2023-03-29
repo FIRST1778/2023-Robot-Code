@@ -24,7 +24,7 @@ import org.ghrobotics.lib.commands.FalconSubsystem
 // English) than the datasheets:
 //     https://cpldcpu.wordpress.com/2014/11/30/understanding-the-apa102-superled/
 object Lights : FalconSubsystem() {
-	var pixels = MutableList<RGB>(LedConstants.NUM_LEDS) { RGB(0,0,0) }
+	var pixels = MutableList(LedConstants.NUM_LEDS) { RGB(0,0,0) }
 
     val redPurpleBlueAnimation =
             GradientAnimation(

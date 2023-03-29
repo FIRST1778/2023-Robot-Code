@@ -4,7 +4,7 @@ import org.frc1778.subsystems.Intake
 import org.ghrobotics.lib.commands.FalconCommand
 
 
-class IntakeStopCommand() : FalconCommand(Intake) {
+class IntakeStopCommand : FalconCommand(Intake) {
     override fun initialize() {
         Intake.retract()
         Intake.stop()

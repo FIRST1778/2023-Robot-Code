@@ -4,7 +4,6 @@ import com.revrobotics.CANSparkMax
 import com.revrobotics.SparkMaxAbsoluteEncoder
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.wpilibj.DutyCycleEncoder
 import org.frc1778.lib.AbstractFalconAbsoluteEncoder
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian

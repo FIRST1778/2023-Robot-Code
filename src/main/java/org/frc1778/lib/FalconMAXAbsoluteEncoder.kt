@@ -5,7 +5,6 @@ import com.revrobotics.CANSparkMaxLowLevel
 import com.revrobotics.SparkMaxAbsoluteEncoder
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.RobotBase
-import org.ghrobotics.lib.mathematics.units.SIKey
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.radians
@@ -31,7 +30,7 @@ class FalconMAXAbsoluteEncoder(
     )
 
     private val canAbsoluteEncoder = canSparkMax.getAbsoluteEncoder(type)
-    public var simulatedPosition = 0.0.radians
+    var simulatedPosition = 0.0.radians
 
     /**
      * Same as [position]

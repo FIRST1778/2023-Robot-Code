@@ -7,7 +7,7 @@ import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.FalconCommand
 
 
-class IntakeSpitCommand() : FalconCommand(Intake) {
+class IntakeSpitCommand : FalconCommand(Intake) {
     override fun initialize() {
         Intake.spit()
         Intake.retract()

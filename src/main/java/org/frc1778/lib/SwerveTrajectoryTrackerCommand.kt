@@ -9,9 +9,7 @@
 package org.frc1778.lib
 
 import edu.wpi.first.math.geometry.Pose2d
-import org.frc1778.lib.FalconSwerveDrivetrain
 import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.math.trajectory.Trajectory
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.Timer

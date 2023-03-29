@@ -10,10 +10,18 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import org.frc1778.lib.SwerveModuleConstants
-import org.ghrobotics.lib.mathematics.units.*
-import org.ghrobotics.lib.mathematics.units.derived.*
+import org.ghrobotics.lib.mathematics.units.Frac
+import org.ghrobotics.lib.mathematics.units.Meter
+import org.ghrobotics.lib.mathematics.units.SIUnit
+import org.ghrobotics.lib.mathematics.units.Second
+import org.ghrobotics.lib.mathematics.units.derived.Acceleration
+import org.ghrobotics.lib.mathematics.units.derived.Radian
+import org.ghrobotics.lib.mathematics.units.derived.Velocity
+import org.ghrobotics.lib.mathematics.units.derived.Volt
+import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.derived.volts
+import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
-import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import kotlin.math.PI
@@ -241,53 +249,13 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
     )
 }
 
-enum class GamePiece(val heightOffset: Double) {
-    Cube(-6.00.inches.value), Cone(5.0.inches.value)
+enum class GamePiece {
 }
 
 //18" away from edge
 enum class Station(private val redPose: Pose3d, private val bluePose: Pose3d) {
-    Left(
-        Pose3d(
-            Translation3d(), Rotation3d()
-        ), Pose3d(
-            Translation3d(), Rotation3d()
-        )
-    ),
-    Center(
-        Pose3d(
-            Translation3d(), Rotation3d()
-        ), Pose3d(
-            Translation3d(), Rotation3d()
-        )
-    ),
-    Right(
-        Pose3d(
-            Translation3d(), Rotation3d()
-        ), Pose3d(
-            Translation3d(), Rotation3d()
-        )
-    );
 
-    fun ours(): Pose3d {
-        return if (Robot.alliance == DriverStation.Alliance.Red) redPose
-        else bluePose
-    }
 }
 
 enum class Side(val transform: Transform3d) {
-    Left(
-        Transform3d(
-            Translation3d(
-                0.0, 22.0.inches.value, 0.0
-            ), Rotation3d()
-        )
-    ),
-    Right(
-        Transform3d(
-            Translation3d(
-                0.0, -22.inches.value, 0.0
-            ), Rotation3d()
-        )
-    )
 }

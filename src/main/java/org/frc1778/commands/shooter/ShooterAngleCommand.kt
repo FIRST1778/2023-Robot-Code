@@ -1,11 +1,8 @@
 package org.frc1778.commands.shooter
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Level
-import org.frc1778.Robot
-import org.frc1778.lib.GameObject
 import org.frc1778.subsystems.Gyro
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Shooter
@@ -14,8 +11,6 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
-import kotlin.math.PI
-import kotlin.math.round
 
 class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
     companion object {

@@ -2,15 +2,10 @@ package org.frc1778.commands.shooter
 
 import com.github.ajalt.colormath.model.RGB
 import org.frc1778.animation.BlinkAnimation
-import org.frc1778.subsystems.Lights
-import edu.wpi.first.wpilibj.DriverStation
-import org.frc1778.Level
-import org.frc1778.Robot
 import org.frc1778.subsystems.Gyro
+import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.FalconCommand
-import kotlin.math.PI
-import kotlin.math.round
 
 class ShooterShootCommand : FalconCommand(Shooter) {
 

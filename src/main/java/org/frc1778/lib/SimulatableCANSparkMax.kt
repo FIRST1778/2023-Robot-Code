@@ -6,13 +6,13 @@ import com.revrobotics.RelativeEncoder
 import edu.wpi.first.wpilibj.RobotBase
 import edu.wpi.first.wpilibj.RobotController
 
-class SimulatableCANSparkMax(deviceId: Int, motorType: CANSparkMaxLowLevel.MotorType) :
+class SimulatableCANSparkMax(deviceId: Int, motorType: MotorType) :
     CANSparkMax(deviceId, motorType) {
-    var simulationVoltage = 0.0;
+    var simulationVoltage = 0.0
     var simulationEncoder = SimulationRelativeEncoder()
     override fun setVoltage(outputVolts: Double) {
         if (RobotBase.isSimulation()) {
-            simulationVoltage = outputVolts;
+            simulationVoltage = outputVolts
         } else {
             super.setVoltage(outputVolts)
         }
@@ -22,7 +22,7 @@ class SimulatableCANSparkMax(deviceId: Int, motorType: CANSparkMaxLowLevel.Motor
         if (RobotBase.isSimulation()) {
             var batteryVoltage = RobotController.getBatteryVoltage()
             if (batteryVoltage == 0.0) {
-                return 0.0;
+                return 0.0
             } else {
                 return (simulationVoltage / batteryVoltage).coerceIn(-1.0, 1.0)
             }

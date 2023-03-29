@@ -1,14 +1,10 @@
 package org.frc1778.commands.drive
 
 import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.geometry.Rotation3d
-import edu.wpi.first.math.geometry.Translation3d
-import org.frc1778.Robot
 import org.frc1778.commands.lights.BalanceAnimation
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
-import kotlin.math.atan
 import kotlin.math.sin
 
 class BalanceCommand: FalconCommand(Drive) {

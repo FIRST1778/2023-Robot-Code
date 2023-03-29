@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.Timer
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.util.function.Supplier
 import java.util.stream.Collectors
 
 

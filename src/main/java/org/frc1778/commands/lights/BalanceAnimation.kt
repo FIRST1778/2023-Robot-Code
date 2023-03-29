@@ -10,11 +10,10 @@ import org.ghrobotics.lib.commands.FalconCommand
 import kotlin.math.abs
 import kotlin.math.ceil
 
-class BalanceAnimation() : FalconCommand(Lights) {
+class BalanceAnimation : FalconCommand(Lights) {
 
-    private val MAX_INCLINATION = 20.0
-    var currentPixels = Lights.pixels
-    val numLedsPerSection: Int = Constants.LedConstants.NUM_LEDS_PER_SECTION
+    private var currentPixels = Lights.pixels
+    private val numLedsPerSection: Int = Constants.LedConstants.NUM_LEDS_PER_SECTION
 
 
     private val interpolator = RGB.interpolator {
@@ -66,6 +65,11 @@ class BalanceAnimation() : FalconCommand(Lights) {
             Lights.animateOn()
 
         }
+    }
+
+    companion object {
+    private const val MAX_INCLINATION = 20.0
+
     }
 
 

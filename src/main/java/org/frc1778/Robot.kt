@@ -1,6 +1,7 @@
 package org.frc1778
 
 import edu.wpi.first.networktables.NetworkTableInstance
+import edu.wpi.first.wpilibj.Compressor
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.PneumaticHub
@@ -40,8 +41,8 @@ object Robot : FalconTimedRobot() {
 
     private var autonomousCommand: Command? = null
 
-    val pcm = PneumaticHub(30)
-    val compressor = pcm.makeCompressor()
+    private val pcm = PneumaticHub(30)
+    private val compressor: Compressor = pcm.makeCompressor()
 
 
     var driveInversion = when (alliance) {
