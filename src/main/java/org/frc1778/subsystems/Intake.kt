@@ -36,14 +36,19 @@ object Intake : FalconSubsystem() {
         PneumaticsModuleType.REVPH,
         30
     )
+    var lineBreakOverride : Boolean = false
 
     private var intakeVoltage = 5.0.volts
     fun setMotorVoltage(voltage : SIUnit<Volt>){
         beltMotor.setVoltage(voltage)
         wheelMotor.setVoltage(voltage/5)
     }
-    fun cubeStored() : Boolean{
-        return !lineBreak.get()
+    fun cubeStored() : Boolean {
+        return if (!lineBreakOverride) {
+            !lineBreak.get()
+        }else{
+            false
+        }
     }
     fun suck() {
 //        if (Manipulator.lineBreak.get()){
@@ -68,6 +73,9 @@ object Intake : FalconSubsystem() {
 
     fun stop() {
         setMotorVoltage(0.0.volts)
+    }
+    fun lineBreakOverrideToggle(){
+        lineBreakOverride = !lineBreakOverride
     }
 
     override fun initSendable(builder: SendableBuilder?) {
