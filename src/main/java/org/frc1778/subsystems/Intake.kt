@@ -1,5 +1,9 @@
 package org.frc1778.subsystems
 
+import org.frc1778.Level
+import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.ShooterAbsoluteEncoder
+
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
@@ -36,14 +40,19 @@ object Intake : FalconSubsystem() {
         PneumaticsModuleType.REVPH,
         30
     )
+    var lineBreakOverride : Boolean = false
 
     private var intakeVoltage = 5.0.volts
     fun setMotorVoltage(voltage : SIUnit<Volt>){
         beltMotor.setVoltage(voltage)
         wheelMotor.setVoltage(voltage/5)
     }
-    fun cubeStored() : Boolean{
-        return !lineBreak.get()
+    fun cubeStored() : Boolean {
+        return if (!lineBreakOverride) {
+            !lineBreak.get()
+        }else{
+            false
+        }
     }
     fun suck() {
 //        if (Manipulator.lineBreak.get()){
@@ -52,10 +61,13 @@ object Intake : FalconSubsystem() {
         setMotorVoltage(intakeVoltage + 2.0.volts)
     }
     fun extend(){
-        if(!cubeStored()){
-            solenoid.state = FalconSolenoid.State.Forward
-        }else{
+        if (Shooter.encoder.absolutePosition > 180.0.degrees) {
+            Shooter.setNextLevel(Level.None)
+        }
+        if (cubeStored()) {
             retract()
+        } else {
+            solenoid.state = FalconSolenoid.State.Forward
         }
     }
     fun retract(){
@@ -68,6 +80,9 @@ object Intake : FalconSubsystem() {
 
     fun stop() {
         setMotorVoltage(0.0.volts)
+    }
+    fun lineBreakOverrideToggle(){
+        lineBreakOverride = !lineBreakOverride
     }
 
     override fun initSendable(builder: SendableBuilder?) {

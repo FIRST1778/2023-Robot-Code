@@ -1,18 +1,12 @@
 package org.frc1778
 
-import com.fasterxml.jackson.databind.JsonSerializer.None
 import edu.wpi.first.wpilibj.Joystick
 import edu.wpi.first.wpilibj2.command.WaitCommand
 import org.frc1778.commands.drive.BalanceCommand
-import org.frc1778.commands.intake.IntakeLowerCommand
-import org.frc1778.commands.intake.IntakeSpitCommand
-import org.frc1778.commands.intake.IntakeSuckCommand
-import org.frc1778.commands.intake.IntakeToShooterCommand
+import org.frc1778.commands.intake.*
 import org.frc1778.commands.shooter.ShooterAngleCommand
 import org.frc1778.commands.shooter.ShooterShootCommand
 import org.frc1778.commands.shooter.ShooterSuckCommand
-import org.frc1778.subsystems.Intake
-import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.parallelDeadline
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.wrappers.hid.mapControls
@@ -85,7 +79,7 @@ object Controls {
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
-        button(1) {} // reset extension
+        button(1) {changeOn(IntakeLineBreakOverrideCommand())}
         button(2) {}
 //        button(3) {changeOn(sequential{+BalanceCommand()})}// other
         // level of placement
