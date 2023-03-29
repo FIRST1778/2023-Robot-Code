@@ -1,5 +1,9 @@
 package org.frc1778.subsystems
 
+import org.frc1778.Level
+import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.ShooterAbsoluteEncoder
+
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
@@ -57,8 +61,8 @@ object Intake : FalconSubsystem() {
         setMotorVoltage(intakeVoltage + 2.0.volts)
     }
     fun extend(){
-        if (Shooter.absolutePosition > 180.0.degrees) {
-            Shooter.retract()
+        if (Shooter.encoder.absolutePosition > 180.0.degrees) {
+            Shooter.setNextLevel(Level.None)
         }
         if (cubeStored()) {
             retract()
