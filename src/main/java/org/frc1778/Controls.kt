@@ -1,13 +1,15 @@
 package org.frc1778
 
 import edu.wpi.first.wpilibj.Joystick
-import edu.wpi.first.wpilibj2.command.WaitCommand
+import org.frc1778.commands.LoadShooter
 import org.frc1778.commands.drive.BalanceCommand
-import org.frc1778.commands.intake.*
+import org.frc1778.commands.intake.IntakeLineBreakOverrideCommand
+import org.frc1778.commands.intake.IntakeLowerCommand
+import org.frc1778.commands.intake.IntakeSpitCommand
+import org.frc1778.commands.intake.IntakeSuckCommand
 import org.frc1778.commands.shooter.ShooterAngleCommand
 import org.frc1778.commands.shooter.ShooterShootCommand
 import org.frc1778.commands.shooter.ShooterSuckCommand
-import org.frc1778.commands.LoadShooter
 import org.ghrobotics.lib.commands.parallelDeadline
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.wrappers.hid.mapControls
@@ -76,12 +78,14 @@ object Controls {
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
-        button(1) {changeOn(IntakeLineBreakOverrideCommand())}
+        button(1) { changeOn(IntakeLineBreakOverrideCommand()) }
         button(2) {}
 //        button(3) {changeOn(sequential{+BalanceCommand()})}// other
         // level of placement
         button(4) {
-            changeOn(ShooterAngleCommand(Level.Bottom))
+            changeOn(
+                ShooterAngleCommand(Level.Bottom)
+            )
         }// bottom
         button(5) {
             changeOn(ShooterAngleCommand(Level.Middle))
@@ -92,14 +96,12 @@ object Controls {
         }// top
         // manipulator open/close toggle
         button(7) {
-//            changeOn(InstantCommand({
-//                Manipulator.toggleState()
-//            }))
+            changeOn(ShooterAngleCommand(Level.None))
         }
 
         // toggle manipulator
         button(8) {
-            changeOn(ShooterAngleCommand(Level.None))
+            changeOn(ShooterAngleCommand(Level.THREE_POINT))
         } // manipulator to hopper
 
         // switches

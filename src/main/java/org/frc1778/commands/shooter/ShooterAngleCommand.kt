@@ -19,8 +19,8 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
 
     lateinit var profile: TrapezoidProfile
     var timer = Timer()
-    val maxAcceleration : Double = 3.5 // rad/sec
-    val maxVelocity: Double = 2.125
+    val maxAcceleration : Double = 8.0 // rad/sec
+    val maxVelocity: Double = 3.5
     var endPos: SIUnit<Radian>? = null
 
     override fun initialize() {
@@ -53,6 +53,8 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
     override fun cancel() {
         super.cancel()
         Shooter.setDesiredAngleVelocity(0.0)
+        Shooter.setDesiredAngle(Shooter.getCurrentAngle())
+        end(true)
     }
     override fun isFinished(): Boolean {
         return profile.isFinished(timer.get())

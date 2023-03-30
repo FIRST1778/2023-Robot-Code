@@ -4,11 +4,11 @@ import com.github.ajalt.colormath.Color
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.util.sendable.SendableBuilder
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.SPI
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import org.frc1778.Constants.LedConstants
 import org.frc1778.animation.Animation
 import org.frc1778.animation.GradientAnimation
-import org.frc1778.Constants.LedConstants
 import org.ghrobotics.lib.commands.FalconSubsystem
 
 // Adafruit DotStars are addressable LEDs controlled via an SPI
@@ -35,10 +35,34 @@ object Lights : FalconSubsystem() {
                         stop(RGB.from255(255, 0, 255))
                         stop(RGB.from255(0, 0, 255))
                     },
-                    8.0
+                    6.0
             )
 
-    private var currentAnimation: Animation = redPurpleBlueAnimation
+
+    val rainbowAnimation =
+        GradientAnimation(
+            RGB.interpolator {
+                stop(RGB.from255(255,0,0))
+                stop(RGB.from255(255,128,0))
+                stop(RGB.from255(255,255,0))
+                stop(RGB.from255(0,255,0))
+                stop(RGB.from255(0,128,255))
+                stop(RGB.from255(0,0,255))
+                stop(RGB.from255(0,128,255))
+                stop(RGB.from255(0,255,255))
+                stop(RGB.from255(0,128,255))
+                stop(RGB.from255(0,0,255))
+                stop(RGB.from255(0,128,255))
+                stop(RGB.from255(0,255,0))
+                stop(RGB.from255(255,255,0))
+                stop(RGB.from255(255,128,0))
+                stop(RGB.from255(255,0,0))
+            },
+            6.0
+        )
+
+//    private var currentAnimation: Animation = listOf(redPurpleBlueAnimation, rainbowAnimation).random()
+    private var currentAnimation: Animation = rainbowAnimation
     private var animationEnabled = true
 
     fun animateOn() {

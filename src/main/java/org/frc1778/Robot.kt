@@ -13,7 +13,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.lights.TeleopLightCommand
 import org.frc1778.lib.FalconTimedRobot
-import org.frc1778.subsystems.*
+import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.Lights
+import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.Vision
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -95,7 +99,7 @@ object Robot : FalconTimedRobot() {
 
     override fun disabledInit() {
         Shooter.resetDesiredAngle()
-        Lights.setAnimation(Lights.redPurpleBlueAnimation)
+        Lights.setAnimation(listOf(Lights.redPurpleBlueAnimation, Lights.rainbowAnimation).random())
         Lights.animateOn()
     }
 

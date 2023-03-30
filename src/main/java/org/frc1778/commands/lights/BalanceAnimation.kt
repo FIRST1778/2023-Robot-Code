@@ -2,10 +2,10 @@ package org.frc1778.commands.lights
 
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.interpolator
-import org.frc1778.subsystems.Lights
-import org.frc1778.subsystems.Gyro
 import org.frc1778.Constants
 import org.frc1778.animation.BlinkAnimation
+import org.frc1778.subsystems.Gyro
+import org.frc1778.subsystems.Lights
 import org.ghrobotics.lib.commands.FalconCommand
 import kotlin.math.abs
 import kotlin.math.ceil
@@ -59,7 +59,7 @@ class BalanceAnimation : FalconCommand(Lights) {
         if (!interrupted) {
             Lights.setAnimation(
                 BlinkAnimation(
-                    RGB.from255(0,255,0), RGB, 6
+                    RGB.from255(0,255,0), RGB, 6, 10
                 )
             )
             Lights.animateOn()
@@ -68,7 +68,7 @@ class BalanceAnimation : FalconCommand(Lights) {
     }
 
     companion object {
-    private const val MAX_INCLINATION = 20.0
+    private const val MAX_INCLINATION = 12.0
 
     }
 

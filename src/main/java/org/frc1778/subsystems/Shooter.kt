@@ -113,7 +113,7 @@ object Shooter : FalconSubsystem(), Sendable {
         Nat.N2(), Nat.N1(), anglePlant, VecBuilder.fill(0.5, 0.5), VecBuilder.fill(0.01), 0.02
     )
     private val angleController = LinearQuadraticRegulator(
-        anglePlant, VecBuilder.fill(0.1, 2.0), VecBuilder.fill(.5), 0.020
+        anglePlant, VecBuilder.fill(0.1, 0.15), VecBuilder.fill(.55), 0.020
     )
     private val angleLoop = LinearSystemLoop(
         anglePlant, angleController, angleObserver, 12.0, 0.020
@@ -121,7 +121,7 @@ object Shooter : FalconSubsystem(), Sendable {
     //TODO Get angle offset for gravity/feedforward
     val angleOffset : SIUnit<Radian> = 36.0.degrees
     fun angleControl() {
-        if (angleControlEnabled && ((scoringLevel != Level.None) || (nextLevel != Level.None))){
+        if (angleControlEnabled && ((scoringLevel != Level.None) || (nextLevel != Level.None ))){
             angleLoop.setNextR(VecBuilder.fill(desiredAngle.value, desiredAngleVelocity))
             angleLoop.correct(VecBuilder.fill(getCurrentAngle().value))
             angleLoop.predict(0.020) // 20 ms

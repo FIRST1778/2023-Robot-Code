@@ -6,7 +6,6 @@ import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
-import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import org.frc1778.lib.SwerveModuleConstants
@@ -217,8 +216,8 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
 //        Transform3d(
 //            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
 //        ),
-        rearShooterPosition = 230.0.degrees,
-        rearShooterVoltage = 5.0.volts,
+        rearShooterPosition = 212.5.degrees,
+        rearShooterVoltage = 4.0.volts,
         frontShooterPosition = 150.degrees,
         frontShooterVoltage = 5.0.volts
 
@@ -227,18 +226,18 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
 //        Transform3d(
 //            Translation3d((22.7.inches).value, 0.0, 34.0.inches.value), Rotation3d()
 //        ),
-        rearShooterPosition = 240.0.degrees,
-        rearShooterVoltage = 4.0.volts,
+        rearShooterPosition = 220.0.degrees,
+        rearShooterVoltage = 2.5.volts,
         frontShooterPosition = 140.0.degrees,
-        frontShooterVoltage = 4.0.volts
+        frontShooterVoltage = 3.375.volts
     ),
     Bottom(
 //        Transform3d(
 //            Translation3d(), Rotation3d()
 //        ),
-        rearShooterPosition = 250.0.degrees,
-        rearShooterVoltage = 3.0.volts,
-        frontShooterPosition = 130.0.degrees,
+        rearShooterPosition = 275.0.degrees,
+        rearShooterVoltage = 2.0.volts,
+        frontShooterPosition = 90.0.degrees,
         frontShooterVoltage = 3.0.volts
     ),
     None(
@@ -246,6 +245,12 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
         rearShooterVoltage = 0.0.volts,
         frontShooterPosition = 90.0.degrees,
         frontShooterVoltage = 0.0.volts
+    ),
+    THREE_POINT(
+        rearShooterPosition = 225.0.degrees,
+        rearShooterVoltage = 10.0.volts,
+        frontShooterPosition = 150.0.degrees,
+        frontShooterVoltage = 10.0.volts
     )
 }
 

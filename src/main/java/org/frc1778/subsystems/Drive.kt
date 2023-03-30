@@ -83,7 +83,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     override val maxSpeed: SIUnit<Velocity<Meter>> = Constants.DriveConstants.maxSpeed
     override val motorOutputLimiter: Source<Double> = {
 //        motorOutputLimiterEntry.getDouble(100.0) / 100.0
-        1.0
+        .45
     }
 
     override val motorCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
