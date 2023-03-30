@@ -7,6 +7,7 @@ import org.frc1778.commands.intake.*
 import org.frc1778.commands.shooter.ShooterAngleCommand
 import org.frc1778.commands.shooter.ShooterShootCommand
 import org.frc1778.commands.shooter.ShooterSuckCommand
+import org.frc1778.commands.LoadShooter
 import org.ghrobotics.lib.commands.parallelDeadline
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.wrappers.hid.mapControls
@@ -56,11 +57,7 @@ object Controls {
                 sequential {
                     +ShooterAngleCommand(Level.None)
                     +parallelDeadline(ShooterSuckCommand()) {
-                        +sequential {
-                            +IntakeSuckCommand()
-                            +WaitCommand(.125)
-                            +IntakeToShooterCommand()
-                        }
+                        +LoadShooter()
                     }
                 }
             )
