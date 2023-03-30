@@ -56,8 +56,8 @@ object Intake : FalconSubsystem() {
         setMotorVoltage(intakeVoltage + 2.0.volts)
     }
     fun extend(){
-        if (Shooter.encoder.absolutePosition > 180.0.degrees) {
-            Shooter.setNextLevel(Level.None)
+        if (Wrist.encoder.absolutePosition > 180.0.degrees) {
+            Wrist.setNextLevel(Level.None)
         }
         if (cubeStored()) {
             retract()

@@ -5,6 +5,7 @@ import org.frc1778.animation.BlinkAnimation
 import org.frc1778.subsystems.Gyro
 import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
 
 class ShooterShootCommand : FalconCommand(Shooter) {
@@ -15,9 +16,9 @@ class ShooterShootCommand : FalconCommand(Shooter) {
         if(Shooter.cubeStored) {
             Shooter.shoot(
                 if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
-                    Shooter.getScoringLevel().frontShooterVoltage
+                    Wrist.getScoringLevel().frontShooterVoltage
                 } else {
-                    Shooter.getScoringLevel().rearShooterVoltage
+                    Wrist.getScoringLevel().rearShooterVoltage
                 }
             )
         }else{

@@ -5,14 +5,15 @@ import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Level
 import org.frc1778.subsystems.Gyro
 import org.frc1778.subsystems.Intake
-import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
 
-class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
+class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Wrist) {
+
     companion object {
         const val END_VEL = 0.0     // rad/sec
     }
@@ -34,11 +35,11 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
         }
         timer.reset()
         timer.start()
-        Shooter.setNextLevel(scoringLevel)
-        var startPosition: SIUnit<Radian> = Shooter.getCurrentAngle()
+        Wrist.setNextLevel(scoringLevel)
+        var startPosition: SIUnit<Radian> = Wrist.getCurrentAngle()
 
         val constraints = TrapezoidProfile.Constraints(maxVelocity, maxAcceleration)
-        val startState = TrapezoidProfile.State(startPosition.value, Shooter.getDesiredAngleVelocity())
+        val startState = TrapezoidProfile.State(startPosition.value, Wrist.getDesiredAngleVelocity())
         val endState = TrapezoidProfile.State(endPos.value, END_VEL)
         profile = TrapezoidProfile(constraints, endState, startState)
         this.endPos = endPos
@@ -46,20 +47,20 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Shooter) {
 
     override fun execute() {
         val state = profile.calculate(timer.get())
-        Shooter.setDesiredAngleVelocity(state.velocity)
-        Shooter.setDesiredAngle(state.position.radians)
+        Wrist.setDesiredAngleVelocity(state.velocity)
+        Wrist.setDesiredAngle(state.position.radians)
     }
 
     override fun cancel() {
         super.cancel()
-        Shooter.setDesiredAngleVelocity(0.0)
-        Shooter.setDesiredAngle(Shooter.getCurrentAngle())
+        Wrist.setDesiredAngleVelocity(0.0)
+        Wrist.setDesiredAngle(Wrist.getCurrentAngle())
         end(true)
     }
     override fun isFinished(): Boolean {
         return profile.isFinished(timer.get())
     }
     override fun end(interrupted: Boolean){
-        Shooter.setScoringLevel(scoringLevel)
+        Wrist.setScoringLevel(if(!interrupted) scoringLevel else Level.OTHER)
     }
 }
