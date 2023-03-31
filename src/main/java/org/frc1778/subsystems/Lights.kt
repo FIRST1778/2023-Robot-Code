@@ -2,6 +2,7 @@ package org.frc1778.subsystems
 
 import com.github.ajalt.colormath.Color
 import com.github.ajalt.colormath.model.RGB
+import com.github.ajalt.colormath.model.Oklch
 import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.SPI
@@ -61,8 +62,20 @@ object Lights : FalconSubsystem() {
             6.0
         )
 
+    val rainbowOklabAnimation =
+        GradientAnimation(
+            Oklch.interpolator {
+                stop(Oklch(l = 1.0, c = 1.0, h = 0))
+                stop(Oklch(l = 1.0, c = 1.0, h = 90))
+                stop(Oklch(l = 1.0, c = 1.0, h = 180))
+                stop(Oklch(l = 1.0, c = 1.0, h = 270))
+                stop(Oklch(l = 1.0, c = 1.0, h = 0))
+            },
+            totalTime = 6.0
+        )
+
 //    private var currentAnimation: Animation = listOf(redPurpleBlueAnimation, rainbowAnimation).random()
-    private var currentAnimation: Animation = rainbowAnimation
+    private var currentAnimation: Animation = rainbowOklabAnimation
     private var animationEnabled = true
 
     fun animateOn() {
