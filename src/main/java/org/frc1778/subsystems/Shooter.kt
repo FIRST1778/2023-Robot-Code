@@ -48,8 +48,6 @@ object Shooter : FalconSubsystem(), Sendable {
     }
 
     override fun periodic() {
-
-
         if(!limitSwitch.get()){
             cubeStored = true
         }

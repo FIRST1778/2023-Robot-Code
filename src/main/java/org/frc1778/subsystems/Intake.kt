@@ -37,7 +37,7 @@ object Intake : FalconSubsystem() {
     )
     var lineBreakOverride : Boolean = false
 
-    private var intakeVoltage = 5.0.volts
+    private var intakeVoltage = 4.5.volts
     fun setMotorVoltage(voltage : SIUnit<Volt>){
         beltMotor.setVoltage(voltage)
         wheelMotor.setVoltage(voltage/5)
