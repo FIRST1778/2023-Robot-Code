@@ -14,7 +14,7 @@ class IntakeSpitCommand : FalconCommand(Intake) {
         Intake.retract()
     }
     override fun execute(){
-        if(Wrist.getCurrentAngle() < 95.0.degrees){
+        if(Wrist.getCurrentAngle() < 95.0.degrees || Wrist.getCurrentAngle() > 270.0.degrees){
             Shooter.spit()
             Shooter.cubeStored = false
         }

@@ -252,9 +252,9 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
     ),
     None(
         rearShooterPosition = 90.0.degrees,
-        rearShooterVoltage = 0.0.volts,
+        rearShooterVoltage = 1.5.volts,
         frontShooterPosition = 90.0.degrees,
-        frontShooterVoltage = 0.0.volts
+        frontShooterVoltage = 1.5.volts
     ),
     THREE_POINT(
         rearShooterPosition = 225.0.degrees,
