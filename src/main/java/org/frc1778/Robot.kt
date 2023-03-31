@@ -18,6 +18,7 @@ import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Shooter
 import org.frc1778.subsystems.Vision
+import org.frc1778.subsystems.Wrist
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -33,7 +34,7 @@ object Robot : FalconTimedRobot() {
     var alliance: Alliance = DriverStation.getAlliance()
     private val eventLoop = EventLoop()
     private val brakeModeLimitSwitchHit = BooleanEvent(
-        eventLoop, Shooter.brakeModeSwitch::get
+        eventLoop, Wrist.brakeModeSwitch::get
     )
 
     //    val alliance: DriverStation.Alliance = Alliance.Red
@@ -60,6 +61,7 @@ object Robot : FalconTimedRobot() {
         +Shooter
         +Lights
         +Intake
+        +Wrist
     }
 
 
@@ -73,10 +75,10 @@ object Robot : FalconTimedRobot() {
 
         //TODO: These might be backwards
         brakeModeLimitSwitchHit.rising().ifHigh {
-            Shooter.setBrakeMode(true)
+            Wrist.setBrakeMode(true)
         }
         brakeModeLimitSwitchHit.falling().ifHigh {
-            Shooter.setBrakeMode(false)
+            Wrist.setBrakeMode(false)
         }
 
 //        field.getObject("traj").setTrajectory(trajectory)
@@ -98,7 +100,7 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun disabledInit() {
-        Shooter.resetDesiredAngle()
+        Wrist.resetDesiredAngle()
         Lights.setAnimation(listOf(Lights.redPurpleBlueAnimation, Lights.rainbowAnimation).random())
         Lights.animateOn()
     }
@@ -107,7 +109,7 @@ object Robot : FalconTimedRobot() {
 //        Arm.resetDesiredExtension()
 //        Arm.resetDesiredAngle()
 //        Manipulator.resetDesiredAngle()
-        Shooter.resetDesiredAngle()
+        Wrist.resetDesiredAngle()
         eventLoop.poll()
     }
 
@@ -120,7 +122,7 @@ object Robot : FalconTimedRobot() {
         }
         autonomousCommand = RobotContainer.getAutonomousCommand()
         autonomousCommand?.schedule()
-        Shooter.resetDesiredAngle()
+        Wrist.resetDesiredAngle()
 
 
     }
@@ -133,7 +135,7 @@ object Robot : FalconTimedRobot() {
     override fun teleopInit() {
 //        Shooter.setVoltage(3.0.volts)
         TeleopLightCommand().schedule()
-        Shooter.resetDesiredAngle()
+        Wrist.resetDesiredAngle()
     }
 
     /** This method is called periodically during operator control.  */

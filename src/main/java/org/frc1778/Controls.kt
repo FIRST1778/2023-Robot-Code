@@ -1,7 +1,7 @@
 package org.frc1778
 
 import edu.wpi.first.wpilibj.Joystick
-import org.frc1778.commands.LoadShooter
+import org.frc1778.commands.shooter.ShooterLoadCommand
 import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.commands.intake.IntakeLineBreakOverrideCommand
 import org.frc1778.commands.intake.IntakeLowerCommand
@@ -59,7 +59,7 @@ object Controls {
                 sequential {
                     +ShooterAngleCommand(Level.None)
                     +parallelDeadline(ShooterSuckCommand()) {
-                        +LoadShooter()
+                        +ShooterLoadCommand()
                     }
                 }
             )

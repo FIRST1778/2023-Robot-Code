@@ -251,7 +251,8 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
         rearShooterVoltage = 10.0.volts,
         frontShooterPosition = 150.0.degrees,
         frontShooterVoltage = 10.0.volts
-    )
+    ),
+    OTHER(90.degrees,0.0.volts,90.degrees,0.0.volts)
 }
 
 enum class GamePiece {

@@ -2,6 +2,7 @@ package org.frc1778.commands.intake
 
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.derived.inDegrees
 
@@ -14,7 +15,7 @@ class IntakeToShooterCommand : FalconCommand(Intake) {
 
     override fun execute() {
         Intake.retract()
-        if(Shooter.getCurrentAngle().inDegrees() < 95.0) {
+        if(Wrist.getCurrentAngle().inDegrees() < 95.0) {
             Intake.suck()
         }
     }

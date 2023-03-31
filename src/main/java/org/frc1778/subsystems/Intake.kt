@@ -37,7 +37,7 @@ object Intake : FalconSubsystem() {
     )
     var lineBreakOverride : Boolean = false
 
-    private var intakeVoltage = 5.0.volts
+    private var intakeVoltage = 4.5.volts
     fun setMotorVoltage(voltage : SIUnit<Volt>){
         beltMotor.setVoltage(voltage)
         wheelMotor.setVoltage(voltage/5)
@@ -56,8 +56,8 @@ object Intake : FalconSubsystem() {
         setMotorVoltage(intakeVoltage + 2.0.volts)
     }
     fun extend(){
-        if (Shooter.encoder.absolutePosition > 180.0.degrees) {
-            Shooter.setNextLevel(Level.None)
+        if (Wrist.encoder.absolutePosition > 180.0.degrees) {
+            Wrist.setNextLevel(Level.None)
         }
         if (cubeStored()) {
             retract()
