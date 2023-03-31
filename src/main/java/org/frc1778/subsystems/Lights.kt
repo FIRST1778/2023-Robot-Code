@@ -176,8 +176,10 @@ object Lights : FalconSubsystem() {
         if (ticksLeftPerDit == 0) {
             ticksLeftPerDit = LedConstants.TICKS_PER_DIT
             morseCodeLed = morseCodeGenerator.first()
+        } else {
+            ticksLeftPerDit--
         }
-        pixels[0] = RGB.from255(0, (if (morseCodeLed) 255 else 0), 0)
+        // pixels[0] = RGB.from255(0, (if (morseCodeLed) 255 else 0), 0)
 
         pixels.forEach {
             emit(ledFrame(it))
