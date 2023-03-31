@@ -35,8 +35,6 @@ object Shooter : FalconSubsystem(), Sendable {
     //TODO Get DIO
     private val limitSwitch = DigitalInput(2)
 
-
-
     var cubeStored = false
 
     fun shoot(voltage : SIUnit<Volt>){

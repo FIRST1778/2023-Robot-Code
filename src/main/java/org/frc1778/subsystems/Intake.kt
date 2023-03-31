@@ -21,6 +21,7 @@ object Intake : FalconSubsystem() {
     //TODO Get linebreak channel
     val lineBreak: DigitalInput = DigitalInput(1)
 
+
     var beltMotor = falconMAX(15, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)) {
         brakeMode = true
         outputInverted = true
@@ -38,6 +39,7 @@ object Intake : FalconSubsystem() {
     var lineBreakOverride : Boolean = false
 
     private var intakeVoltage = 4.5.volts
+
     fun setMotorVoltage(voltage : SIUnit<Volt>){
         beltMotor.setVoltage(voltage)
         wheelMotor.setVoltage(voltage/5)
@@ -49,6 +51,7 @@ object Intake : FalconSubsystem() {
             false
         }
     }
+
     fun suck() {
 //        if (Manipulator.lineBreak.get()){
 //            intakeMotor.setVoltage(-intakeVoltage)

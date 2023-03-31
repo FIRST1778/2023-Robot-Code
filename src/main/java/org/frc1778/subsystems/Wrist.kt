@@ -88,7 +88,7 @@ object Wrist : FalconSubsystem() {
         Nat.N2(), Nat.N1(), anglePlant, VecBuilder.fill(0.5, 0.5), VecBuilder.fill(0.01), 0.02
     )
     private val angleController = LinearQuadraticRegulator(
-        anglePlant, VecBuilder.fill(0.1, 0.15), VecBuilder.fill(.55), 0.020
+        anglePlant, VecBuilder.fill(0.75, 0.75), VecBuilder.fill(.5), 0.020
     )
     private val angleLoop = LinearSystemLoop(
         anglePlant, angleController, angleObserver, 12.0, 0.020

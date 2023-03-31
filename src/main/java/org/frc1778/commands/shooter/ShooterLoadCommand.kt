@@ -13,8 +13,8 @@ class ShooterLoadCommand : FalconCommand(Intake) {
 
 	override fun initialize() {
 		command = sequential {
-			+IntakeSuckCommand()
-			if(Intake.cubeStored()) {
+			if(!Intake.cubeStored()) {
+				+IntakeSuckCommand()
 				+WaitCommand(.25)
 			}
 			+IntakeToShooterCommand()

@@ -37,14 +37,34 @@ object Controls {
         }
     }
 
+    /*
+    Operator Controls
+    Red
+        -1: Intake Spit
+        -2: Shoot
+        -3: Shooter Load Cube
+        -4: Intake Suck
+        -5: Lower Intake Wheels (for tipping cones)
+    Blue
+        -1: Line Break Override (if line break breaks)
+        -2: Unbound Debug Button
+        -3: Unbound Debug Button
+        -4: Shooter Angle Bottom
+        -5: Shooter Angle Middle
+        -6: Shooter Angle Top
+        -7: Shooter to Hopper
+        -8: Shooter 3-Point (for shuttling)
+        -9: Unbound Switch
+        -10: Balance Switch
+        -Axis 1: Unbound Switch
+    */
+
     val operatorControllerRed = operatorControllerGenericHID1.mapControls {
-        //TODO: Confirm these are the correct
-        //charging station selection
         button(1) {
             change(
                 IntakeSpitCommand()
             )
-        }// station 1
+        }
 
         button(2) {
             change(
@@ -53,7 +73,7 @@ object Controls {
             changeOff {
                 ShooterAngleCommand(Level.None).schedule()
             }
-        }// station 2
+        }
         button(3) {
             change(
                 sequential {
@@ -63,68 +83,43 @@ object Controls {
                     }
                 }
             )
-        }// station 3
-        // Intake
+        }
 
         button(4) {
             change(IntakeSuckCommand())
-            // intake suck
         }
         button(5) {
             change(
                 IntakeLowerCommand()
             )
-        } // intake spit
+        }
     }
     val operatorControllerBlue = operatorControllerGenericHID2.mapControls {
         // bug fix buttons
         button(1) { changeOn(IntakeLineBreakOverrideCommand()) }
         button(2) {}
-//        button(3) {changeOn(sequential{+BalanceCommand()})}// other
-        // level of placement
+        button(3) {}
         button(4) {
             changeOn(
                 ShooterAngleCommand(Level.Bottom)
             )
-        }// bottom
+        }
         button(5) {
             changeOn(ShooterAngleCommand(Level.Middle))
-        }// middle
+        }
         button(6) {
             changeOn(ShooterAngleCommand(Level.Top))
 
-        }// top
-        // manipulator open/close toggle
+        }
         button(7) {
             changeOn(ShooterAngleCommand(Level.None))
         }
-
-        // toggle manipulator
         button(8) {
             changeOn(ShooterAngleCommand(Level.THREE_POINT))
-        } // manipulator to hopper
-
-        // switches
-        button(11) {
-            whileOn {
-//                DotStar.display(DotStar.Color.Yellow)
-//                Robot.gamePiece = GamePiece.Cone
-//                Manipulator.setGameObject(GameObject.CONE)
-            } // cone
-            whileOff {
-//                DotStar.display(DotStar.Color.Purple)
-//                Robot.gamePiece = GamePiece.Cube
-//                Manipulator.setGameObject(GameObject.CUBE)
-            }
-
-            // cube
-        } // cone/cube
-        button(10) {
-            change(BalanceCommand())
-        } // balance
-        axisButton(0, -1.0) {
-
-        }// left/right (cone mode)
+        }
+        button(11) {}
+        button(10) { change(BalanceCommand()) }
+        axisButton(1, -1.0) {}
     }
 
 
