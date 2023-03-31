@@ -96,7 +96,8 @@ object Wrist : FalconSubsystem() {
 
     //TODO Get angle offset for gravity/feedforward
     val angleOffset: SIUnit<Radian> = 36.0.degrees
-    fun angleControl() {
+    private fun angleControl() {
+        @Suppress("UsePropertyAccessSyntax")
         if (angleControlEnabled && ((scoringLevel != Level.None) || (nextLevel != Level.None)) || getCurrentAngle() > 92.degrees) {
             angleLoop.setNextR(VecBuilder.fill(desiredAngle.value, desiredAngleVelocity))
             angleLoop.correct(VecBuilder.fill(getCurrentAngle().value))
