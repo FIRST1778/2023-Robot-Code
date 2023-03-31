@@ -1,5 +1,6 @@
 package org.frc1778.subsystems
 
+import kotlin.random.Random
 import com.github.ajalt.colormath.Color
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.model.Oklch
@@ -92,12 +93,44 @@ object Lights : FalconSubsystem() {
         currentAnimation.reset()
     }
 
-
-
     fun fill(color: Color) {
         pixels.fill(color.toSRGB())
     }
 
+    var ticksLeftPerDit = 0
+    var morseCodeLed = false
+    val morseCodeGenerator: Sequence<Boolean> = sequence {
+        while (true) {
+            var someOfTheManyImportantFellas = arrayOf(
+                "Apollo",
+                "Eli",
+                "Gavin",
+                "Grace",
+                "Lilia",
+                "Simon",
+                "Zach")
+            someOfTheManyImportantFellas.shuffle(Random.Default)
+            for (importantFella: String in someOfTheManyImportantFellas) {
+                for (letter: Char in importantFella.lowercase()) {
+                    val idx = "abcdefghijklmnopqrstuvwxyz".indexOf(letter)
+                    for (c: Char in LedConstants.MORSE_CODE[idx]) {
+                        if (c == '-') {
+                            yield(true)
+                            yield(true)
+                        }
+                        yield(true)
+                        yield(false)
+                    }
+                    yield(false)
+                    yield(false)
+                }
+                yield(false)
+                yield(false)
+                yield(false)
+                yield(false)
+            }
+        }
+    }
 
     private val spi = SPI(SPI.Port.kOnboardCS0).apply { setClockRate(4_000_000) }
 
@@ -133,14 +166,22 @@ object Lights : FalconSubsystem() {
         // The LEDs which are farthest from the source need to have their frames
         // emitted first.
         if (animationEnabled) {
-            val led = ledFrame(currentAnimation.get())
-            repeat(LedConstants.NUM_LEDS) { emit(led) }
-            if(currentAnimation.isDone()) animateOff()
-        } else {
-			pixels.forEach {
-				emit(ledFrame(it))
-			}
-		}
+            pixels.fill(currentAnimation.get())
+            if (currentAnimation.isDone())
+                animateOff()
+        }
+
+        // Morse code stuff (comment out if you dislike) (looking at you
+        // Gavin)
+        if (ticksLeftPerDit == 0) {
+            ticksLeftPerDit = LedConstants.TICKS_PER_DIT
+            morseCodeLed = morseCodeGenerator.first()
+        }
+        pixels[0] = RGB.from255(0, (if (morseCodeLed) 255 else 0), 0)
+
+        pixels.forEach {
+            emit(ledFrame(it))
+        }
 
         emit(endFrame())
     }

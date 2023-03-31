@@ -206,6 +206,16 @@ object Constants {
 	object LedConstants {
 		const val NUM_LEDS: Int = 7 * 4
 		const val NUM_LEDS_PER_SECTION: Int = 7
+        val MORSE_CODE = arrayOf(
+            ".-", "-...", "-.-.", "-..", // A-D
+            ".", "..-.", "--.", "....", // E-H
+            "..", ".---", "-.-", ".-..", // I-L
+            "--", "-.", "---", ".--.", // M-P
+            "--.-", ".-.", "...", "-", // Q-T
+            "..-", "...-", ".--", "-..-", // U-X
+            "-.--", "--.." // Y-Z
+        )
+        const val TICKS_PER_DIT = 8  // 8 * 20 ms = 160 ms per dit
 	}
 
 
