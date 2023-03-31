@@ -24,7 +24,7 @@ class TeleopLightCommand: FalconCommand(Lights) {
             if(Robot.alliance == DriverStation.Alliance.Blue){
                 Lights.fill(RGB.from255(0,0,255))
             }else{
-                Lights.fill(RGB.from255(255, 0, 0))\
+                Lights.fill(RGB.from255(255, 0, 0))
             }
         }
     }
