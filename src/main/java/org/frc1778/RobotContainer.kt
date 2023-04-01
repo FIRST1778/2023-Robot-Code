@@ -10,13 +10,18 @@ import org.frc1778.commands.intake.IntakeSpitCommand
 import org.frc1778.commands.intake.IntakeStopCommand
 import org.frc1778.commands.intake.IntakeSuckCommand
 import org.frc1778.commands.shooter.ShooterAngleCommand
+import org.frc1778.commands.shooter.ShooterShootCommand
+import org.frc1778.commands.shooter.ShooterSuckCommand
 import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.sequential
+import org.ghrobotics.lib.mathematics.units.seconds
 import org.ghrobotics.lib.utils.Source
 import org.ghrobotics.lib.wrappers.networktables.ShuffleboardTabBuilder
+import org.ghrobotics.lib.wrappers.networktables.sendableChooser
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -31,7 +36,6 @@ import org.ghrobotics.lib.wrappers.networktables.ShuffleboardTabBuilder
  */
 object RobotContainer {
 
-
     private val autoPathConstraints = PathConstraints(
         3.75, // m/s
         2.875 //m/s^2
@@ -41,16 +45,17 @@ object RobotContainer {
         2.75,
         1.875
     )
-
     private val eventMap: HashMap<String, Command> = hashMapOf(
         "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
         "Spit Out Game Piece Long" to IntakeSpitCommand().withTimeout(1.5),
         "Lower Intake" to IntakeSuckCommand(),
         "Pick Up Intake" to IntakeStopCommand(),
-        "Angle Top" to ShooterAngleCommand(Level.Top),
+        "Angle To First Position" to ShooterAngleCommand(Level.None),// Initialized in the getAutonomousCommand() function
+        "Angle To Second Position" to ShooterAngleCommand(Level.None),
+        "Angle To Third Position" to ShooterAngleCommand(Level.None),
+        "Lower Shooter" to ShooterAngleCommand(Level.None),
+        "Shoot" to ShooterShootCommand().withTimeout(0.3)
     )
-
-
     val station1 = {
         Drive.followTrajectoryGroupWithCommands(
             getAlliancePathGroup("Station 1", autoPathConstraints, Alliance.Red), eventMap
@@ -98,7 +103,6 @@ object RobotContainer {
         )
     }
 
-
     /**
      * A enumeration of the available autonomous modes.
      *
@@ -129,13 +133,23 @@ object RobotContainer {
         AutoMode.values().forEach { addOption(it.optionName, it) }
         setDefaultOption(AutoMode.default.optionName, AutoMode.default)
     }
-
+    private val firstShootingLevelChooser = SendableChooser<Level>().apply{
+        Level.values().forEach{addOption(it.optionName, it)}
+        setDefaultOption(Level.Bottom.optionName, Level.Bottom)
+    }
+    private val secondShootingLevelChooser = SendableChooser<Level>().apply{
+        Level.values().forEach{addOption(it.optionName, it)}
+        setDefaultOption(Level.Bottom.optionName, Level.Bottom)
+    }
+    private val thirdShootingLevelChooser = SendableChooser<Level>().apply{
+        Level.values().forEach{addOption(it.optionName, it)}
+        setDefaultOption(Level.Bottom.optionName, Level.Bottom)
+    }
     private val balanceChooser = SendableChooser<Boolean>().apply {
         addOption("Yes", true)
         addOption("No", false)
         setDefaultOption("No", false)
     }
-
     private val balanceLocationChooser = SendableChooser<Boolean>().apply {
         addOption("Outside", true)
         addOption("Inside", false)
@@ -150,6 +164,18 @@ object RobotContainer {
             position(0,0)
             size(2, 1)
         }
+        autoTab.sendableChooser("First Shooting Level", firstShootingLevelChooser) {
+            position(4, 0)
+            size(2,1)
+        }
+        autoTab.sendableChooser("Second Shooting Level", secondShootingLevelChooser) {
+            position(4, 0)
+            size(2,1)
+        }
+        autoTab.sendableChooser("Third Shooting Level", thirdShootingLevelChooser) {
+            position(4, 0)
+            size(2,1)
+        }
         autoTab.sendableChooser("Balance?", balanceChooser) {
             position(2, 0)
             size(2,1)
@@ -158,21 +184,21 @@ object RobotContainer {
             position(4, 0)
             size(2,1)
         }
-
     }
 
 
     fun getAutonomousCommand(): Command {
+        eventMap["Angle To First Position"] = ShooterAngleCommand(firstShootingLevelChooser.selected)
+        eventMap["Angle To Second Position"] = ShooterAngleCommand(secondShootingLevelChooser.selected)
+        eventMap["Angle To Third Position"] = ShooterAngleCommand(thirdShootingLevelChooser.selected)
         return sequential {
             +autoModeChooser.selected!!.command()
             if (balanceChooser.selected!!) {
                 +DriveToChargeStation(balanceLocationChooser.selected)
                 +BalanceCommand()
             }
-
         }
     }
-
 
     private fun getAlliancePathGroup(
         name: String, constraints: PathConstraints, from: Alliance, to: Alliance = Robot.alliance

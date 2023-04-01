@@ -114,7 +114,7 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun autonomousInit() {
-
+        Wrist.resetDesiredAngle()
         alliance = DriverStation.getAlliance()
         driveInversion = when (alliance) {
             Alliance.Red -> -1
@@ -122,9 +122,6 @@ object Robot : FalconTimedRobot() {
         }
         autonomousCommand = RobotContainer.getAutonomousCommand()
         autonomousCommand?.schedule()
-        Wrist.resetDesiredAngle()
-
-
     }
 
 

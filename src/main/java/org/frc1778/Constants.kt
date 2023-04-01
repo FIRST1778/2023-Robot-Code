@@ -221,11 +221,12 @@ object Constants {
 
 }
 //TODO Get shooter position values
-enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltage : SIUnit<Volt>, val frontShooterPosition : SIUnit<Radian>, val frontShooterVoltage : SIUnit<Volt>) {
+enum class Level(val optionName : String, val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltage : SIUnit<Volt>, val frontShooterPosition : SIUnit<Radian>, val frontShooterVoltage : SIUnit<Volt>) {
     Top(
 //        Transform3d(
 //            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
 //        ),
+        optionName = "Top",
         rearShooterPosition = 212.5.degrees,
         rearShooterVoltage = 3.875.volts,
         frontShooterPosition = 155.degrees,
@@ -236,6 +237,7 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
 //        Transform3d(
 //            Translation3d((22.7.inches).value, 0.0, 34.0.inches.value), Rotation3d()
 //        ),
+        optionName = "Middle",
         rearShooterPosition = 210.0.degrees,
         rearShooterVoltage = 2.5.volts,
         frontShooterPosition = 150.0.degrees,
@@ -245,24 +247,26 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
 //        Transform3d(
 //            Translation3d(), Rotation3d()
 //        ),
+        optionName = "Bottom",
         rearShooterPosition = 275.0.degrees,
         rearShooterVoltage = 1.5.volts,
         frontShooterPosition = 90.0.degrees,
         frontShooterVoltage = 3.0.volts
     ),
     None(
+        optionName = "Hopper",
         rearShooterPosition = 90.0.degrees,
         rearShooterVoltage = 1.5.volts,
         frontShooterPosition = 90.0.degrees,
         frontShooterVoltage = 1.5.volts
     ),
     THREE_POINT(
+        optionName = "3 Point",
         rearShooterPosition = 225.0.degrees,
         rearShooterVoltage = 10.0.volts,
         frontShooterPosition = 150.0.degrees,
         frontShooterVoltage = 10.0.volts
     ),
-    OTHER(90.degrees,0.0.volts,90.degrees,0.0.volts)
 }
 
 enum class GamePiece {

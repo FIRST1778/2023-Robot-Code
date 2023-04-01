@@ -1,0 +1,100 @@
+{
+  "waypoints": [
+    {
+      "anchorPoint": {
+        "x": 14.685548458115466,
+        "y": 4.8829405504745385
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 13.713919768265068,
+        "y": 4.228432924950957
+      },
+      "holonomicAngle": -180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Angle To First Position",
+          "Shoot"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "minimum",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 9.252406873293214,
+        "y": 4.6047613959822815
+      },
+      "prevControl": {
+        "x": 10.509926458254693,
+        "y": 4.613940371054993
+      },
+      "nextControl": {
+        "x": 10.509926458254693,
+        "y": 4.613940371054993
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": true,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "minimum",
+        "waitTime": 0.25
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 14.411097466988087,
+        "y": 4.196813072656102
+      },
+      "prevControl": {
+        "x": 13.770772647928275,
+        "y": 4.818281551456721
+      },
+      "nextControl": null,
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [
+          "Shoot",
+          "Lower Shooter"
+        ],
+        "executionBehavior": "sequential",
+        "waitBehavior": "after",
+        "waitTime": 0
+      }
+    }
+  ],
+  "markers": [
+    {
+      "position": 1.3363636363636349,
+      "names": [
+        "Angle To Second Position",
+        "Pick Up Intake"
+      ]
+    },
+    {
+      "position": 0.40909090909090917,
+      "names": [
+        "Lower Shooter"
+      ]
+    },
+    {
+      "position": 0.6000000000000006,
+      "names": [
+        "Lower Intake"
+      ]
+    }
+  ]
+}
