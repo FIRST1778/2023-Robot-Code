@@ -1,10 +1,13 @@
 package org.frc1778.commands.shooter
 
+import com.github.ajalt.colormath.model.RGB
 import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Level
+import org.frc1778.animation.BlinkAnimation
 import org.frc1778.subsystems.Gyro
 import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Shooter
 import org.frc1778.subsystems.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
@@ -66,5 +69,10 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Wrist) {
     }
     override fun end(interrupted: Boolean){
         Wrist.setScoringLevel(if(!interrupted) scoringLevel else Level.OTHER)
+        if(!interrupted)  {
+            Lights.setAnimation(
+                BlinkAnimation(RGB.from255(0,255,0), RGB, 6, 6)
+            )
+        }
     }
 }
