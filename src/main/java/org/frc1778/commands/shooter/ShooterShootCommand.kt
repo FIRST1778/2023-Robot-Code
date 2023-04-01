@@ -1,7 +1,5 @@
 package org.frc1778.commands.shooter
 
-import com.github.ajalt.colormath.model.RGB
-import org.frc1778.animation.BlinkAnimation
 import org.frc1778.subsystems.Gyro
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Lights
@@ -12,22 +10,23 @@ import org.ghrobotics.lib.mathematics.units.derived.degrees
 
 class ShooterShootCommand : FalconCommand(Shooter, Intake) {
 
-    private val rebBlink = BlinkAnimation(RGB.from255(255,0,0), RGB, 4, 4)
+
 
     override fun execute() {
-        if(Shooter.cubeStored) {
-            Shooter.shoot(
-                if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
-                    Wrist.getScoringLevel().frontShooterVoltage
-                } else {
-                    Wrist.getScoringLevel().rearShooterVoltage
-                }
-            )
-            if(Wrist.getCurrentAngle() < 95.degrees) {
-                Intake.spit()
+
+        Shooter.shoot(
+            if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
+                Wrist.getScoringLevel().frontShooterVoltage
+            } else {
+                Wrist.getScoringLevel().rearShooterVoltage
             }
-        }else{
-            Lights.setAnimation(rebBlink)
+        )
+        if (Wrist.getCurrentAngle() < 95.degrees) {
+            Intake.spit()
+        }
+
+        if (!Shooter.cubeStored) {
+            Lights.setAnimation(Lights.rebBlink)
             Lights.animateOn()
         }
     }

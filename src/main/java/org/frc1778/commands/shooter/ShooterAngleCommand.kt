@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Level
 import org.frc1778.subsystems.Gyro
 import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.Shooter
 import org.frc1778.subsystems.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.SIUnit
@@ -25,11 +26,14 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Wrist) {
     var endPos: SIUnit<Radian>? = null
 
     override fun initialize() {
-        val endPos = if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
+        val endPos = if(!Shooter.cubeStored) {
+            Level.None.frontShooterPosition //Can't angle if no cube
+        } else if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
             scoringLevel.frontShooterPosition
         }else{
             scoringLevel.rearShooterPosition
         }
+
         if(endPos > 180.0.degrees){
             Intake.retract()
         }

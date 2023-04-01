@@ -9,6 +9,7 @@ import org.frc1778.commands.drive.DriveToChargeStation
 import org.frc1778.commands.intake.IntakeSpitCommand
 import org.frc1778.commands.intake.IntakeStopCommand
 import org.frc1778.commands.intake.IntakeSuckCommand
+import org.frc1778.commands.shooter.ShooterAngleCommand
 import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
@@ -32,17 +33,21 @@ object RobotContainer {
 
 
     private val autoPathConstraints = PathConstraints(
-        2.75, // m/s
-        1.875 //m/s^2
+        3.75, // m/s
+        2.875 //m/s^2
     )
 
+    private val slowAutoPathConstraints = PathConstraints(
+        2.75,
+        1.875
+    )
 
-    //<editor-fold desc="Old Auto Things">
     private val eventMap: HashMap<String, Command> = hashMapOf(
         "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
         "Spit Out Game Piece Long" to IntakeSpitCommand().withTimeout(1.5),
         "Lower Intake" to IntakeSuckCommand(),
         "Pick Up Intake" to IntakeStopCommand(),
+        "Angle Top" to ShooterAngleCommand(Level.Top),
     )
 
 
@@ -63,7 +68,7 @@ object RobotContainer {
     val station2 = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("Station 2", autoPathConstraints, Alliance.Red), eventMap
+                getAlliancePathGroup("Station 2", slowAutoPathConstraints, Alliance.Red), eventMap
             )
         }
     }
@@ -71,7 +76,7 @@ object RobotContainer {
     val station2Balance = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("Station 2 Balance", autoPathConstraints, Alliance.Red), eventMap
+                getAlliancePathGroup("Station 2 Balance", slowAutoPathConstraints, Alliance.Red), eventMap
             )
             +BalanceCommand()
         }
@@ -80,7 +85,7 @@ object RobotContainer {
     val station3 = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("Station 3", autoPathConstraints, Alliance.Red), eventMap
+                getAlliancePathGroup("Station 3", slowAutoPathConstraints, Alliance.Red), eventMap
             )
             +IntakeStopCommand()
             // +BalanceCommand()
@@ -89,7 +94,7 @@ object RobotContainer {
 
     val station3Score2 = {
         Drive.followTrajectoryGroupWithCommands(
-            getAlliancePathGroup("Station 3 Score 2", autoPathConstraints, Alliance.Red), eventMap
+            getAlliancePathGroup("Station 3 Score 2", slowAutoPathConstraints, Alliance.Red), eventMap
         )
     }
 
@@ -147,11 +152,11 @@ object RobotContainer {
         }
         autoTab.sendableChooser("Balance?", balanceChooser) {
             position(2, 0)
-            size(1,1)
+            size(2,1)
         }
         autoTab.sendableChooser("Balance Location", balanceLocationChooser) {
             position(4, 0)
-            size(1,1)
+            size(2,1)
         }
 
     }

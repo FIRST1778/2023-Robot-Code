@@ -16,7 +16,7 @@ import kotlin.math.abs
 
 class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Drive) {
     companion object {
-        private val pathConstraints = PathConstraints(3.5, 3.0)
+        private val pathConstraints = PathConstraints(4.0, 6.0)
     }
 
     private lateinit var trajectoryTrackerCommand: SwerveTrajectoryTrackerCommand
@@ -52,7 +52,7 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
             }.points.map {(location, heading) ->
                 PathPoint(
                     location, heading, holonomicRotation
-                ).withControlLengths(.125, .25).transformForAlliance(
+                ).withControlLengths(.375, .25).transformForAlliance(
                    Robot.alliance, Alliance.Blue
                 )
             }
@@ -138,20 +138,20 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
     }
 
     enum class StationBalancingPaths(val points: List<Pair<Translation2d, Rotation2d>>, val qualifier: Rectangle2d) {
-        STATION_ONE(
+        STATION_THREE(
             listOf(
                 Translation2d(2.1, .7) to Rotation2d.fromDegrees(0.0),
                 Translation2d(3.9, .7) to Rotation2d.fromDegrees(0.0),
-                Translation2d(5.5, .95) to Rotation2d.fromDegrees(70.0)
+                Translation2d(6.00, .95) to Rotation2d.fromDegrees(70.0)
             ), Rectangle2d(
                 Translation2d(1.45, 2.7), Translation2d(2.85, 0.0)
             )
         ),
-        STATION_THREE(
+        STATION_ONE(
             listOf(
                 Translation2d(2.1, 4.75) to Rotation2d.fromDegrees(0.0),
                 Translation2d(3.9, 4.75) to Rotation2d.fromDegrees(0.0),
-                Translation2d(5.5, 4.5) to Rotation2d.fromDegrees(-70.0)
+                Translation2d(6.00, 4.75) to Rotation2d.fromDegrees(-70.0)
             ), Rectangle2d(
                 Translation2d(1.45, 2.7), Translation2d(3.25, 5.4)
             )

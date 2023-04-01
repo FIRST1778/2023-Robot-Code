@@ -9,9 +9,9 @@ import kotlin.math.sin
 
 class BalanceCommand: FalconCommand(Drive) {
     companion object {
-        const val PROPORTIONAL: Double = 1.95 // (m/sec)/m
+        const val PROPORTIONAL: Double = 2.15 // (m/sec)/m
         const val INTEGRAL: Double = 0.05
-        const val DERIVATIVE: Double = 0.17
+        const val DERIVATIVE: Double = 0.125
         const val ERROR_TOLERANCE: Double = 0.055
         const val ERROR_DERIVATIVE_TOLERANCE: Double = 0.4
     }

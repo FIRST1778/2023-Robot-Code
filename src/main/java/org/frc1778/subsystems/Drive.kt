@@ -83,7 +83,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     override val maxSpeed: SIUnit<Velocity<Meter>> = Constants.DriveConstants.maxSpeed
     override val motorOutputLimiter: Source<Double> = {
 //        motorOutputLimiterEntry.getDouble(100.0) / 100.0
-        .45
+        1.00
     }
 
     override val motorCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
@@ -106,15 +106,15 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     //TODO: Tune Holonomic Drive Controller
     override val controller: HolonomicDriveController = HolonomicDriveController(
         PIDController(
-            1.2,
+            0.75,
             0.0,
-            0.02125
+            0.15
 
         ),
         PIDController(
-            1.2,
+            0.75,
             0.0,
-            0.02125
+            0.15
         ),
         ProfiledPIDController(
             0.2,

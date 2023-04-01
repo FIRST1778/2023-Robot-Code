@@ -227,18 +227,18 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
 //            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
 //        ),
         rearShooterPosition = 212.5.degrees,
-        rearShooterVoltage = 4.0.volts,
-        frontShooterPosition = 150.degrees,
-        frontShooterVoltage = 5.0.volts
+        rearShooterVoltage = 3.875.volts,
+        frontShooterPosition = 155.degrees,
+        frontShooterVoltage = 4.75.volts
 
     ),
     Middle(
 //        Transform3d(
 //            Translation3d((22.7.inches).value, 0.0, 34.0.inches.value), Rotation3d()
 //        ),
-        rearShooterPosition = 220.0.degrees,
+        rearShooterPosition = 210.0.degrees,
         rearShooterVoltage = 2.5.volts,
-        frontShooterPosition = 140.0.degrees,
+        frontShooterPosition = 150.0.degrees,
         frontShooterVoltage = 3.375.volts
     ),
     Bottom(
@@ -246,7 +246,7 @@ enum class Level(val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltag
 //            Translation3d(), Rotation3d()
 //        ),
         rearShooterPosition = 275.0.degrees,
-        rearShooterVoltage = 2.0.volts,
+        rearShooterVoltage = 1.5.volts,
         frontShooterPosition = 90.0.degrees,
         frontShooterVoltage = 3.0.volts
     ),

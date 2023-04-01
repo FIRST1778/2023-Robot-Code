@@ -1,17 +1,18 @@
 package org.frc1778.subsystems
 
-import kotlin.random.Random
 import com.github.ajalt.colormath.Color
-import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.model.Oklch
+import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.SPI
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import org.frc1778.Constants.LedConstants
 import org.frc1778.animation.Animation
+import org.frc1778.animation.BlinkAnimation
 import org.frc1778.animation.GradientAnimation
 import org.ghrobotics.lib.commands.FalconSubsystem
+import kotlin.random.Random
 
 // Adafruit DotStars are addressable LEDs controlled via an SPI
 // interface.  We use them to display purple or yellow lights so that the
@@ -75,6 +76,7 @@ object Lights : FalconSubsystem() {
             totalTime = 6.0
         )
 
+    val rebBlink = BlinkAnimation(RGB.from255(255, 0, 0), RGB, 4, 4)
 //    private var currentAnimation: Animation = listOf(redPurpleBlueAnimation, rainbowAnimation).random()
     private var currentAnimation: Animation = rainbowOklabAnimation
     private var animationEnabled = true
