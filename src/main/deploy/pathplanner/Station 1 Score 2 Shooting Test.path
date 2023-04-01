@@ -7,8 +7,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 13.713919768265068,
-        "y": 4.228432924950957
+        "x": 13.856051967423083,
+        "y": 4.832494771372523
       },
       "holonomicAngle": -180.0,
       "isReversal": false,
@@ -22,6 +22,31 @@
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "minimum",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 12.846913353401176,
+        "y": 4.7258956220040105
+      },
+      "prevControl": {
+        "x": 13.472295029696447,
+        "y": 4.733002231961912
+      },
+      "nextControl": {
+        "x": 11.951510109159797,
+        "y": 4.71572058513763
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
         "waitTime": 0
       }
     },
@@ -52,12 +77,37 @@
     },
     {
       "anchorPoint": {
+        "x": 13.131177751717203,
+        "y": 4.505590713309087
+      },
+      "prevControl": {
+        "x": 12.29259777668491,
+        "y": 4.548230373056492
+      },
+      "nextControl": {
+        "x": 13.756301451839146,
+        "y": 4.473804762455429
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
         "x": 14.411097466988087,
         "y": 4.196813072656102
       },
       "prevControl": {
-        "x": 13.770772647928275,
-        "y": 4.818281551456721
+        "x": 13.799199087759876,
+        "y": 4.398991563940576
       },
       "nextControl": null,
       "holonomicAngle": 180.0,
@@ -78,20 +128,20 @@
   ],
   "markers": [
     {
-      "position": 1.3363636363636349,
+      "position": 2.636363636363636,
       "names": [
         "Angle To Second Position",
         "Pick Up Intake"
       ]
     },
     {
-      "position": 0.40909090909090917,
+      "position": 0.781818181818182,
       "names": [
         "Lower Shooter"
       ]
     },
     {
-      "position": 0.6000000000000006,
+      "position": 1.5818181818181811,
       "names": [
         "Lower Intake"
       ]
