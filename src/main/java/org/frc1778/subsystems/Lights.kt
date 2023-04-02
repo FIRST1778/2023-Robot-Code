@@ -64,21 +64,21 @@ object Lights : FalconSubsystem() {
             6.0
         )
 
-    val rainbowOklabAnimation =
+    val rainbowOklchAnimation =
         GradientAnimation(
             Oklch.interpolator {
-                stop(Oklch(l = 1.0, c = 1.0, h = 0))
-                stop(Oklch(l = 1.0, c = 1.0, h = 90))
-                stop(Oklch(l = 1.0, c = 1.0, h = 180))
-                stop(Oklch(l = 1.0, c = 1.0, h = 270))
-                stop(Oklch(l = 1.0, c = 1.0, h = 0))
+                stop(Oklch(l = 0.8, c = 0.3, h = 0.0))
+                stop(Oklch(l = 0.8, c = 0.3, h = 90.0))
+                stop(Oklch(l = 0.8, c = 0.3, h = 180.0))
+                stop(Oklch(l = 0.8, c = 0.3, h = 270.0))
+                stop(Oklch(l = 0.8, c = 0.3, h = 0.0))
             },
-            totalTime = 6.0
+            6.0
         )
 
     val rebBlink = BlinkAnimation(RGB.from255(255, 0, 0), RGB, 4, 4)
 //    private var currentAnimation: Animation = listOf(redPurpleBlueAnimation, rainbowAnimation).random()
-    private var currentAnimation: Animation = rainbowOklabAnimation
+    private var currentAnimation: Animation = rainbowOklchAnimation
     private var animationEnabled = true
 
     fun animateOn() {

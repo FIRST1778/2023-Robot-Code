@@ -63,7 +63,6 @@ class BalanceAnimation : FalconCommand(Lights) {
                 )
             )
             Lights.animateOn()
-
         }
     }
 
