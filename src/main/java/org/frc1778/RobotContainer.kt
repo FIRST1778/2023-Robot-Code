@@ -10,6 +10,7 @@ import org.frc1778.commands.intake.IntakeSpitCommand
 import org.frc1778.commands.intake.IntakeStopCommand
 import org.frc1778.commands.intake.IntakeSuckCommand
 import org.frc1778.commands.shooter.ShooterAngleCommand
+import org.frc1778.commands.shooter.ShooterLoadCommand
 import org.frc1778.commands.shooter.ShooterShootCommand
 import org.frc1778.commands.shooter.ShooterSuckCommand
 import org.frc1778.lib.pathplanner.PathConstraints
@@ -17,6 +18,7 @@ import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Shooter
+import org.ghrobotics.lib.commands.parallelDeadline
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.units.seconds
 import org.ghrobotics.lib.utils.Source
@@ -49,6 +51,11 @@ object RobotContainer {
         "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
         "Spit Out Game Piece Long" to IntakeSpitCommand().withTimeout(1.5),
         "Lower Intake" to IntakeSuckCommand(),
+        "Suck To Shooter" to sequential {
+            +parallelDeadline(ShooterSuckCommand()) {
+                +ShooterLoadCommand()
+            }
+        }.withTimeout(4.0),
         "Pick Up Intake" to IntakeStopCommand(),
         "Angle To First Position" to ShooterAngleCommand(Level.None),// Initialized in the getAutonomousCommand() function
         "Angle To Second Position" to ShooterAngleCommand(Level.None),
