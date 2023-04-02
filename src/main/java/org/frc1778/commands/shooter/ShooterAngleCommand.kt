@@ -16,7 +16,7 @@ import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
 
-class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Wrist) {
+class ShooterAngleCommand(val scoringLevel: Level) : FalconCommand(Wrist) {
 
     companion object {
         const val END_VEL = 0.0     // rad/sec
@@ -24,20 +24,20 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Wrist) {
 
     lateinit var profile: TrapezoidProfile
     var timer = Timer()
-    val maxAcceleration : Double = 9.0 // rad/sec
+    val maxAcceleration: Double = 9.0 // rad/sec
     val maxVelocity: Double = 5.0
     var endPos: SIUnit<Radian>? = null
 
     override fun initialize() {
-        val endPos = if(!Shooter.cubeStored) {
+        val endPos = if (!Shooter.cubeStored) {
             Level.None.frontShooterPosition //Can't angle if no cube
         } else if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
             scoringLevel.frontShooterPosition
-        }else{
+        } else {
             scoringLevel.rearShooterPosition
         }
 
-        if(endPos > 180.0.degrees){
+        if (endPos > 180.0.degrees) {
             Intake.retract()
         }
         timer.reset()
@@ -64,14 +64,17 @@ class ShooterAngleCommand(val scoringLevel : Level) : FalconCommand(Wrist) {
         Wrist.setDesiredAngle(Wrist.getCurrentAngle())
         end(true)
     }
+
     override fun isFinished(): Boolean {
         return profile.isFinished(timer.get())
     }
-    override fun end(interrupted: Boolean){
-        Wrist.setScoringLevel(if(!interrupted) scoringLevel else Level.OTHER)
-        if(!interrupted)  {
+
+    override fun end(interrupted: Boolean) {
+
+        if (!interrupted) {
+            Wrist.setScoringLevel(scoringLevel)
             Lights.setAnimation(
-                BlinkAnimation(RGB.from255(0,255,0), RGB, 6, 6)
+                BlinkAnimation(RGB.from255(0, 255, 0), RGB, 6, 6)
             )
         }
     }
