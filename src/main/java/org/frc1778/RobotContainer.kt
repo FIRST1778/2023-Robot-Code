@@ -17,13 +17,10 @@ import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.parallelDeadline
 import org.ghrobotics.lib.commands.sequential
-import org.ghrobotics.lib.mathematics.units.seconds
 import org.ghrobotics.lib.utils.Source
 import org.ghrobotics.lib.wrappers.networktables.ShuffleboardTabBuilder
-import org.ghrobotics.lib.wrappers.networktables.sendableChooser
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -44,25 +41,21 @@ object RobotContainer {
     )
 
     private val slowAutoPathConstraints = PathConstraints(
-        2.75,
-        1.875
+        2.75, 1.875
     )
-    private val eventMap: HashMap<String, Command> = hashMapOf(
-        "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
-        "Spit Out Game Piece Long" to IntakeSpitCommand().withTimeout(1.5),
-        "Lower Intake" to IntakeSuckCommand(),
-        "Suck To Shooter" to sequential {
-            +parallelDeadline(ShooterSuckCommand()) {
+    private val eventMap: HashMap<String, Command> =
+        hashMapOf("Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
+            "Spit Out Game Piece Long" to IntakeSpitCommand().withTimeout(1.5),
+            "Lower Intake" to IntakeSuckCommand(),
+            "Suck To Shooter" to parallelDeadline(ShooterSuckCommand()) {
                 +ShooterLoadCommand()
-            }
-        }.withTimeout(4.0),
-        "Pick Up Intake" to IntakeStopCommand(),
-        "Angle To First Position" to ShooterAngleCommand(Level.None),// Initialized in the getAutonomousCommand() function
-        "Angle To Second Position" to ShooterAngleCommand(Level.None),
-        "Angle To Third Position" to ShooterAngleCommand(Level.None),
-        "Lower Shooter" to ShooterAngleCommand(Level.None),
-        "Shoot" to ShooterShootCommand().withTimeout(0.3)
-    )
+            }.withTimeout(4.0),
+            "Pick Up Intake" to IntakeStopCommand(),
+            "Angle To First Position" to ShooterAngleCommand(Level.None),// Initialized in the getAutonomousCommand() function
+            "Angle To Second Position" to ShooterAngleCommand(Level.None),
+            "Angle To Third Position" to ShooterAngleCommand(Level.None),
+            "Lower Shooter" to ShooterAngleCommand(Level.None),
+            "Shoot" to ShooterShootCommand().withTimeout(0.3))
     val station1 = {
         Drive.followTrajectoryGroupWithCommands(
             getAlliancePathGroup("Station 1", autoPathConstraints, Alliance.Red), eventMap
@@ -117,12 +110,15 @@ object RobotContainer {
      * @param command The [Command] to run for this mode.
      */
     enum class AutoMode(val optionName: String, val command: Source<Command>) {
-        STATION_ONE("Station 1", station1),
-        STATION_ONE_SCORE_2("Station 1 Score 2", station1Score2),
-        STATION_TWO("Station 2", station2),
-        STATION_TWO_BALANCE("Station 2 Leave & Balance", station2Balance),
-        STATION_THREE_WITH_MARKERS("Station 3", station3),
-        STATION_THREE_SCORE_2("Station 3 Score 2", station3Score2),
+        STATION_ONE("Station 1", station1), STATION_ONE_SCORE_2(
+            "Station 1 Score 2",
+            station1Score2
+        ),
+        STATION_TWO("Station 2", station2), STATION_TWO_BALANCE(
+            "Station 2 Leave & Balance",
+            station2Balance
+        ),
+        STATION_THREE_WITH_MARKERS("Station 3", station3), STATION_THREE_SCORE_2("Station 3 Score 2", station3Score2),
 
 
         ; //!Don't remove
@@ -140,16 +136,16 @@ object RobotContainer {
         AutoMode.values().forEach { addOption(it.optionName, it) }
         setDefaultOption(AutoMode.default.optionName, AutoMode.default)
     }
-    private val firstShootingLevelChooser = SendableChooser<Level>().apply{
-        Level.values().forEach{addOption(it.optionName, it)}
+    private val firstShootingLevelChooser = SendableChooser<Level>().apply {
+        Level.values().forEach { addOption(it.optionName, it) }
         setDefaultOption(Level.Bottom.optionName, Level.Bottom)
     }
-    private val secondShootingLevelChooser = SendableChooser<Level>().apply{
-        Level.values().forEach{addOption(it.optionName, it)}
+    private val secondShootingLevelChooser = SendableChooser<Level>().apply {
+        Level.values().forEach { addOption(it.optionName, it) }
         setDefaultOption(Level.Bottom.optionName, Level.Bottom)
     }
-    private val thirdShootingLevelChooser = SendableChooser<Level>().apply{
-        Level.values().forEach{addOption(it.optionName, it)}
+    private val thirdShootingLevelChooser = SendableChooser<Level>().apply {
+        Level.values().forEach { addOption(it.optionName, it) }
         setDefaultOption(Level.Bottom.optionName, Level.Bottom)
     }
     private val balanceChooser = SendableChooser<Boolean>().apply {
@@ -168,28 +164,28 @@ object RobotContainer {
 //        SmartDashboard.putData("Balance?", balanceChooser)
         val autoTab = ShuffleboardTabBuilder("Auto")
         autoTab.sendableChooser("Auto", autoModeChooser) {
-            position(0,0)
+            position(0, 0)
             size(2, 1)
         }
         autoTab.sendableChooser("First Shooting Level", firstShootingLevelChooser) {
             position(4, 0)
-            size(2,1)
+            size(2, 1)
         }
         autoTab.sendableChooser("Second Shooting Level", secondShootingLevelChooser) {
             position(4, 0)
-            size(2,1)
+            size(2, 1)
         }
         autoTab.sendableChooser("Third Shooting Level", thirdShootingLevelChooser) {
             position(4, 0)
-            size(2,1)
+            size(2, 1)
         }
         autoTab.sendableChooser("Balance?", balanceChooser) {
             position(2, 0)
-            size(2,1)
+            size(2, 1)
         }
         autoTab.sendableChooser("Balance Location", balanceLocationChooser) {
             position(4, 0)
-            size(2,1)
+            size(2, 1)
         }
     }
 
