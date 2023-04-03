@@ -227,10 +227,10 @@ enum class Level(val optionName : String, val rearShooterPosition : SIUnit<Radia
 //            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
 //        ),
         optionName = "Top",
-        rearShooterPosition = 212.5.degrees,
-        rearShooterVoltage = 3.875.volts,
+        rearShooterPosition = 207.5.degrees,
+        rearShooterVoltage = 3.7.volts,
         frontShooterPosition = 155.degrees,
-        frontShooterVoltage = 4.75.volts
+        frontShooterVoltage = 4.5.volts
 
     ),
     Middle(
@@ -240,8 +240,8 @@ enum class Level(val optionName : String, val rearShooterPosition : SIUnit<Radia
         optionName = "Middle",
         rearShooterPosition = 210.0.degrees,
         rearShooterVoltage = 2.5.volts,
-        frontShooterPosition = 150.0.degrees,
-        frontShooterVoltage = 3.375.volts
+        frontShooterPosition = 150.degrees,
+        frontShooterVoltage = 3.2.volts
     ),
     Bottom(
 //        Transform3d(
@@ -267,6 +267,13 @@ enum class Level(val optionName : String, val rearShooterPosition : SIUnit<Radia
         frontShooterPosition = 150.0.degrees,
         frontShooterVoltage = 10.0.volts
     ),
+    CHARGE_STATION(
+        optionName = "Don't Choose ME",
+        rearShooterPosition = 225.0.degrees,
+        rearShooterVoltage = 11.0.volts,
+        frontShooterPosition = 150.0.degrees,
+        frontShooterVoltage = 11.0.volts
+    )
 }
 
 enum class GamePiece {

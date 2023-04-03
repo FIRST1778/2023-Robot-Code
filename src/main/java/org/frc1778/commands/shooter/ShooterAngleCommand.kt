@@ -29,6 +29,7 @@ class ShooterAngleCommand(val scoringLevel: Level) : FalconCommand(Wrist) {
     var endPos: SIUnit<Radian>? = null
 
     override fun initialize() {
+
         val endPos = if (!Shooter.cubeStored) {
             Level.None.frontShooterPosition //Can't angle if no cube
         } else if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
@@ -70,7 +71,6 @@ class ShooterAngleCommand(val scoringLevel: Level) : FalconCommand(Wrist) {
     }
 
     override fun end(interrupted: Boolean) {
-
         if (!interrupted) {
             Wrist.setScoringLevel(scoringLevel)
             Lights.setAnimation(

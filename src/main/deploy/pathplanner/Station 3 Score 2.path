@@ -2,23 +2,24 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 14.695539091411147,
-        "y": 0.6027282642800573
+        "x": 14.554362069732257,
+        "y": 1.0078404334993782
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.456885739520649,
-        "y": 0.6761600648617494
+        "x": 14.257040162677603,
+        "y": 0.9620986016448153
       },
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Spit Out Game Piece",
-          "Pick Up Intake"
+          "Load Shooter",
+          "Angle To First Position",
+          "Shoot"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -28,17 +29,17 @@
     {
       "anchorPoint": {
         "x": 13.166666732542382,
-        "y": 0.7575698843980456
+        "y": 0.73
       },
       "prevControl": {
         "x": 13.783154751649587,
-        "y": 0.7737932533219222
+        "y": 0.7462233689238765
       },
       "nextControl": {
         "x": 12.817865679779342,
-        "y": 0.7483909093253325
+        "y": 0.7208210249272868
       },
-      "holonomicAngle": 36.208725868553465,
+      "holonomicAngle": 130.0,
       "isReversal": false,
       "velOverride": 2.0,
       "isLocked": false,
@@ -53,17 +54,17 @@
     {
       "anchorPoint": {
         "x": 11.933478937100302,
-        "y": 0.7575698843980456
+        "y": 0.73
       },
       "prevControl": {
-        "x": 12.309816915081479,
-        "y": 0.7024960339617752
+        "x": 12.313811494889398,
+        "y": 0.7267522071432739
       },
       "nextControl": {
-        "x": 11.076421630965669,
-        "y": 0.8829929048079938
+        "x": 11.186026908346852,
+        "y": 0.7363827545394548
       },
-      "holonomicAngle": 35.44994350209202,
+      "holonomicAngle": 130.0,
       "isReversal": false,
       "velOverride": 2.0,
       "isLocked": false,
@@ -77,20 +78,20 @@
     },
     {
       "anchorPoint": {
-        "x": 10.634232238597935,
-        "y": 0.9021356730074647
+        "x": 10.839770932155155,
+        "y": 0.8920199178029219
       },
       "prevControl": {
-        "x": 10.894415133798008,
-        "y": 0.8759289964403675
+        "x": 11.095949404941226,
+        "y": 0.8920199178029219
       },
       "nextControl": {
-        "x": 10.374049343397862,
-        "y": 0.9283423495745621
+        "x": 10.505847039152343,
+        "y": 0.8920199178029219
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
-      "velOverride": 1.25,
+      "velOverride": 1.5,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
@@ -102,43 +103,68 @@
     },
     {
       "anchorPoint": {
-        "x": 9.047490979912316,
-        "y": 0.9174665064247158
+        "x": 9.985989073052343,
+        "y": 0.901506382904065
       },
       "prevControl": {
-        "x": 9.873598736456351,
-        "y": 0.8715716310611585
+        "x": 10.280413556793013,
+        "y": 0.901506382904065
       },
       "nextControl": {
-        "x": 9.873598736456351,
-        "y": 0.8715716310611585
+        "x": 9.71381222333067,
+        "y": 0.901506382904065
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": 1.0,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 8.964285280026512,
+        "y": 0.916532075744586
+      },
+      "prevControl": {
+        "x": 9.750619865470716,
+        "y": 0.9165320757445858
+      },
+      "nextControl": {
+        "x": 9.750619865470716,
+        "y": 0.9165320757445858
       },
       "holonomicAngle": 180.0,
       "isReversal": true,
       "velOverride": 0.5,
       "isLocked": false,
-      "isStopPoint": true,
+      "isStopPoint": false,
       "stopEvent": {
         "names": [],
         "executionBehavior": "sequential",
         "waitBehavior": "minimum",
-        "waitTime": 0.5
+        "waitTime": 0.75
       }
     },
     {
       "anchorPoint": {
         "x": 11.950259899844006,
-        "y": 0.7591871712511749
+        "y": 0.73
       },
       "prevControl": {
         "x": 11.508357342859279,
-        "y": 0.7948244742338134
+        "y": 0.7656373029826385
       },
       "nextControl": {
         "x": 12.397927026594285,
-        "y": 0.7230849836100242
+        "y": 0.6938978123588493
       },
-      "holonomicAngle": 125.28674897505981,
+      "holonomicAngle": 130.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -153,17 +179,17 @@
     {
       "anchorPoint": {
         "x": 13.170513842114923,
-        "y": 0.7519667337229452
+        "y": 0.73
       },
       "prevControl": {
         "x": 12.968341591324476,
-        "y": 0.7230849836100242
+        "y": 0.7011182498870789
       },
       "nextControl": {
         "x": 13.37268609290537,
-        "y": 0.7808484838358662
+        "y": 0.758881750112921
       },
-      "holonomicAngle": 128.6598082540901,
+      "holonomicAngle": 130.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -177,23 +203,23 @@
     },
     {
       "anchorPoint": {
-        "x": 14.55,
-        "y": 1.1045903231248406
+        "x": 14.554362069732257,
+        "y": 1.0078404334993782
       },
       "prevControl": {
-        "x": 14.04456937302388,
-        "y": 0.7796706343544781
+        "x": 14.037479369775701,
+        "y": 0.8477440220084084
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Spit Out Game Piece",
-          "Pick Up Intake"
+          "Angle To Second Position",
+          "Shoot"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -203,15 +229,21 @@
   ],
   "markers": [
     {
-      "position": 3.2072727272725325,
+      "position": 2.181818181818146,
       "names": [
-        "Lower Intake"
+        "Suck To Shooter"
       ]
     },
     {
-      "position": 4.429090909090683,
+      "position": 0.5818181818181901,
       "names": [
-        "Pick Up Intake"
+        "Lower Shooter"
+      ]
+    },
+    {
+      "position": 6.807272727272382,
+      "names": [
+        "Angle To Second Position"
       ]
     }
   ]

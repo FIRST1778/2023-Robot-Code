@@ -10,15 +10,16 @@
         "x": 13.881415631895297,
         "y": 2.774919338406409
       },
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": 1.0,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Spit Out Game Piece",
-          "Pick Up Intake"
+          "Load Shooter",
+          "Pick Up Intake",
+          "Shoot"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",
@@ -38,7 +39,7 @@
         "x": 11.840877843797864,
         "y": 2.805682281730825
       },
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": 0.75,
       "isLocked": false,
@@ -63,7 +64,7 @@
         "x": 11.602902430187031,
         "y": 2.8073408348181568
       },
-      "holonomicAngle": 0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": 0.75,
       "isLocked": false,
@@ -88,7 +89,7 @@
         "x": 10.899285415662952,
         "y": 2.8044755312380985
       },
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 180.0,
       "isReversal": true,
       "velOverride": 0.75,
       "isLocked": false,
@@ -110,7 +111,7 @@
         "y": 2.7987884538124352
       },
       "nextControl": null,
-      "holonomicAngle": 0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -123,5 +124,12 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.34909090909090584,
+      "names": [
+        "Lower Shooter"
+      ]
+    }
+  ]
 }

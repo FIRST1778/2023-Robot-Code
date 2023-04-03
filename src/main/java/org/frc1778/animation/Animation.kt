@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Timer
 
 
 interface Animation {
-    fun get(): RGB
+    fun get(): Color
     fun reset()
 
     fun isDone(): Boolean
@@ -33,7 +33,7 @@ class GradientAnimation<T : Color>(
     override fun get(): RGB {
         timer.start()
         val interp = (timer.get() / totalTime) % 1
-        return interpolator.interpolate(interp).toSRGB()
+        return RGB(interpolator.interpolate(interp).toSRGB().toHex())
     }
 
     override fun reset() {

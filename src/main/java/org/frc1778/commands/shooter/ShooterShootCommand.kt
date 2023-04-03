@@ -33,7 +33,12 @@ class ShooterShootCommand : FalconCommand(Shooter, Intake) {
 
     override fun cancel() {
         super.cancel()
+        end(true)
+    }
+
+    override fun end(interrupted: Boolean) {
         Shooter.stopWheels()
+        Intake.stop()
         Shooter.cubeStored = false
     }
 }

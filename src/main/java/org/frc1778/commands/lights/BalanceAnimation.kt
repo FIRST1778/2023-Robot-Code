@@ -59,7 +59,7 @@ class BalanceAnimation : FalconCommand(Lights) {
         if (!interrupted) {
             Lights.setAnimation(
                 BlinkAnimation(
-                    RGB.from255(0,255,0), RGB, 6, 10
+                    RGB.from255(0,255,0), RGB, 2, 3
                 )
             )
             Lights.animateOn()
