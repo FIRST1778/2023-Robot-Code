@@ -37,25 +37,33 @@ object RobotContainer {
 
     private val autoPathConstraints = PathConstraints(
         3.75, // m/s
-        2.875 //m/s^2
+        3.125 //m/s^2
     )
 
     private val slowAutoPathConstraints = PathConstraints(
-        2.75, 1.875
+        2.875, 3.125
     )
-    private val eventMap: HashMap<String, Command> =
-        hashMapOf("Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
-            "Spit Out Game Piece Long" to IntakeSpitCommand().withTimeout(1.5),
-            "Lower Intake" to IntakeSuckCommand(),
-            "Suck To Shooter" to parallelDeadline(ShooterSuckCommand()) {
-                +ShooterLoadCommand()
-            }.withTimeout(4.0),
-            "Pick Up Intake" to IntakeStopCommand(),
-            "Angle To First Position" to ShooterAngleCommand(Level.None),// Initialized in the getAutonomousCommand() function
-            "Angle To Second Position" to ShooterAngleCommand(Level.None),
-            "Angle To Third Position" to ShooterAngleCommand(Level.None),
-            "Lower Shooter" to ShooterAngleCommand(Level.None),
-            "Shoot" to ShooterShootCommand().withTimeout(0.3))
+
+    private val slowerAutoPathConstraints = PathConstraints(
+        2.25, 3.00
+    )
+    private val eventMap: HashMap<String, Command> = hashMapOf(
+        "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
+        "Spit Out Game Piece Long" to IntakeSpitCommand().withTimeout(1.5),
+        "Lower Intake" to IntakeSuckCommand(),
+        "Suck To Shooter" to parallelDeadline(ShooterSuckCommand()) {
+            +ShooterLoadCommand()
+        },
+        "Load Shooter" to ShooterSuckCommand(),
+        "Pick Up Intake" to IntakeStopCommand(),
+        "Angle To First Position" to ShooterAngleCommand(Level.None),// Initialized in the getAutonomousCommand() function
+        "Angle To Second Position" to ShooterAngleCommand(Level.None),
+        "Angle To Third Position" to ShooterAngleCommand(Level.None),
+        "Lower Shooter" to ShooterAngleCommand(Level.None),
+        "Shoot" to ShooterShootCommand().withTimeout(0.3)
+    )
+
+
     val station1 = {
         Drive.followTrajectoryGroupWithCommands(
             getAlliancePathGroup("Station 1", autoPathConstraints, Alliance.Red), eventMap
@@ -69,11 +77,24 @@ object RobotContainer {
 
     }
 
+    val station1Score3 = {
+        Drive.followTrajectoryGroupWithCommands(
+            getAlliancePathGroup("Station 1 Score 3", autoPathConstraints, Alliance.Red), eventMap
+        )
+    }
 
-    val station2 = {
+
+    val station2Sub = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("Station 2", slowAutoPathConstraints, Alliance.Red), eventMap
+                getAlliancePathGroup("Station 2 Substation", slowerAutoPathConstraints, Alliance.Red), eventMap
+            )
+        }
+    }
+    val station2Cable = {
+        sequential {
+            +Drive.followTrajectoryGroupWithCommands(
+                getAlliancePathGroup("Station 2 Cable", slowerAutoPathConstraints, Alliance.Red), eventMap
             )
         }
     }
@@ -81,7 +102,7 @@ object RobotContainer {
     val station2Balance = {
         sequential {
             +Drive.followTrajectoryGroupWithCommands(
-                getAlliancePathGroup("Station 2 Balance", slowAutoPathConstraints, Alliance.Red), eventMap
+                getAlliancePathGroup("Station 2 Balance", slowerAutoPathConstraints, Alliance.Red), eventMap
             )
             +BalanceCommand()
         }
@@ -103,6 +124,7 @@ object RobotContainer {
         )
     }
 
+
     /**
      * A enumeration of the available autonomous modes.
      *
@@ -111,14 +133,21 @@ object RobotContainer {
      */
     enum class AutoMode(val optionName: String, val command: Source<Command>) {
         STATION_ONE("Station 1", station1), STATION_ONE_SCORE_2(
-            "Station 1 Score 2",
-            station1Score2
+            "Station 1 Score 2", station1Score2
         ),
-        STATION_TWO("Station 2", station2), STATION_TWO_BALANCE(
-            "Station 2 Leave & Balance",
-            station2Balance
+        STATION_ONE_SCORE_3("Station 1 Score 3", station1Score3), STATION_TWO_SUB(
+            "Station 2 Substation",
+            station2Sub
+        ),STATION_TWO_CABLE(
+            "Station 2 Cable",
+            station2Cable
         ),
-        STATION_THREE_WITH_MARKERS("Station 3", station3), STATION_THREE_SCORE_2("Station 3 Score 2", station3Score2),
+        STATION_TWO_BALANCE(
+            "Station 2 Leave & Balance", station2Balance
+        ),
+        STATION_THREE_WITH_MARKERS("Station 3", station3), STATION_THREE_SCORE_2(
+            "Station 3 Score 2", station3Score2
+        ),
 
 
         ; //!Don't remove
@@ -129,9 +158,6 @@ object RobotContainer {
         }
     }
 
-
-    //TODO: This might still be broken.
-    //!!NEED TO GET THIS WORKING!!
     private val autoModeChooser = SendableChooser<AutoMode>().apply {
         AutoMode.values().forEach { addOption(it.optionName, it) }
         setDefaultOption(AutoMode.default.optionName, AutoMode.default)
@@ -168,15 +194,15 @@ object RobotContainer {
             size(2, 1)
         }
         autoTab.sendableChooser("First Shooting Level", firstShootingLevelChooser) {
-            position(4, 0)
+            position(0, 2)
             size(2, 1)
         }
         autoTab.sendableChooser("Second Shooting Level", secondShootingLevelChooser) {
-            position(4, 0)
+            position(2, 2)
             size(2, 1)
         }
         autoTab.sendableChooser("Third Shooting Level", thirdShootingLevelChooser) {
-            position(4, 0)
+            position(4, 2)
             size(2, 1)
         }
         autoTab.sendableChooser("Balance?", balanceChooser) {
@@ -191,14 +217,17 @@ object RobotContainer {
 
 
     fun getAutonomousCommand(): Command {
-        eventMap["Angle To First Position"] = ShooterAngleCommand(firstShootingLevelChooser.selected)
-        eventMap["Angle To Second Position"] = ShooterAngleCommand(secondShootingLevelChooser.selected)
-        eventMap["Angle To Third Position"] = ShooterAngleCommand(thirdShootingLevelChooser.selected)
+        eventMap["Angle To First Position"] = ShooterAngleCommand(firstShootingLevelChooser.selected!!)
+        eventMap["Angle To Second Position"] = ShooterAngleCommand(secondShootingLevelChooser.selected!!)
+        eventMap["Angle To Third Position"] = ShooterAngleCommand(thirdShootingLevelChooser.selected!!)
+
         return sequential {
             +autoModeChooser.selected!!.command()
             if (balanceChooser.selected!!) {
                 +DriveToChargeStation(balanceLocationChooser.selected)
                 +BalanceCommand()
+            } else {
+                +ShooterAngleCommand(Level.None)
             }
         }
     }

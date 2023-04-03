@@ -2,23 +2,23 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 14.695539091411147,
-        "y": 0.6027282642800573
+        "x": 14.687959204005065,
+        "y": 1.009593283557798
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.456885739520649,
-        "y": 0.6761600648617494
+        "x": 14.20479890150843,
+        "y": 0.9226601860494988
       },
-      "holonomicAngle": 0.0,
+      "holonomicAngle": 180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Spit Out Game Piece",
-          "Pick Up Intake"
+          "Load Shooter",
+          "Angle To First Position"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",
@@ -38,7 +38,7 @@
         "x": 12.817865679779342,
         "y": 0.7483909093253325
       },
-      "holonomicAngle": 36.208725868553465,
+      "holonomicAngle": 130.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -63,7 +63,7 @@
         "x": 11.076421630965669,
         "y": 0.8829929048079938
       },
-      "holonomicAngle": 35.44994350209202,
+      "holonomicAngle": 130.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -118,16 +118,22 @@
       "stopEvent": {
         "names": [],
         "executionBehavior": "sequential",
-        "waitBehavior": "after",
+        "waitBehavior": "none",
         "waitTime": 0.5
       }
     }
   ],
   "markers": [
     {
-      "position": 3.4327272727271385,
+      "position": 2.501818181818196,
       "names": [
-        "Lower Intake"
+        "Suck To Shooter"
+      ]
+    },
+    {
+      "position": 0.5236363636363796,
+      "names": [
+        "Lower Shooter"
       ]
     }
   ]

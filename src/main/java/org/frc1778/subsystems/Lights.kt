@@ -3,6 +3,7 @@ package org.frc1778.subsystems
 import com.github.ajalt.colormath.Color
 import com.github.ajalt.colormath.model.Oklch
 import com.github.ajalt.colormath.model.RGB
+import com.github.ajalt.colormath.model.RGBInt
 import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.SPI
@@ -27,7 +28,7 @@ import kotlin.random.Random
 // English) than the datasheets:
 //     https://cpldcpu.wordpress.com/2014/11/30/understanding-the-apa102-superled/
 object Lights : FalconSubsystem() {
-	var pixels = MutableList(LedConstants.NUM_LEDS) { RGB(0,0,0) }
+	var pixels = MutableList<Color>(LedConstants.NUM_LEDS) { RGB(0,0,0) }
 
     val redPurpleBlueAnimation =
             GradientAnimation(
@@ -51,9 +52,9 @@ object Lights : FalconSubsystem() {
                 stop(RGB.from255(0,255,0))
                 stop(RGB.from255(0,128,255))
                 stop(RGB.from255(0,0,255))
-                stop(RGB.from255(0,128,255))
+                stop(RGB.from255(128,0,255))
                 stop(RGB.from255(0,255,255))
-                stop(RGB.from255(0,128,255))
+                stop(RGB.from255(128,0,255))
                 stop(RGB.from255(0,0,255))
                 stop(RGB.from255(0,128,255))
                 stop(RGB.from255(0,255,0))
@@ -144,17 +145,19 @@ object Lights : FalconSubsystem() {
             // The start frame is at least 4 0x00 bytes.
             ByteArray(4) { 0x00.toByte() }
 
-    private fun ledFrame(rgb: RGB) =
-            byteArrayOf(
-                    // The first 3 bits (111) begin an LED frame.  The next 5 bits
-                    // are the brightness, which we always set to full (31 out of 31).
-                    0xFF.toByte(),
-                    // Blue-green-red seems to be the norm for color order, but we might
-                    // need to change this.
-                    rgb.blueInt.toByte(),
-                    rgb.greenInt.toByte(),
-                    rgb.redInt.toByte()
-            )
+    private fun ledFrame(color: Color): ByteArray {
+        val rgbInt = RGBInt.convert(color)
+        return byteArrayOf(
+            // The first 3 bits (111) begin an LED frame.  The next 5 bits
+            // are the brightness, which we always set to full (31 out of 31).
+            0xFF.toByte(),
+            // Blue-green-red seems to be the norm for color order, but we might
+            // need to change this.
+            rgbInt.b.toByte(),
+            rgbInt.g.toByte(),
+            rgbInt.r.toByte()
+        )
+    }
 
     private fun endFrame() =
             // The end frame is defined by the datasheet to be 4 0xFF bytes, but
@@ -168,7 +171,9 @@ object Lights : FalconSubsystem() {
         // The LEDs which are farthest from the source need to have their frames
         // emitted first.
         if (animationEnabled) {
-            pixels.fill(currentAnimation.get())
+            val curr = currentAnimation.get()
+
+            pixels.fill(curr)
             if (currentAnimation.isDone())
                 animateOff()
         }

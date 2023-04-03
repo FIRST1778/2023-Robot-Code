@@ -12,7 +12,10 @@ class SwerveTrajectoryGroupTrackerCommand(
     private val trajectories: List<PathPlannerTrajectory>,
     private val eventMap: HashMap<String, Command>
 ) : FalconCommand(drivetrain) {
-    private val command = sequential {
+    private lateinit var  command : Command
+
+    override fun initialize() {
+        command = sequential {
         +InstantCommand({
             drivetrain.resetPosition(trajectories.first().initialHolonomicPose)
         })
@@ -24,7 +27,6 @@ class SwerveTrajectoryGroupTrackerCommand(
 
     }
 
-    override fun initialize() {
         drivetrain.controller.thetaController.reset(drivetrain.robotPosition.rotation.radians)
         command.initialize()
     }

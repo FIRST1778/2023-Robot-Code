@@ -62,6 +62,8 @@ object Robot : FalconTimedRobot() {
         +Lights
         +Intake
         +Wrist
+        Wrist.setBrakeMode(true)
+
     }
 
 
@@ -80,6 +82,7 @@ object Robot : FalconTimedRobot() {
         brakeModeLimitSwitchHit.falling().ifHigh {
             Wrist.setBrakeMode(false)
         }
+        Wrist.setBrakeMode(true)
 
 //        field.getObject("traj").setTrajectory(trajectory)
 
@@ -101,7 +104,8 @@ object Robot : FalconTimedRobot() {
 
     override fun disabledInit() {
         Wrist.resetDesiredAngle()
-        Lights.setAnimation(listOf(Lights.redPurpleBlueAnimation, Lights.rainbowAnimation).random())
+//        Lights.setAnimation(listOf(Lights.redPurpleBlueAnimation, Lights.rainbowAnimation).random())
+        Lights.setAnimation(Lights.rainbowOklchAnimation)
         Lights.animateOn()
     }
 
@@ -114,6 +118,7 @@ object Robot : FalconTimedRobot() {
     }
 
     override fun autonomousInit() {
+        TeleopLightCommand().schedule()
         Wrist.resetDesiredAngle()
         alliance = DriverStation.getAlliance()
         driveInversion = when (alliance) {

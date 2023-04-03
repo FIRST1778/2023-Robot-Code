@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Timer
 
 
 interface Animation {
-    fun get(): RGB
+    fun get(): Color
     fun reset()
 
     fun isDone(): Boolean
@@ -33,7 +33,7 @@ class GradientAnimation<T : Color>(
     override fun get(): RGB {
         timer.start()
         val interp = (timer.get() / totalTime) % 1
-        return interpolator.interpolate(interp).toSRGB()
+        return RGB(interpolator.interpolate(interp).toSRGB().toHex())
     }
 
     override fun reset() {
@@ -65,14 +65,14 @@ class BlinkAnimation<T : Color>(
     private val timePerAnimation = (1.0 / frequency) / 2.0
 
     @Suppress("NullableBooleanElvis")
-    override fun get(): RGB {
+    override fun get(): T {
         timer.start()
         return if (count?.let { timer.get() < it * timePerAnimation } ?: true) {
             val interp = (timer.get() / timePerAnimation) % 1
-            interpolator.interpolate(interp).toSRGB()
+            interpolator.interpolate(interp)
         } else {
             done = true
-            color.toSRGB()
+            color
         }
     }
 

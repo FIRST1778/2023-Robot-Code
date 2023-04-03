@@ -27,6 +27,9 @@
       "/Shuffleboard/Auto/Auto": "String Chooser",
       "/Shuffleboard/Auto/Balance Location": "String Chooser",
       "/Shuffleboard/Auto/Balance?": "String Chooser",
+      "/Shuffleboard/Auto/First Shooting Level": "String Chooser",
+      "/Shuffleboard/Auto/Second Shooting Level": "String Chooser",
+      "/Shuffleboard/Auto/Third Shooting Level": "String Chooser",
       "/Shuffleboard/Drive/Drive": "Subsystem",
       "/Shuffleboard/Field/Field": "Field2d",
       "/Shuffleboard/Gyro/Gyro": "Subsystem",
@@ -50,6 +53,21 @@
         }
       },
       "/Shuffleboard/Auto/Balance?": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Auto/First Shooting Level": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Auto/Second Shooting Level": {
+        "window": {
+          "visible": true
+        }
+      },
+      "/Shuffleboard/Auto/Third Shooting Level": {
         "window": {
           "visible": true
         }
