@@ -18,7 +18,7 @@
       "stopEvent": {
         "names": [
           "Load Shooter",
-          "Pick Up Intake",
+          "Angle To First Position",
           "Shoot"
         ],
         "executionBehavior": "sequential",
@@ -78,15 +78,15 @@
     },
     {
       "anchorPoint": {
-        "x": 10.5,
+        "x": 10.4,
         "y": 2.809065018774454
       },
       "prevControl": {
-        "x": 10.899285415662952,
+        "x": 10.799285415662952,
         "y": 2.8044755312380985
       },
       "nextControl": {
-        "x": 10.899285415662952,
+        "x": 10.799285415662952,
         "y": 2.8044755312380985
       },
       "holonomicAngle": 180.0,

@@ -1,5 +1,6 @@
 package org.frc1778
 
+import com.github.ajalt.colormath.model.Oklab
 import com.github.ajalt.colormath.model.Oklch
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.transform.Interpolator
@@ -23,7 +24,7 @@ class LightTests {
 
     @Test
     fun redPurpleBlue() {
-        writeInterpolation(RGB.interpolator {
+        writeInterpolation(Oklab.interpolator {
                         stop(RGB.from255(0, 0, 255))
                         stop(RGB.from255(255, 0, 255))
                         stop(RGB.from255(255, 0, 0))
@@ -56,12 +57,24 @@ class LightTests {
     @Test
     fun oklhcRainbow() {
         writeInterpolation(Oklch.interpolator {
+//            easing = EasingFunctions.easeInOut()
                 stop(Oklch(l = 0.8, c = 0.3, h = 0.0))
                 stop(Oklch(l = 0.8, c = 0.3, h = 90.0))
                 stop(Oklch(l = 0.8, c = 0.3, h = 180.0))
                 stop(Oklch(l = 0.8, c = 0.3, h = 270.0))
                 stop(Oklch(l = 0.8, c = 0.3, h = 0.0))
             }, "Oklhc Rainbow")
+    }
+
+    @Test
+    fun greenBlink() {
+        writeInterpolation(
+            RGB.interpolator {
+                stop(RGB.from255(0, 255, 0))
+                stop(RGB.from255(0, 0, 0))
+                stop(RGB.from255(0, 255, 0))
+            }, "Green Blink"
+        )
     }
 
 

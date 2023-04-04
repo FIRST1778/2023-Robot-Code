@@ -1,9 +1,11 @@
 package org.frc1778.subsystems
 
 import com.github.ajalt.colormath.Color
+import com.github.ajalt.colormath.model.Oklab
 import com.github.ajalt.colormath.model.Oklch
 import com.github.ajalt.colormath.model.RGB
 import com.github.ajalt.colormath.model.RGBInt
+import com.github.ajalt.colormath.transform.EasingFunctions
 import com.github.ajalt.colormath.transform.interpolator
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.SPI
@@ -30,9 +32,10 @@ import kotlin.random.Random
 object Lights : FalconSubsystem() {
 	var pixels = MutableList<Color>(LedConstants.NUM_LEDS) { RGB(0,0,0) }
 
-    val redPurpleBlueAnimation =
+    private val redPurpleBlueAnimation =
             GradientAnimation(
-                    RGB.interpolator {
+                    Oklab.interpolator {
+                        easing = EasingFunctions.easeInOut()
                         stop(RGB.from255(0, 0, 255))
                         stop(RGB.from255(255, 0, 255))
                         stop(RGB.from255(255, 0, 0))
@@ -43,31 +46,10 @@ object Lights : FalconSubsystem() {
             )
 
 
-    val rainbowAnimation =
-        GradientAnimation(
-            RGB.interpolator {
-                stop(RGB.from255(255,0,0))
-                stop(RGB.from255(255,128,0))
-                stop(RGB.from255(255,255,0))
-                stop(RGB.from255(0,255,0))
-                stop(RGB.from255(0,128,255))
-                stop(RGB.from255(0,0,255))
-                stop(RGB.from255(128,0,255))
-                stop(RGB.from255(0,255,255))
-                stop(RGB.from255(128,0,255))
-                stop(RGB.from255(0,0,255))
-                stop(RGB.from255(0,128,255))
-                stop(RGB.from255(0,255,0))
-                stop(RGB.from255(255,255,0))
-                stop(RGB.from255(255,128,0))
-                stop(RGB.from255(255,0,0))
-            },
-            6.0
-        )
-
-    val rainbowOklchAnimation =
+    private val rainbowOklchAnimation =
         GradientAnimation(
             Oklch.interpolator {
+                easing = EasingFunctions.easeInOut()
                 stop(Oklch(l = 0.8, c = 0.3, h = 0.0))
                 stop(Oklch(l = 0.8, c = 0.3, h = 90.0))
                 stop(Oklch(l = 0.8, c = 0.3, h = 180.0))
@@ -77,8 +59,12 @@ object Lights : FalconSubsystem() {
             6.0
         )
 
+    val animations = listOf(
+        redPurpleBlueAnimation,
+        rainbowOklchAnimation
+    )
+
     val rebBlink = BlinkAnimation(RGB.from255(255, 0, 0), RGB, 4, 4)
-//    private var currentAnimation: Animation = listOf(redPurpleBlueAnimation, rainbowAnimation).random()
     private var currentAnimation: Animation = rainbowOklchAnimation
     private var animationEnabled = true
 
@@ -186,7 +172,7 @@ object Lights : FalconSubsystem() {
         } else {
             ticksLeftPerDit--
         }
-        pixels[0] = RGB.from255(0, 0, (if (morseCodeLed) 255 else 0))
+//        pixels[0] = RGB.from255(0, 0, (if (morseCodeLed) 255 else 0))
 
         pixels.forEach {
             emit(ledFrame(it))

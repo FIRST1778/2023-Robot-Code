@@ -228,7 +228,7 @@ enum class Level(val optionName : String, val rearShooterPosition : SIUnit<Radia
 //        ),
         optionName = "Top",
         rearShooterPosition = 207.5.degrees,
-        rearShooterVoltage = 3.7.volts,
+        rearShooterVoltage = 3.8.volts,
         frontShooterPosition = 155.degrees,
         frontShooterVoltage = 4.5.volts
 

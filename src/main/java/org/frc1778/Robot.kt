@@ -104,8 +104,7 @@ object Robot : FalconTimedRobot() {
 
     override fun disabledInit() {
         Wrist.resetDesiredAngle()
-//        Lights.setAnimation(listOf(Lights.redPurpleBlueAnimation, Lights.rainbowAnimation).random())
-        Lights.setAnimation(Lights.rainbowOklchAnimation)
+        Lights.setAnimation(Lights.animations.random())
         Lights.animateOn()
     }
 

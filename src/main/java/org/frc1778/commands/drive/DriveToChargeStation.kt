@@ -21,7 +21,7 @@ import kotlin.math.abs
 
 class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Drive) {
     companion object {
-        private val pathConstraints = PathConstraints(3.125, 4.0)
+        private val pathConstraints = PathConstraints(4.0, 5.0)
     }
 
     private lateinit var trajectoryTrackerCommand: Command
@@ -63,10 +63,10 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
                             *Drive.swerveModuleStates().toTypedArray()
                         )
                     ),
-                    *stationPath.points.map { (location, heading) ->
+                    *stationPath.points.map { (location, heading, prevControl, nextControl) ->
                         PathPoint(
                             location, heading, holonomicRotation
-                        ).withControlLengths(.75, .375).transformForAlliance(
+                        ).withControlLengths(prevControl, nextControl).transformForAlliance(
                             Robot.alliance, Alliance.Blue
                         )
                     }.toTypedArray(),
@@ -78,7 +78,7 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
             )
         }
         trajectoryTrackerCommand = parallel {
-            if(Wrist.getCurrentAngle() > 95.degrees) {
+            if (Wrist.getCurrentAngle() > 95.degrees) {
                 +ShooterAngleCommand(Level.None)
             }
             +Drive.followTrajectory { trajectory }
@@ -140,7 +140,7 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
                 return if (alliance == Alliance.Red) RED else BLUE
             }
 
-            val BLUE_BALANCE = Translation2d(4.0, 2.8) to Rotation2d.fromDegrees(0.0)
+            val BLUE_BALANCE = Translation2d(4.125, 2.8) to Rotation2d.fromDegrees(0.0)
 
             val RED_BALANCE = Translation2d(12.55, 2.8) to Rotation2d.fromDegrees(0.0)
 
@@ -148,32 +148,32 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
     }
 
     enum class StationBalancingPaths(
-        val points: List<Pair<Translation2d, Rotation2d>>,
-        val qualifier: Rectangle2d,
-        val pathConstraints: PathConstraints
+        val points: List<PathPointData>, val qualifier: Rectangle2d, val pathConstraints: PathConstraints
     ) {
         STATION_THREE(
             listOf(
-                Translation2d(2.1, .7) to Rotation2d.fromDegrees(0.0),
-                Translation2d(3.9, .7) to Rotation2d.fromDegrees(0.0),
-                Translation2d(6.00, .95) to Rotation2d.fromDegrees(70.0)
+                PathPointData(Translation2d(2.1, .7), Rotation2d.fromDegrees(0.0), .125, .75),
+                PathPointData(Translation2d(3.9, .7), Rotation2d.fromDegrees(0.0), .75, .75),
+                PathPointData(Translation2d(6.00, .95), Rotation2d.fromDegrees(70.0), .5, .7)
             ), Rectangle2d(
                 Translation2d(1.45, 2.7), Translation2d(2.85, 0.0)
-            ),
-            PathConstraints(2.75, 3.5)
+            ), PathConstraints(2.75, 3.5)
         ),
         STATION_ONE(
             listOf(
-                Translation2d(2.1, 4.75) to Rotation2d.fromDegrees(0.0),
-                Translation2d(3.9, 4.75) to Rotation2d.fromDegrees(0.0),
-                Translation2d(6.00, 4.75) to Rotation2d.fromDegrees(-70.0)
+                PathPointData(Translation2d(2.1, 4.75), Rotation2d.fromDegrees(0.0), .125, .75),
+                PathPointData(Translation2d(3.9, 4.75), Rotation2d.fromDegrees(0.0), .75, .75),
+                PathPointData(Translation2d(6.00, 4.75), Rotation2d.fromDegrees(-70.0), .5, .75)
             ), Rectangle2d(
                 Translation2d(1.45, 2.7), Translation2d(3.25, 5.4)
-            ),
-            PathConstraints(4.0, 6.0)
+            ), PathConstraints(4.0, 6.0)
         );
 
     }
+
+    data class PathPointData(
+        val anchor: Translation2d, val heading: Rotation2d, val prevControl: Double = 0.0, val nextControl: Double = 0.0
+    )
 
     data class BalancePoint(
         val location: Translation2d,
@@ -208,14 +208,12 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
             }
             val currentPosition = this.position
             val transformedPosition = Translation2d(
-                (16.54 / 2) + (transformDirection * abs((16.54 / 2) - currentPosition.x)),
-                currentPosition.y
+                (16.54 / 2) + (transformDirection * abs((16.54 / 2) - currentPosition.x)), currentPosition.y
             )
 
 
             val currentRotation = this.heading
-            val transformedRotation =
-                currentRotation.rotateBy(Rotation2d.fromDegrees(180.0)) * -1.0
+            val transformedRotation = currentRotation.rotateBy(Rotation2d.fromDegrees(180.0)) * -1.0
 
             return PathPoint(
                 transformedPosition, transformedRotation, this.holonomicRotation, this.velocityOverride

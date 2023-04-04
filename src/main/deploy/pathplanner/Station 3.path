@@ -18,7 +18,8 @@
       "stopEvent": {
         "names": [
           "Load Shooter",
-          "Angle To First Position"
+          "Angle To First Position",
+          "Shoot"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "after",

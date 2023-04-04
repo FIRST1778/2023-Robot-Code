@@ -4,6 +4,7 @@ package org.frc1778
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.commands.drive.DriveToChargeStation
 import org.frc1778.commands.intake.IntakeSpitCommand
@@ -17,6 +18,7 @@ import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.Shooter
 import org.ghrobotics.lib.commands.parallelDeadline
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.utils.Source
@@ -35,6 +37,10 @@ import org.ghrobotics.lib.wrappers.networktables.ShuffleboardTabBuilder
  */
 object RobotContainer {
 
+    private val slightlyFasterAutoPathConstraints = PathConstraints(
+        4.00, 5.0
+    )
+
     private val autoPathConstraints = PathConstraints(
         3.75, // m/s
         3.125 //m/s^2
@@ -51,8 +57,11 @@ object RobotContainer {
         "Spit Out Game Piece" to IntakeSpitCommand().withTimeout(.625),
         "Spit Out Game Piece Long" to IntakeSpitCommand().withTimeout(1.5),
         "Lower Intake" to IntakeSuckCommand(),
-        "Suck To Shooter" to parallelDeadline(ShooterSuckCommand()) {
-            +ShooterLoadCommand()
+        "Suck To Shooter" to sequential {
+            +ShooterShootCommand().withTimeout(.05)
+            +parallelDeadline(ShooterSuckCommand()) {
+                +ShooterLoadCommand()
+            }
         },
         "Load Shooter" to ShooterSuckCommand(),
         "Pick Up Intake" to IntakeStopCommand(),
@@ -60,7 +69,8 @@ object RobotContainer {
         "Angle To Second Position" to ShooterAngleCommand(Level.None),
         "Angle To Third Position" to ShooterAngleCommand(Level.None),
         "Lower Shooter" to ShooterAngleCommand(Level.None),
-        "Shoot" to ShooterShootCommand().withTimeout(0.3)
+        "Shoot" to ShooterShootCommand().withTimeout(0.3),
+        "Unload Shooter" to InstantCommand({ Shooter.cubeStored = false})
     )
 
 
@@ -79,7 +89,7 @@ object RobotContainer {
 
     val station1Score3 = {
         Drive.followTrajectoryGroupWithCommands(
-            getAlliancePathGroup("Station 1 Score 3", autoPathConstraints, Alliance.Red), eventMap
+            getAlliancePathGroup("Station 1 Score 3", slightlyFasterAutoPathConstraints, Alliance.Red), eventMap
         )
     }
 
