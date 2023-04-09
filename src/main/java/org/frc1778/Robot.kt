@@ -135,6 +135,7 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
 //        Shooter.setVoltage(3.0.volts)
+        autonomousCommand?.cancel()
         TeleopLightCommand().schedule()
         Wrist.resetDesiredAngle()
     }
