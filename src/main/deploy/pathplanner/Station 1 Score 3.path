@@ -337,7 +337,7 @@
       ]
     },
     {
-      "position": 1.6000000000001253,
+      "position": 1.35,
       "names": [
         "Suck To Shooter"
       ]
@@ -368,6 +368,12 @@
     },
     {
       "position": 6.196363636363314,
+      "names": [
+        "Shoot"
+      ]
+    },
+    {
+      "position": 0.75,
       "names": [
         "Shoot"
       ]

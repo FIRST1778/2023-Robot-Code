@@ -29,6 +29,7 @@
       "/Shuffleboard/Auto/Balance?": "String Chooser",
       "/Shuffleboard/Auto/First Shooting Level": "String Chooser",
       "/Shuffleboard/Auto/Second Shooting Level": "String Chooser",
+      "/Shuffleboard/Auto/Shoot From Charge Station?": "String Chooser",
       "/Shuffleboard/Auto/Third Shooting Level": "String Chooser",
       "/Shuffleboard/Drive/Drive": "Subsystem",
       "/Shuffleboard/Field/Field": "Field2d",

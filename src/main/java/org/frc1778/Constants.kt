@@ -2,7 +2,6 @@ package org.frc1778
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout
 import edu.wpi.first.apriltag.AprilTagFields
-import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
@@ -43,10 +42,10 @@ object Constants {
         private const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
 
         private val swerveDriveWheelOffsets = mapOf(
-            "Top Left" to 272.3,
-            "Top Right" to 17.6,
-            "Bottom Right" to 46.5,
-            "Bottom Left" to 273.45,
+            "Top Left" to 271.7,
+            "Top Right" to 17.9,
+            "Bottom Right" to 46.6,
+            "Bottom Left" to 273.8,
         )
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
@@ -220,12 +219,16 @@ object Constants {
 
 
 }
-//TODO Get shooter position values
-enum class Level(val optionName : String, val rearShooterPosition : SIUnit<Radian>, val rearShooterVoltage : SIUnit<Volt>, val frontShooterPosition : SIUnit<Radian>, val frontShooterVoltage : SIUnit<Volt>) {
+
+enum class Level(
+    val optionName: String,
+    val rearShooterPosition: SIUnit<Radian>,
+    val rearShooterVoltage: SIUnit<Volt>,
+    val frontShooterPosition: SIUnit<Radian>,
+    val frontShooterVoltage: SIUnit<Volt>
+) {
+    //Shoot for the Top
     Top(
-//        Transform3d(
-//            Translation3d(39.73.inches.value, 0.0, 46.0.inches.value), Rotation3d()
-//        ),
         optionName = "Top",
         rearShooterPosition = 207.5.degrees,
         rearShooterVoltage = 3.8.volts,
@@ -233,26 +236,23 @@ enum class Level(val optionName : String, val rearShooterPosition : SIUnit<Radia
         frontShooterVoltage = 4.5.volts
 
     ),
+    //Shoot to the Middle
     Middle(
-//        Transform3d(
-//            Translation3d((22.7.inches).value, 0.0, 34.0.inches.value), Rotation3d()
-//        ),
         optionName = "Middle",
         rearShooterPosition = 210.0.degrees,
         rearShooterVoltage = 2.5.volts,
         frontShooterPosition = 150.degrees,
         frontShooterVoltage = 3.2.volts
     ),
+    //Shoot to the Bottom
     Bottom(
-//        Transform3d(
-//            Translation3d(), Rotation3d()
-//        ),
         optionName = "Bottom",
         rearShooterPosition = 275.0.degrees,
         rearShooterVoltage = 1.5.volts,
         frontShooterPosition = 90.0.degrees,
         frontShooterVoltage = 3.0.volts
     ),
+    //Stow Shooter
     None(
         optionName = "Hopper",
         rearShooterPosition = 90.0.degrees,
@@ -260,6 +260,7 @@ enum class Level(val optionName : String, val rearShooterPosition : SIUnit<Radia
         frontShooterPosition = 90.0.degrees,
         frontShooterVoltage = 1.5.volts
     ),
+    //Shoot from Across Charge Station
     THREE_POINT(
         optionName = "3 Point",
         rearShooterPosition = 225.0.degrees,
@@ -267,22 +268,12 @@ enum class Level(val optionName : String, val rearShooterPosition : SIUnit<Radia
         frontShooterPosition = 150.0.degrees,
         frontShooterVoltage = 10.0.volts
     ),
+    //Shoot From atop Charge Station
     CHARGE_STATION(
         optionName = "Don't Choose ME",
         rearShooterPosition = 225.0.degrees,
-        rearShooterVoltage = 11.0.volts,
+        rearShooterVoltage = 10.0.volts,
         frontShooterPosition = 150.0.degrees,
-        frontShooterVoltage = 11.0.volts
+        frontShooterVoltage = 10.0.volts
     )
-}
-
-enum class GamePiece {
-}
-
-//18" away from edge
-enum class Station(private val redPose: Pose3d, private val bluePose: Pose3d) {
-
-}
-
-enum class Side(val transform: Transform3d) {
 }

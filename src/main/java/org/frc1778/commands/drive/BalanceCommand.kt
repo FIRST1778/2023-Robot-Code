@@ -36,7 +36,6 @@ class BalanceCommand: FalconCommand(Drive) {
     }
 
     override fun end(interrupted: Boolean) {
-        DriveBrakeCommand().schedule()
         balanceAnimation.end(interrupted)
     }
 

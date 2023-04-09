@@ -1,11 +1,13 @@
 package org.frc1778
 
 
+import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.frc1778.commands.drive.BalanceCommand
+import org.frc1778.commands.drive.DriveBrakeCommand
 import org.frc1778.commands.drive.DriveToChargeStation
 import org.frc1778.commands.intake.IntakeSpitCommand
 import org.frc1778.commands.intake.IntakeStopCommand
@@ -70,7 +72,7 @@ object RobotContainer {
         "Angle To Third Position" to ShooterAngleCommand(Level.None),
         "Lower Shooter" to ShooterAngleCommand(Level.None),
         "Shoot" to ShooterShootCommand().withTimeout(0.3),
-        "Unload Shooter" to InstantCommand({ Shooter.cubeStored = false})
+        "Unload Shooter" to InstantCommand({ Shooter.cubeStored = false })
     )
 
 
@@ -148,7 +150,8 @@ object RobotContainer {
         STATION_ONE_SCORE_3("Station 1 Score 3", station1Score3), STATION_TWO_SUB(
             "Station 2 Substation",
             station2Sub
-        ),STATION_TWO_CABLE(
+        ),
+        STATION_TWO_CABLE(
             "Station 2 Cable",
             station2Cable
         ),
@@ -158,13 +161,33 @@ object RobotContainer {
         STATION_THREE_WITH_MARKERS("Station 3", station3), STATION_THREE_SCORE_2(
             "Station 3 Score 2", station3Score2
         ),
+        SHOOT_ONLY("Shoot Only", {
+            sequential {
+                +InstantCommand({
+                    Drive.resetPosition(
+                        edu.wpi.first.math.geometry.Pose2d(
+                            edu.wpi.first.math.geometry.Translation2d(0.0, 0.0),
+                            edu.wpi.first.math.geometry.Rotation2d.fromDegrees(
+                                if (DriverStation.getAlliance() == Alliance.Blue) {
+                                    0.0
+                                } else 180.0
+                            )
+                        )
+                    )
+                })
+                +ShooterSuckCommand()
+                +ShooterAngleCommand(Level.Top)
+                +ShooterShootCommand().withTimeout(0.5)
+            }
+        })
 
 
         ; //!Don't remove
 
         companion object {
             /** The default auto mode. */
-            val default = STATION_ONE
+            val default = SHOOT_ONLY
+//            val default = STATION_ONE
         }
     }
 
@@ -173,15 +196,18 @@ object RobotContainer {
         setDefaultOption(AutoMode.default.optionName, AutoMode.default)
     }
     private val firstShootingLevelChooser = SendableChooser<Level>().apply {
-        Level.values().forEach { addOption(it.optionName, it) }
+        Level.values().filterNot { it == Level.CHARGE_STATION || it == Level.THREE_POINT }
+            .forEach { addOption(it.optionName, it) }
         setDefaultOption(Level.Bottom.optionName, Level.Bottom)
     }
     private val secondShootingLevelChooser = SendableChooser<Level>().apply {
-        Level.values().forEach { addOption(it.optionName, it) }
+        Level.values().filterNot { it == Level.CHARGE_STATION || it == Level.THREE_POINT }
+            .forEach { addOption(it.optionName, it) }
         setDefaultOption(Level.Bottom.optionName, Level.Bottom)
     }
     private val thirdShootingLevelChooser = SendableChooser<Level>().apply {
-        Level.values().forEach { addOption(it.optionName, it) }
+        Level.values().filterNot { it == Level.CHARGE_STATION || it == Level.THREE_POINT }
+            .forEach { addOption(it.optionName, it) }
         setDefaultOption(Level.Bottom.optionName, Level.Bottom)
     }
     private val balanceChooser = SendableChooser<Boolean>().apply {
@@ -193,6 +219,12 @@ object RobotContainer {
         addOption("Outside", true)
         addOption("Inside", false)
         setDefaultOption("Outside", true)
+    }
+
+    private val shootFromStationChooser = SendableChooser<Boolean>().apply {
+        addOption("Yes", true)
+        addOption("No", false)
+        setDefaultOption("No", false)
     }
 
     init {
@@ -223,6 +255,11 @@ object RobotContainer {
             position(4, 0)
             size(2, 1)
         }
+
+        autoTab.sendableChooser("Shoot From Charge Station?", shootFromStationChooser) {
+            position(6, 0)
+            size(3, 1)
+        }
     }
 
 
@@ -236,6 +273,21 @@ object RobotContainer {
             if (balanceChooser.selected!!) {
                 +DriveToChargeStation(balanceLocationChooser.selected)
                 +BalanceCommand()
+                +DriveBrakeCommand()
+                if (shootFromStationChooser.selected!!) {
+                    +sequential {
+                        +ShooterShootCommand().withTimeout(.05)
+                        +parallelDeadline(ShooterSuckCommand()) {
+                            +ShooterLoadCommand()
+                        }
+                    }
+                    +sequential {
+                        +ShooterSuckCommand()
+                        +ShooterAngleCommand(Level.THREE_POINT)
+                        +ShooterShootCommand().withTimeout(0.5)
+                        +ShooterAngleCommand(Level.None)
+                    }
+                }
             } else {
                 +ShooterAngleCommand(Level.None)
             }
