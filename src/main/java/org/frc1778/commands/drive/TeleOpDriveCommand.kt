@@ -65,11 +65,11 @@ class TeleOpDriveCommand: FalconCommand(Drive) {
     }
 
     companion object {
-        val translationX = Controls.driverController.getRawAxis(1)
-        val translationY = Controls.driverController.getRawAxis(0)
-        val rotation = Controls.driverController.getRawAxis(2)
+        val translationX = Controls.steamDeck.getRawAxis(0)
+        val translationY = Controls.steamDeck.getRawAxis(1)
+        val rotation = Controls.steamDeck.getRawAxis(4)
         // There are two switches at the top of the controller.  Right is hold, with
         // ID 1; left is toggle, with ID 2.
-        val autoAlignActive = Controls.driverController.getRawButton(1)
+        val autoAlignActive = Controls.steamDeck.getRawButton(10)
     }
 }

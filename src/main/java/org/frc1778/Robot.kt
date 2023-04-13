@@ -97,9 +97,8 @@ object Robot : FalconTimedRobot() {
     override fun robotPeriodic() {
 
         Shuffleboard.update()
-        Controls.driverController.update()
-        Controls.operatorControllerRed.update()
-        Controls.operatorControllerBlue.update()
+        Controls.steamDeck.update()
+
     }
 
     override fun disabledInit() {
