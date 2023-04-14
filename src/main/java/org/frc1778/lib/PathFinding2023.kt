@@ -22,8 +22,10 @@ import kotlin.math.pow
 import kotlin.properties.Delegates
 
 class PathFinding2023(
-    private val nodes: Set<Node>, private val openIndexes: Set<Int>, private val zones: Set<Rectangle2d>
+    nodes: Set<Node>, private val openIndexes: Set<Int>, private val zones: Set<Rectangle2d>
 ) {
+
+    private val _nodes: Set<Node> = nodes + nodes.map {it.getInvertedNode()}
 
     constructor(
         waypoints: List<PathPlannerTrajectory.Waypoint>, openIndexes: Set<Int>, zones: Set<Rectangle2d>
@@ -36,7 +38,7 @@ class PathFinding2023(
     }.toSet(), openIndexes, zones)
 
     init {
-        nodes.forEachIndexed(this::setConnections)
+        _nodes.forEachIndexed(this::setConnections)
     }
 
 
@@ -44,7 +46,7 @@ class PathFinding2023(
         node.open = index in openIndexes
         val nodeZones: Set<Rectangle2d> = zones.filter { it.contains(node.pathPoint.position) }.toSet()
         node.connections =
-            nodes.filter { node -> nodeZones.any { zone -> zone.contains(node.pathPoint.position) } }.toSet()
+            _nodes.filter { node -> nodeZones.any { zone -> zone.contains(node.pathPoint.position) } }.toSet()
     }
 
     private fun setConnections(node: Node) {
@@ -53,9 +55,9 @@ class PathFinding2023(
         if (nodeZones.isNotEmpty()) {
             node.open = false
             node.connections =
-                nodes.filter { node -> nodeZones.any { zone -> zone.contains(node.pathPoint.position) } }.toSet()
+                _nodes.filter { node -> nodeZones.any { zone -> zone.contains(node.pathPoint.position) } }.toSet()
         } else {
-            node.connections = nodes.filter { it.open }.toSet()
+            node.connections = _nodes.filter { it.open }.toSet()
             node.open = true
         }
     }
@@ -73,11 +75,15 @@ class PathFinding2023(
         setConnections(start)
         setConnections(end)
 
-        val endZone = zones.first { it.contains(end.pathPoint.position) }
-        nodes.filter { endZone.contains(it.pathPoint.position) }.forEach {
+        val endZone = try {
+             zones.first { it.contains(end.pathPoint.position) }
+        } catch (e: NoSuchElementException) {
+            return null
+        }
+        _nodes.filter { endZone.contains(it.pathPoint.position) }.forEach {
             it.connections += end
         }
-        val openList = (nodes.toMutableList() + start + end) as MutableList<Node>
+        val openList = (_nodes.toMutableList() + start + end) as MutableList<Node>
 
 
 
@@ -95,8 +101,7 @@ class PathFinding2023(
             for (node in currNode.connections.filter { !it.closed }) {
                 if (node == end) {
                     end.parent = currNode
-                    val path = end.tracePath(start)
-                    return path
+                    return end.tracePath(start)
                 } else {
                     val gNew = node.g + (node distanceTo currNode)
                     val hNew = DISTANCE_WEIGHT * (node distanceTo end) + HEADING_WEIGHT * (currNode diffHeading node)
@@ -120,7 +125,7 @@ class PathFinding2023(
     companion object {
         private const val FIELD_LENGTH_METERS: Double = 16.54
         const val DISTANCE_WEIGHT = 1.0
-        const val HEADING_WEIGHT = 0.5
+        const val HEADING_WEIGHT = 50.0
 
         private val PathPlannerTrajectory.Waypoint.heading: Rotation2d
             get() {
@@ -149,10 +154,6 @@ class PathFinding2023(
                     val waypoints = PathPlannerTrajectory.transformWaypointsForAlliance(
                         PathPlanner.getWaypointsFromJson(json), to, from
                     )
-
-
-
-
                     return PathFinding2023(waypoints, openIndexes, transformZonesForAlliance(zones, from, to))
                 }
             } catch (e: Exception) {
@@ -236,8 +237,17 @@ class Node(
     }
 
     infix fun diffHeading(other: Node): Double {
-        return abs(this.pathPoint.heading.degrees - other.pathPoint.heading.degrees)
+        return abs(this.pathPoint.heading.radians - other.pathPoint.heading.radians)
     }
+
+    fun getInvertedNode(): Node {
+        return Node(PathPoint(
+            pathPoint.position,
+            pathPoint.heading.plus(Rotation2d.fromDegrees(180.0)),
+            pathPoint.holonomicRotation
+        ))
+    }
+
 
 
 }

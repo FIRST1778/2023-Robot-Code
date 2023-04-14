@@ -132,7 +132,7 @@ object Wrist : FalconSubsystem() {
     }
 
     override fun periodic() {
-        angleControl()
+//        angleControl()
     }
 
     override fun lateInit() {
