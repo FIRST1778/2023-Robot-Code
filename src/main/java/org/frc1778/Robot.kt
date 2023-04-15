@@ -20,6 +20,8 @@ import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.lib.PathFinding2023
 import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
+import org.frc1778.lib.pathplanner.PathPlannerTrajectory
+import org.frc1778.lib.pathplanner.PathPoint
 import org.frc1778.lib.pathplanner.server.PathPlannerServer
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Intake
@@ -28,7 +30,7 @@ import org.frc1778.subsystems.Shooter
 import org.frc1778.subsystems.Vision
 import org.frc1778.subsystems.Wrist
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
-import kotlin.properties.Delegates
+import kotlin.system.measureTimeMillis
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -98,9 +100,6 @@ object Robot : FalconTimedRobot() {
         PathPlannerServer.startServer(5811)
 
 
-
-
-
 //        field.getObject("traj").setTrajectory(trajectory)
 
         compressor.enableAnalog(95.0, 115.0)
@@ -159,46 +158,60 @@ object Robot : FalconTimedRobot() {
         Wrist.resetDesiredAngle()
         alliance = DriverStation.getAlliance()
 
+        val pathFinder: PathFinding2023 = PathFinding2023.fromJson(
+                "Nodes Blue", setOf(0, 4, 5, 6), setOf(
+                    Rectangle2d(
+                        Translation2d(1.5, 5.45), Translation2d(5.75, 4.00)
+                    ), Rectangle2d(
+                        Translation2d(5.75, 1.45), Translation2d(1.5, 0.0)
+                    ), Rectangle2d(
+                        Translation2d(1.5, 5.45), Translation2d(2.75, 0.0)
+                    ), Rectangle2d(
+                        Translation2d(9.85, 8.00), Translation2d(16.2, 5.5)
+                    )
+                ), Alliance.Blue
+            )!!
 
-        val pathFinder = PathFinding2023.fromJson(
-            "Nodes Blue", setOf(0, 4, 5, 6), setOf(
-                Rectangle2d(
-                    Translation2d(1.5, 5.45), Translation2d(5.75, 4.00)
-                ), Rectangle2d(
-                    Translation2d(5.75, 1.45), Translation2d(1.5, 0.0)
-                ), Rectangle2d(
-                    Translation2d(1.5, 5.45), Translation2d(2.75, 0.0)
-                ), Rectangle2d(
-                    Translation2d(9.85, 8.00), Translation2d(16.2, 5.5)
+
+        var foundPath: List<PathPoint>?
+
+
+        measureTimeMillis {
+            foundPath = pathFinder.findPath(
+                Pose2d(
+                    Translation2d(
+                        2.00, 2.5
+                    ), Rotation2d.fromDegrees(180.0)
+                ), ChassisSpeeds(0.0, 0.0, 0.0), Pose2d(
+                    Translation2d(
+                        12.5, 7.5
+                    ), Rotation2d.fromDegrees(0.0)
                 )
-            ), Alliance.Blue
-        )!!
 
-        val foundPath = pathFinder.findPath(
-            Pose2d(
-                Translation2d(
-                    8.00, 4.75
-                ), Rotation2d.fromDegrees(0.0)
-            ), ChassisSpeeds(), Pose2d(
-                Translation2d(
-                    2.00, 2.5
-                ), Rotation2d.fromDegrees(180.0)
             )
+        }.let { time ->
+            println("Path Finding Time: $time ms")
+        }
 
-        )
 
+        lateinit var pathPlannerTrajectory: PathPlannerTrajectory
 
-        val pathPlannerTrajectory = PathPlanner.generatePath(
-            PathConstraints(2.0, 1.5),
-            foundPath,
-        )
+        measureTimeMillis {
+            pathPlannerTrajectory = PathPlanner.generatePath(
+                PathConstraints(Constants.DriveConstants.maxSpeed.value, Constants.DriveConstants.maxSpeed.value * 1.5),
+                foundPath,
+            )
+        }.let { time ->
+            println("Trajectory Creating Time: $time ms")
+        }
 
-        Drive.setTrajectory(
-            pathPlannerTrajectory
-        )
-        Drive.followTrajectory(pathPlannerTrajectory).schedule()
+        measureTimeMillis {
+            Drive.followTrajectory(pathPlannerTrajectory).schedule()
+        }.let { time ->
+            println("Trajectory Command Creation and Schedule Time: $time ms")
+        }
 
-        PathPlannerServer.sendActivePath(pathPlannerTrajectory.states)
+//        PathPlannerServer.sendActivePath(pathPlannerTrajectory.states)
 
     }
 

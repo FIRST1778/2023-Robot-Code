@@ -1,5 +1,6 @@
 package org.frc1778.lib
 
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.geometry.Translation2d
@@ -16,29 +17,40 @@ import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.hypot
+import kotlin.math.min
 import kotlin.math.pow
+import kotlin.math.sqrt
 import kotlin.properties.Delegates
 
 class PathFinding2023(
     nodes: Set<Node>, private val openIndexes: Set<Int>, private val zones: Set<Rectangle2d>
 ) {
 
-    private val _nodes: Set<Node> = nodes + nodes.map {it.getInvertedNode()}
+    private val _nodes: Set<Node> = nodes
 
     constructor(
         waypoints: List<PathPlannerTrajectory.Waypoint>, openIndexes: Set<Int>, zones: Set<Rectangle2d>
     ) : this(waypoints.map { waypoint ->
-        Node(
-            PathPoint(
-                waypoint.anchorPoint, waypoint.heading, waypoint.holonomicRotation
-            )
-        )
+        Node(PathPoint(
+            waypoint.anchorPoint, waypoint.heading, waypoint.holonomicRotation
+        ).apply {
+            if (waypoint.nextControl != null) {
+                withNextControlLength(waypoint.nextControlLength)
+            }
+            if (waypoint.prevControl != null) {
+                withPrevControlLength(waypoint.prevControlLength)
+            }
+        })
     }.toSet(), openIndexes, zones)
 
     init {
         _nodes.forEachIndexed(this::setConnections)
+        _nodes.filter { it.open }.forEach {
+            it.connections += _nodes.filter { it.open }.toSet()
+        }
     }
 
 
@@ -72,11 +84,12 @@ class PathFinding2023(
 
 
     private fun optimize(start: Node, end: Node): List<Node>? {
+        end.pathPoint.withPrevControlLength(0.01)
         setConnections(start)
         setConnections(end)
 
         val endZone = try {
-             zones.first { it.contains(end.pathPoint.position) }
+            zones.first { it.contains(end.pathPoint.position) }
         } catch (e: NoSuchElementException) {
             return null
         }
@@ -98,20 +111,24 @@ class PathFinding2023(
             openList.remove(currNode)
             currNode.closed = true
 
-            for (node in currNode.connections.filter { !it.closed }) {
-                if (node == end) {
+            for (nextNode in currNode.connections.filter { !it.closed }) {
+                if (nextNode == end) {
                     end.parent = currNode
                     return end.tracePath(start)
                 } else {
-                    val gNew = node.g + (node distanceTo currNode)
-                    val hNew = DISTANCE_WEIGHT * (node distanceTo end) + HEADING_WEIGHT * (currNode diffHeading node)
-                    val fNew = gNew + hNew
-                    if (node.f == Double.MAX_VALUE || node.f > fNew) {
-                        node.f = fNew
-                        node.g = gNew
-                        node.h = hNew
-                        node.parent = currNode
-                        openList.add(node)
+                    val gNew = nextNode.g + (nextNode distanceTo currNode)
+                    val hNew =
+                        DISTANCE_WEIGHT * (nextNode distanceTo end) + HEADING_WEIGHT * (currNode diffHeading nextNode)
+                    val hNewInverted =
+                        DISTANCE_WEIGHT * (nextNode distanceTo end) + HEADING_WEIGHT * (nextNode.invertedNode() diffHeading currNode)
+                    val fNew = gNew + min(hNew, hNewInverted)
+                    if (nextNode.f == Double.MAX_VALUE || nextNode.f > fNew) {
+                        if (hNewInverted < hNew) nextNode.invertHeading()
+                        nextNode.f = fNew
+                        nextNode.g = gNew
+                        nextNode.h = hNew
+                        nextNode.parent = currNode
+                        openList.add(nextNode)
                     }
                 }
 
@@ -124,8 +141,8 @@ class PathFinding2023(
 
     companion object {
         private const val FIELD_LENGTH_METERS: Double = 16.54
-        const val DISTANCE_WEIGHT = 1.0
-        const val HEADING_WEIGHT = 50.0
+        const val DISTANCE_WEIGHT: Double = .125
+        const val HEADING_WEIGHT = .75
 
         private val PathPlannerTrajectory.Waypoint.heading: Rotation2d
             get() {
@@ -134,6 +151,26 @@ class PathFinding2023(
                     this.anchorPoint.y - (this.nextControl?.y ?: this.anchorPoint.y)
                 )
             }
+
+        private val PathPlannerTrajectory.Waypoint.prevControlLength: Double
+            get() {
+                return prevControl?.let {
+                    sqrt(
+                        (this.anchorPoint.x - it.x).pow(2) + (this.anchorPoint.y - it.y).pow(2)
+                    )
+                } ?: 0.01
+            }
+
+
+        private val PathPlannerTrajectory.Waypoint.nextControlLength: Double
+            get() {
+                return nextControl?.let {
+                    sqrt(
+                        (this.anchorPoint.x - it.x).pow(2) + (this.anchorPoint.y - it.y).pow(2)
+                    )
+                } ?: 0.01
+            }
+
 
         fun fromJson(
             name: String, openIndexes: Set<Int>, zones: Set<Rectangle2d>, from: Alliance, to: Alliance = Robot.alliance
@@ -162,6 +199,7 @@ class PathFinding2023(
             }
         }
 
+
         private fun transformZonesForAlliance(
             zones: Set<Rectangle2d>, from: Alliance, to: Alliance
         ): Set<Rectangle2d> {
@@ -188,12 +226,11 @@ class PathFinding2023(
             return zones
         }
     }
-
-
 }
 
+
 class Node(
-    val pathPoint: PathPoint
+    var pathPoint: PathPoint
 ) {
 
     var f: Double = Double.MAX_VALUE
@@ -226,8 +263,9 @@ class Node(
     }
 
     fun tracePath(start: Node): List<Node> {
-        if (this.parent == start) return mutableListOf( this.parent!!, this)
-        return  (this.parent!!.tracePath(start)) + this
+        println(this.h)
+        if (this.parent == start) return mutableListOf(this.parent!!, this)
+        return (this.parent!!.tracePath(start)) + this
     }
 
     infix fun distanceTo(other: Node): Double {
@@ -237,17 +275,35 @@ class Node(
     }
 
     infix fun diffHeading(other: Node): Double {
-        return abs(this.pathPoint.heading.radians - other.pathPoint.heading.radians)
+        return abs(
+            MathUtil.inputModulus(
+                this.pathPoint.heading.radians - other.pathPoint.heading.radians, -ANGLE_WRAP, ANGLE_WRAP
+            )
+        )
     }
 
-    fun getInvertedNode(): Node {
-        return Node(PathPoint(
-            pathPoint.position,
-            pathPoint.heading.plus(Rotation2d.fromDegrees(180.0)),
-            pathPoint.holonomicRotation
-        ))
+    fun invertHeading() {
+        this.pathPoint = PathPoint(
+            this.pathPoint.position,
+            this.pathPoint.heading.plus(Rotation2d.fromDegrees(180.0)),
+            this.pathPoint.holonomicRotation
+        ).apply {
+            if (pathPoint.nextControlLength > 0) {
+                withPrevControlLength(pathPoint.nextControlLength)
+            }
+            if (pathPoint.prevControlLength > 0) {
+                withNextControlLength(pathPoint.prevControlLength)
+            }
+        }
+    }
+
+    fun invertedNode(): Node {
+        return Node(pathPoint).apply { invertHeading() }
     }
 
 
+    companion object {
+        private const val ANGLE_WRAP = (PI - -PI) / 2.0
+    }
 
 }
