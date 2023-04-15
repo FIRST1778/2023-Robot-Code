@@ -159,18 +159,18 @@ object Robot : FalconTimedRobot() {
         alliance = DriverStation.getAlliance()
 
         val pathFinder: PathFinding2023 = PathFinding2023.fromJson(
-                "Nodes Blue", setOf(0, 4, 5, 6), setOf(
-                    Rectangle2d(
-                        Translation2d(1.5, 5.45), Translation2d(5.75, 4.00)
-                    ), Rectangle2d(
-                        Translation2d(5.75, 1.45), Translation2d(1.5, 0.0)
-                    ), Rectangle2d(
-                        Translation2d(1.5, 5.45), Translation2d(2.75, 0.0)
-                    ), Rectangle2d(
-                        Translation2d(9.85, 8.00), Translation2d(16.2, 5.5)
-                    )
-                ), Alliance.Blue
-            )!!
+            "Nodes Blue", setOf(0, 4, 5, 6), setOf(
+                Rectangle2d(
+                    Translation2d(1.5, 5.45), Translation2d(5.75, 4.00)
+                ), Rectangle2d(
+                    Translation2d(5.75, 1.45), Translation2d(1.5, 0.0)
+                ), Rectangle2d(
+                    Translation2d(1.5, 5.45), Translation2d(2.75, 0.0)
+                ), Rectangle2d(
+                    Translation2d(9.85, 8.00), Translation2d(16.2, 5.5)
+                )
+            ), Alliance.Blue
+        )!!
 
 
         var foundPath: List<PathPoint>?
@@ -197,10 +197,15 @@ object Robot : FalconTimedRobot() {
         lateinit var pathPlannerTrajectory: PathPlannerTrajectory
 
         measureTimeMillis {
-            pathPlannerTrajectory = PathPlanner.generatePath(
-                PathConstraints(Constants.DriveConstants.maxSpeed.value, Constants.DriveConstants.maxSpeed.value * 1.5),
-                foundPath,
-            )
+            foundPath?.let {
+                pathPlannerTrajectory = PathPlanner.generatePath(
+                    PathConstraints(
+                        Constants.DriveConstants.maxSpeed.value,
+                        Constants.DriveConstants.maxSpeed.value * 1.5
+                    ),
+                    it,
+                )
+            }
         }.let { time ->
             println("Trajectory Creating Time: $time ms")
         }
