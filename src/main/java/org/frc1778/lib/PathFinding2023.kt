@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.Filesystem
-import org.frc1778.Robot
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.lib.pathplanner.PathPoint
@@ -26,13 +25,19 @@ import kotlin.math.sqrt
 import kotlin.properties.Delegates
 
 class PathFinding2023(
-    nodes: Set<Node>, private val openIndexes: Set<Int>, private val zones: Set<Rectangle2d>
+    nodes: Set<Node>,
+    private val openIndexes: Set<Int>,
+    private val zones: Set<Rectangle2d>,
+    importantRotationIndexes: Set<Int>? = null
 ) {
 
     private val _nodes: Set<Node> = nodes
 
     constructor(
-        waypoints: List<PathPlannerTrajectory.Waypoint>, openIndexes: Set<Int>, zones: Set<Rectangle2d>
+        waypoints: List<PathPlannerTrajectory.Waypoint>,
+        openIndexes: Set<Int>,
+        zones: Set<Rectangle2d>,
+        importantRotationIndexes: Set<Int>? = null
     ) : this(waypoints.map { waypoint ->
         Node(PathPoint(
             waypoint.anchorPoint, waypoint.heading, waypoint.holonomicRotation
@@ -44,10 +49,13 @@ class PathFinding2023(
                 withPrevControlLength(waypoint.prevControlLength)
             }
         })
-    }.toSet(), openIndexes, zones)
+    }.toSet(), openIndexes,  zones, importantRotationIndexes)
 
     init {
         _nodes.forEachIndexed(this::setConnections)
+        importantRotationIndexes?.forEach {
+            _nodes.elementAt(it).importantRotation = true
+        }
         _nodes.filter { it.open }.forEach {
             it.connections += _nodes.filter { it.open }.toSet()
         }
@@ -62,7 +70,6 @@ class PathFinding2023(
     }
 
     private fun setConnections(node: Node) {
-
         val nodeZones: Set<Rectangle2d> = zones.filter { it.contains(node.pathPoint.position) }.toSet()
         if (nodeZones.isNotEmpty()) {
             node.open = false
@@ -75,11 +82,20 @@ class PathFinding2023(
     }
 
     fun findPath(start: Pose2d, currentSpeeds: ChassisSpeeds, end: Pose2d): List<PathPoint>? {
-        return optimize(
-            Node(start, currentSpeeds), Node(end)
-        )?.map {
-            it.pathPoint
-        }
+        val path = optimize(Node(start, currentSpeeds), Node(end)) ?: return null
+
+        return listOf(
+            path[0].pathPoint, *path.windowed(2).map { (previous, current) ->
+                if (current.importantRotation) current.pathPoint else
+                    PathPoint(
+                        current.pathPoint.position,
+                        current.pathPoint.heading,
+                        previous.pathPoint.holonomicRotation
+                    )
+
+            }.toTypedArray()
+        )
+
     }
 
 
@@ -173,7 +189,12 @@ class PathFinding2023(
 
 
         fun fromJson(
-            name: String, openIndexes: Set<Int>, zones: Set<Rectangle2d>, from: Alliance, to: Alliance = Robot.alliance
+            name: String,
+            openIndexes: Set<Int>,
+            zones: Set<Rectangle2d>,
+            from: Alliance,
+            to: Alliance,
+            importantRotationIndexes: Set<Int>? = null
         ): PathFinding2023? {
             try {
                 BufferedReader(
@@ -191,7 +212,12 @@ class PathFinding2023(
                     val waypoints = PathPlannerTrajectory.transformWaypointsForAlliance(
                         PathPlanner.getWaypointsFromJson(json), to, from
                     )
-                    return PathFinding2023(waypoints, openIndexes, transformZonesForAlliance(zones, from, to))
+                    return PathFinding2023(
+                        waypoints,
+                        openIndexes,
+                        transformZonesForAlliance(zones, from, to),
+                        importantRotationIndexes
+                    )
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -240,6 +266,7 @@ class Node(
     var closed: Boolean = false
     lateinit var connections: Set<Node>
     var open by Delegates.notNull<Boolean>()
+    var importantRotation= false
 
     fun reset() {
         f = Double.MAX_VALUE

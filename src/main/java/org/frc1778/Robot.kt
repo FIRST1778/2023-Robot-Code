@@ -169,7 +169,7 @@ object Robot : FalconTimedRobot() {
                 ), Rectangle2d(
                     Translation2d(9.85, 8.00), Translation2d(16.2, 5.5)
                 )
-            ), Alliance.Blue
+            ), Alliance.Blue, alliance, setOf(5, 6)
         )!!
 
 
@@ -200,8 +200,7 @@ object Robot : FalconTimedRobot() {
             foundPath?.let {
                 pathPlannerTrajectory = PathPlanner.generatePath(
                     PathConstraints(
-                        Constants.DriveConstants.maxSpeed.value,
-                        Constants.DriveConstants.maxSpeed.value * 1.5
+                        Constants.DriveConstants.maxSpeed.value, Constants.DriveConstants.maxSpeed.value * 1.5
                     ),
                     it,
                 )
