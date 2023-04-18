@@ -176,16 +176,19 @@ object Robot : FalconTimedRobot() {
         var foundPath: List<PathPoint>?
 
 
+        val translation1 = Translation2d(
+            2.00, 2.5
+        )
+
+        val translation2 = Translation2d(
+            12.5, 7.5
+        )
         measureTimeMillis {
             foundPath = pathFinder.findPath(
                 Pose2d(
-                    Translation2d(
-                        2.00, 2.5
-                    ), Rotation2d.fromDegrees(180.0)
+                    translation2, Rotation2d.fromDegrees(0.0)
                 ), ChassisSpeeds(0.0, 0.0, 0.0), Pose2d(
-                    Translation2d(
-                        12.5, 7.5
-                    ), Rotation2d.fromDegrees(0.0)
+                    translation1, Rotation2d.fromDegrees(180.0)
                 )
 
             )

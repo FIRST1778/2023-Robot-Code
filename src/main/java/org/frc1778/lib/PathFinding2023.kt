@@ -12,6 +12,7 @@ import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.lib.pathplanner.PathPoint
 import org.frc1778.lib.pathplanner.simple.JSONObject
 import org.frc1778.lib.pathplanner.simple.parser.JSONParser
+import org.ghrobotics.lib.mathematics.epsilonEquals
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
 import java.io.BufferedReader
 import java.io.File
@@ -49,7 +50,7 @@ class PathFinding2023(
                 withPrevControlLength(waypoint.prevControlLength)
             }
         })
-    }.toSet(), openIndexes,  zones, importantRotationIndexes)
+    }.toSet(), openIndexes, zones, importantRotationIndexes)
 
     init {
         _nodes.forEachIndexed(this::setConnections)
@@ -82,17 +83,25 @@ class PathFinding2023(
     }
 
     fun findPath(start: Pose2d, currentSpeeds: ChassisSpeeds, end: Pose2d): List<PathPoint>? {
-        val path = optimize(Node(start, currentSpeeds), Node(end)) ?: return null
+        val startNode = Node(start, currentSpeeds).apply {
+            if ((abs(currentSpeeds.vxMetersPerSecond) + abs(currentSpeeds.vyMetersPerSecond) + abs(currentSpeeds.omegaRadiansPerSecond)).epsilonEquals(
+                    0.0
+                )
+            ) {
+                updateHeading(this headingTo end.translation)
+            }
+        }
+
+
+        val path = optimize(startNode, Node(end)) ?: return null
 
         return listOf(
             path[0].pathPoint, *path.windowed(2).map { (previous, current) ->
-                if (current.importantRotation) current.pathPoint else
-                    PathPoint(
-                        current.pathPoint.position,
-                        current.pathPoint.heading,
-                        previous.pathPoint.holonomicRotation
-                    )
-
+                current.apply {
+                    if(!current.importantRotation) {
+                        updateHeading(previous.pathPoint.heading)
+                    }
+                }.pathPoint
             }.toTypedArray()
         )
 
@@ -213,10 +222,7 @@ class PathFinding2023(
                         PathPlanner.getWaypointsFromJson(json), to, from
                     )
                     return PathFinding2023(
-                        waypoints,
-                        openIndexes,
-                        transformZonesForAlliance(zones, from, to),
-                        importantRotationIndexes
+                        waypoints, openIndexes, transformZonesForAlliance(zones, from, to), importantRotationIndexes
                     )
                 }
             } catch (e: Exception) {
@@ -266,7 +272,7 @@ class Node(
     var closed: Boolean = false
     lateinit var connections: Set<Node>
     var open by Delegates.notNull<Boolean>()
-    var importantRotation= false
+    var importantRotation = false
 
     fun reset() {
         f = Double.MAX_VALUE
@@ -309,11 +315,24 @@ class Node(
         )
     }
 
+    infix fun headingTo(translation: Translation2d): Rotation2d {
+        return Rotation2d(
+            translation.x - this.pathPoint.position.x, translation.y - this.pathPoint.position.y
+        )
+    }
+
+    infix fun headingTo(other: Node): Rotation2d {
+        return this.headingTo(other.pathPoint.position)
+    }
+
     fun invertHeading() {
+
+        updateHeading(this.pathPoint.heading.plus(Rotation2d.fromDegrees(180.0)))
+    }
+
+    fun updateHeading(rotation2d: Rotation2d) {
         this.pathPoint = PathPoint(
-            this.pathPoint.position,
-            this.pathPoint.heading.plus(Rotation2d.fromDegrees(180.0)),
-            this.pathPoint.holonomicRotation
+            this.pathPoint.position, rotation2d, this.pathPoint.holonomicRotation
         ).apply {
             if (pathPoint.nextControlLength > 0) {
                 withPrevControlLength(pathPoint.nextControlLength)
