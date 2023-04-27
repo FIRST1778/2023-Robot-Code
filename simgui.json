@@ -10,6 +10,13 @@
         "visible": true
       }
     },
+    "Other Devices": {
+      "SPARK MAX [16]": {
+        "header": {
+          "open": true
+        }
+      }
+    },
     "RoboRIO": {
       "RoboRIO Input": {
         "open": true
@@ -40,7 +47,8 @@
       "/Shuffleboard/Shooter/Limit Switch": "Digital Input",
       "/Shuffleboard/Shooter/Shooter": "Subsystem",
       "/SmartDashboard/Auto choices": "String Chooser",
-      "/SmartDashboard/Balance?": "String Chooser"
+      "/SmartDashboard/Balance?": "String Chooser",
+      "/SmartDashboard/Shooter": "Mechanism2d"
     },
     "windows": {
       "/Shuffleboard/Auto/Auto": {
@@ -82,10 +90,18 @@
         "window": {
           "visible": true
         }
+      },
+      "/Shuffleboard/Shooter/Shooter": {
+        "window": {
+          "visible": true
+        }
       }
     }
   },
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
     "transitory": {
       "Shuffleboard": {
         "Drive": {

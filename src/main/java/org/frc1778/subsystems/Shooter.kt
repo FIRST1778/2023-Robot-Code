@@ -12,6 +12,7 @@ import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.rev.falconMAX
+import org.littletonrobotics.junction.LoggedRobot
 
 object Shooter : FalconSubsystem(), Sendable {
 
@@ -46,7 +47,7 @@ object Shooter : FalconSubsystem(), Sendable {
     }
 
     override fun periodic() {
-        if(!limitSwitch.get()){
+        if(!limitSwitch.get() || LoggedRobot.isSimulation()){
             cubeStored = true
         }
     }

@@ -45,8 +45,9 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
                 setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100)
                 setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20)
                 setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 20)
-
             }
+
+
         }
     }
     override var turnMotor = with(swerveModuleConstants) {

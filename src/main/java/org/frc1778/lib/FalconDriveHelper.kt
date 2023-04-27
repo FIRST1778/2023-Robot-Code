@@ -8,8 +8,10 @@
 
 package org.frc1778.lib
 
+import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import org.ghrobotics.lib.mathematics.max
+import org.littletonrobotics.junction.LoggedRobot
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.withSign
@@ -152,7 +154,9 @@ class FalconDriveHelper {
                 vy - currentChassisSpeeds.vyMetersPerSecond
             )) else vy,
             rotationInput,
-            drivetrain.robotPosition.rotation
+            if(LoggedRobot.isReal()) {
+                drivetrain.robotPosition.rotation
+            } else Rotation2d.fromDegrees(0.0)
         )
     }
 

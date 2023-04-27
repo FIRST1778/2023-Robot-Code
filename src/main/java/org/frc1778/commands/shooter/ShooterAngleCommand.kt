@@ -71,7 +71,10 @@ class ShooterAngleCommand(val scoringLevel: Level) : FalconCommand(Wrist) {
     }
 
     override fun end(interrupted: Boolean) {
+
+
         if (!interrupted) {
+
             Wrist.setScoringLevel(scoringLevel)
             Lights.setAnimation(
                 BlinkAnimation(RGB.from255(0, 255, 0), RGB, 6, 6)
