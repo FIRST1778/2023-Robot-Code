@@ -6,19 +6,28 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.DriverStation.Alliance
 import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PowerDistribution
+import edu.wpi.first.wpilibj.RobotBase.isReal
 import edu.wpi.first.wpilibj.event.BooleanEvent
 import edu.wpi.first.wpilibj.event.EventLoop
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.lights.TeleopLightCommand
-import org.frc1778.lib.FalconTimedRobot
+import org.frc1778.lib.LoggedFalconTimedRobot
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Shooter
 import org.frc1778.subsystems.Vision
 import org.frc1778.subsystems.Wrist
+import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.derived.inDegrees
+import org.littletonrobotics.junction.Logger
+import org.littletonrobotics.junction.networktables.NT4Publisher
+import org.littletonrobotics.junction.wpilog.WPILOGWriter
+
 
 /**
  * The VM is configured to automatically run this object (which basically functions as a singleton class),
@@ -30,7 +39,7 @@ import org.frc1778.subsystems.Wrist
  * the `Main.kt` file in the project. (If you use the IDE's Rename or Move refactorings when renaming the
  * object or package, it will get changed everywhere.)
  */
-object Robot : FalconTimedRobot() {
+object Robot : LoggedFalconTimedRobot() {
     var alliance: Alliance = DriverStation.getAlliance()
     private val eventLoop = EventLoop()
     private val brakeModeLimitSwitchHit = BooleanEvent(
@@ -68,6 +77,44 @@ object Robot : FalconTimedRobot() {
 
 
     override fun robotInit() {
+        Logger.getInstance().recordMetadata("ProjectName", "Cold Fusion") // Set a metadata value
+
+        if (isReal()) {
+            Logger.getInstance().addDataReceiver(WPILOGWriter("/media/sda1/")) // Log to a USB stick
+            Logger.getInstance().addDataReceiver(NT4Publisher()) // Publish data to NetworkTables
+            PowerDistribution(1, PowerDistribution.ModuleType.kRev) // Enables power distribution logging
+        } else {
+//            setUseTiming(false) // Run as fast as possible
+//            val logPath = LogFileUtil.findReplayLog() // Pull the replay log from AdvantageScope (or prompt the user)
+//            Logger.getInstance().setReplaySource(WPILOGReader(logPath)) // Read replay log
+//            Logger.getInstance()
+//                .addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))) // Save outputs to a new log
+
+            Logger.getInstance().addDataReceiver(NT4Publisher())
+        }
+
+
+
+// Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+
+// Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+        Logger.getInstance()
+            .start() // Start logging! No more data receivers, replay sources, or metadata values may be added
+
+
+        val shooterMechanism = Mechanism2d(3.0, 3.0)
+        val shooterRoot = shooterMechanism.getRoot("Shooter", .25, 1.5)
+        val wrist = shooterRoot.append(
+            MechanismLigament2d("Wrist", 0.2, -90.0)
+        )
+        val shooter = wrist.append(
+            MechanismLigament2d("Shooter", 0.75, 90.0)
+        )
+
+        wrist.angle = Wrist.getCurrentAngle().inDegrees()
+
+        SmartDashboard.putData("Shooter", shooterMechanism)
+
         SmartDashboard.setNetworkTableInstance(
             NetworkTableInstance.getDefault()
         )
@@ -95,7 +142,6 @@ object Robot : FalconTimedRobot() {
 
 
     override fun robotPeriodic() {
-
         Shuffleboard.update()
         Controls.driverController.update()
         Controls.operatorControllerRed.update()
@@ -135,6 +181,7 @@ object Robot : FalconTimedRobot() {
 
     override fun teleopInit() {
 //        Shooter.setVoltage(3.0.volts)
+        Wrist.angleMotor.encoder.resetPosition(90.degrees)
         autonomousCommand?.cancel()
         TeleopLightCommand().schedule()
         Wrist.resetDesiredAngle()

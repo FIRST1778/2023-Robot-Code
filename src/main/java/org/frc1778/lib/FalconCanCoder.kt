@@ -1,6 +1,7 @@
 package org.frc1778.lib
 
 import com.ctre.phoenix.sensors.CANCoder
+import com.ctre.phoenix.sensors.CANCoderSimCollection
 import com.ctre.phoenix.sensors.CANCoderStatusFrame
 import edu.wpi.first.util.sendable.SendableBuilder
 import org.ghrobotics.lib.mathematics.units.SIKey
@@ -23,6 +24,9 @@ class FalconCanCoder<K : SIKey>(
         configSensorDirection(false)
         setStatusFramePeriod(CANCoderStatusFrame.SensorData, 100)
     }
+
+    val simCollection: CANCoderSimCollection get() = canCoder.simCollection
+
     override val rawPosition: SIUnit<NativeUnit> = canCoder.position.nativeUnits
     override val rawVelocity: SIUnit<NativeUnitVelocity> = canCoder.velocity.nativeUnitsPer100ms
     override val absolutePosition: SIUnit<Radian> get() = canCoder.absolutePosition.degrees

@@ -1,13 +1,13 @@
 package org.frc1778
 
 import edu.wpi.first.wpilibj.Joystick
-import org.frc1778.commands.shooter.ShooterLoadCommand
 import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.commands.intake.IntakeLineBreakOverrideCommand
 import org.frc1778.commands.intake.IntakeLowerCommand
 import org.frc1778.commands.intake.IntakeSpitCommand
 import org.frc1778.commands.intake.IntakeSuckCommand
 import org.frc1778.commands.shooter.ShooterAngleCommand
+import org.frc1778.commands.shooter.ShooterLoadCommand
 import org.frc1778.commands.shooter.ShooterShootCommand
 import org.frc1778.commands.shooter.ShooterSuckCommand
 import org.ghrobotics.lib.commands.parallelDeadline
@@ -109,7 +109,6 @@ object Controls {
         }
         button(6) {
             changeOn(ShooterAngleCommand(Level.Top))
-
         }
         button(7) {
             changeOn(ShooterAngleCommand(Level.None))

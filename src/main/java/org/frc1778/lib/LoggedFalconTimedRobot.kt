@@ -1,25 +1,16 @@
-/*
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at https://mozilla.org/MPL/2.0/.
- *
- * Copyright 2019, Green Hope Falcons
- */
-
 package org.frc1778.lib
 
 import edu.wpi.first.hal.FRCNetComm
 import edu.wpi.first.hal.HAL
 import edu.wpi.first.wpilibj.RobotBase
-import edu.wpi.first.wpilibj.TimedRobot
 import edu.wpi.first.wpilibj.livewindow.LiveWindow
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.CommandScheduler
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
+import org.littletonrobotics.junction.LoggedRobot
 
-abstract class FalconTimedRobot {
-
+abstract class LoggedFalconTimedRobot {
     enum class Mode {
         NONE,
         DISABLED,
@@ -30,15 +21,15 @@ abstract class FalconTimedRobot {
     }
 
     var currentMode = Mode.NONE
-    private set
+        private set
 
     private val sensorlessReadySystems = arrayListOf<SensorlessCompatibleSubsystem>()
     var sensorlessModeActive = false
-    protected set
+        protected set
 
     protected val wrappedValue = WpiTimedRobot()
 
-    protected inner class WpiTimedRobot : TimedRobot() {
+    protected inner class WpiTimedRobot : LoggedRobot() {
 
         private val kLanguage_Kotlin = 6
 
@@ -47,58 +38,59 @@ abstract class FalconTimedRobot {
         }
 
         override fun robotInit() {
-            currentMode = FalconTimedRobot.Mode.NONE
-            this@FalconTimedRobot.robotInit()
-                    FalconSubsystemHandler.lateInit()
+            currentMode = LoggedFalconTimedRobot.Mode.NONE
+            this@LoggedFalconTimedRobot.robotInit()
+            FalconSubsystemHandler.lateInit()
             LiveWindow.disableAllTelemetry()
         }
 
         override fun autonomousInit() {
-            currentMode = FalconTimedRobot.Mode.AUTONOMOUS
-            this@FalconTimedRobot.autonomousInit()
-                    FalconSubsystemHandler.autoReset()
+            currentMode = LoggedFalconTimedRobot.Mode.AUTONOMOUS
+            this@LoggedFalconTimedRobot.autonomousInit()
+            FalconSubsystemHandler.autoReset()
         }
 
         override fun teleopInit() {
-            currentMode = FalconTimedRobot.Mode.TELEOP
-            this@FalconTimedRobot.teleopInit()
-                    FalconSubsystemHandler.teleopReset()
+            currentMode = LoggedFalconTimedRobot.Mode.TELEOP
+            this@LoggedFalconTimedRobot.teleopInit()
+            FalconSubsystemHandler.teleopReset()
         }
 
         override fun disabledInit() {
-            currentMode = FalconTimedRobot.Mode.DISABLED
-            this@FalconTimedRobot.disabledInit()
-                    FalconSubsystemHandler.setNeutral()
+            currentMode = LoggedFalconTimedRobot.Mode.DISABLED
+            this@LoggedFalconTimedRobot.disabledInit()
+            FalconSubsystemHandler.setNeutral()
         }
 
         override fun testInit() {
-            currentMode = FalconTimedRobot.Mode.TEST
-            this@FalconTimedRobot.testInit()
+            currentMode = LoggedFalconTimedRobot.Mode.TEST
+            this@LoggedFalconTimedRobot.testInit()
         }
 
         override fun robotPeriodic() {
-            this@FalconTimedRobot.robotPeriodic()
-                    CommandScheduler.getInstance().run()
+            this@LoggedFalconTimedRobot.robotPeriodic()
+            CommandScheduler.getInstance().run()
         }
 
         override fun autonomousPeriodic() {
-            this@FalconTimedRobot.autonomousPeriodic()
+            this@LoggedFalconTimedRobot.autonomousPeriodic()
         }
 
         override fun teleopPeriodic() {
-            this@FalconTimedRobot.teleopPeriodic()
+            this@LoggedFalconTimedRobot.teleopPeriodic()
         }
 
         override fun disabledPeriodic() {
-            this@FalconTimedRobot.disabledPeriodic()
+            this@LoggedFalconTimedRobot.disabledPeriodic()
         }
+
         override fun simulationInit() {
-            currentMode = FalconTimedRobot.Mode.SIMULATION
-            this@FalconTimedRobot.simulationInit()
+            currentMode = LoggedFalconTimedRobot.Mode.SIMULATION
+            this@LoggedFalconTimedRobot.simulationInit()
         }
 
         override fun simulationPeriodic() {
-            this@FalconTimedRobot.simulationPeriodic()
+            this@LoggedFalconTimedRobot.simulationPeriodic()
         }
     }
 
@@ -134,6 +126,10 @@ abstract class FalconTimedRobot {
     fun enableClosedLoopControl() {
         sensorlessReadySystems.forEach { it.enableClosedLoopControl() }
         sensorlessModeActive = false
+    }
+
+    fun setUseTiming(useTiming: Boolean) {
+        wrappedValue.setUseTiming(useTiming)
     }
 
     fun start() {
