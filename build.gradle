@@ -5,7 +5,9 @@ plugins {
     id "org.jetbrains.kotlin.jvm" version "1.8.0"
     id "edu.wpi.first.GradleRIO" version "2023.4.3"
     id "idea"
+    id 'com.google.devtools.ksp' version '1.8.0-1.0.9'
 }
+
 
 def javaVersion = JavaVersion.VERSION_11
 sourceCompatibility = javaVersion
@@ -52,7 +54,7 @@ wpi.java.debugJni = false
 def includeDesktopSupport = true
 
 repositories {
-    maven {url "https://jitpack.io"}
+    maven { url "https://jitpack.io" }
     maven {
         url = uri("https://maven.pkg.github.com/Mechanical-Advantage/AdvantageKit")
         credentials {
@@ -68,14 +70,18 @@ configurations.all {
     exclude group: "edu.wpi.first.wpilibj"
 }
 
+def autoLogBranch = "0130d27f75"
+
 dependencies {
     implementation "com.github.FIRST1778:FalconLibrary:Swerve-Drive-Implementation-SNAPSHOT"
 
-//    implementation "com.pathplanner.lib:pathplannerLib-java:2023.4.4_BETA"
+    implementation "com.github.gamingnight5965:AutoLog:$autoLogBranch"
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
     implementation 'com.github.ajalt.colormath:colormath:3.2.1'
+    implementation 'com.squareup:kotlinpoet:1.12.0'
+    implementation 'com.squareup:kotlinpoet-javapoet:1.12.0'
 
 
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
@@ -98,12 +104,20 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 
     def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
-    annotationProcessor "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
+//    kapt "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
+    ksp "com.github.gamingnight5965:AutoLog:$autoLogBranch"
 
 
 }
 
-test{
+kotlin {
+    sourceSets {
+        main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
+        test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
+    }
+}
+
+test {
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
@@ -146,5 +160,8 @@ idea {
         // Improve development experience (and IDEA's capabilities) by having source & javadoc attached
         downloadJavadoc = true
         downloadSources = true
+        sourceDirs = sourceDirs + file('build/generated/ksp/main/kotlin') // or tasks["kspKotlin"].destination
+        testSourceDirs = testSourceDirs + file('build/generated/ksp/test/kotlin')
+        generatedSourceDirs = generatedSourceDirs + file('build/generated/ksp/main/kotlin') + file('build/generated/ksp/test/kotlin')
     }
 }

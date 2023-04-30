@@ -36,6 +36,8 @@ import kotlin.math.sin
 
 object Wrist : FalconSubsystem() {
 
+//    val wristIO = WristIO()
+
     val brakeModeSwitch = DigitalInput(3)
 
     val angleMotor = falconMAX(
@@ -57,8 +59,6 @@ object Wrist : FalconSubsystem() {
 
     private var desiredAngleVelocity: Double = 0.0 // rad/s
     private var desiredAngle: SIUnit<Radian> = 0.0.radians
-
-    private var wristRotation = 0.0
 
     val encoder = ShooterAbsoluteEncoder(angleMotor.canSparkMax, NativeUnitRotationModel(1.nativeUnits)).apply {
         setInverted(true)
@@ -138,6 +138,7 @@ object Wrist : FalconSubsystem() {
             }
 
             angleMotor.setVoltage(nextVoltage.volts)
+
         } else {
             if (LoggedRobot.isReal()) {
                 resetDesiredAngle()
@@ -165,7 +166,7 @@ object Wrist : FalconSubsystem() {
         } catch (e: Exception) {
             DriverStation.reportError("Bad Angle ${getCurrentAngle()}", false)
         }
-        wristRotation += .1
+
         Logger.getInstance().recordOutput(
             "Wrist Pose", Pose3d(
                 Translation3d(-0.255, 0.0, 0.3175),
@@ -218,4 +219,23 @@ object Wrist : FalconSubsystem() {
 
 
     }
+
+//    @AutoLog
+//    class WristIO() {
+//        var wristVoltage: SIUnit<Volt> = 0.0.volts
+//        var scoringLevel: Level = Level.None
+//        var nextLevel: Level? = null
+//        var brakeModeSwitch: Boolean = false
+//        var brakeMode: Boolean = true
+//        var wristPose: Pose3d = Pose3d(
+//                Translation3d(-0.255, 0.0, 0.3175),
+//                Rotation3d(0.0, 0.0, 0.0)
+//            )
+//        val currentAngle: SIUnit<Radian>
+//            get() = getCurrentAngle()
+//
+//        var desiredAngle: SIUnit<Radian> = 90.degrees
+//        var desiredAngularVelocity: SIUnit<AngularVelocity> = SIUnit(0.0)
+//
+//    }
 }

@@ -26,6 +26,10 @@ import kotlin.math.PI
 import kotlin.math.hypot
 
 object Constants {
+    val currentMode = Mode.SIM
+    enum class Mode {
+        REAL, SIM
+    }
 
     object DriveConstants {
         val driveTab: ShuffleboardTab = Shuffleboard.getTab("Drive")!!

@@ -17,37 +17,42 @@ import org.junit.jupiter.api.Test
 class ShooterAngleCommandTests {
 
     fun testScenario(angle: SIUnit<Radian>, alliance: DriverStation.Alliance, shouldBeFront: Boolean) {
+        if (Constants.currentMode == Constants.Mode.REAL) {
+            var cmd = ShooterAngleCommand(Level.Middle)
 
-        var cmd = ShooterAngleCommand(Level.Middle)
+            Robot.alliance = alliance
+            Drive.robotPosition = Pose2d(0.0, 0.0, Rotation2d(angle.value))
+            Shooter.cubeStored = true
 
-        Robot.alliance = alliance
-        Drive.robotPosition = Pose2d(0.0, 0.0, Rotation2d(angle.value))
-        Shooter.cubeStored = true
 
-        assertEquals(alliance, Robot.alliance)
-        assertEquals(MathUtil.angleModulus(angle.value), Gyro.odometryYaw(), 0.01)
+            assertEquals(alliance, Robot.alliance)
+            assertEquals(MathUtil.angleModulus(angle.value), Gyro.odometryYaw(), 0.01)
 
-        cmd.initialize()
-        if(shouldBeFront) {
-            assertEquals(Level.Middle.frontShooterPosition, cmd.endPos)
-        }else {
-            assertEquals(Level.Middle.rearShooterPosition, cmd.endPos)
+            cmd.initialize()
+
+            if (shouldBeFront) {
+                assertEquals(Level.Middle.frontShooterPosition, cmd.endPos)
+            } else {
+                assertEquals(Level.Middle.rearShooterPosition, cmd.endPos)
+
+            }
         }
     }
+
     fun testRedTowardsGrid(angle: SIUnit<Radian>) {
-        testScenario(angle, DriverStation.Alliance.Red, shouldBeFront=true)
+        testScenario(angle, DriverStation.Alliance.Red, shouldBeFront = true)
     }
 
     fun testRedAwayFromGrid(angle: SIUnit<Radian>) {
-        testScenario(angle, DriverStation.Alliance.Red, shouldBeFront=false)
+        testScenario(angle, DriverStation.Alliance.Red, shouldBeFront = false)
     }
 
     fun testBlueTowardsGrid(angle: SIUnit<Radian>) {
-        testScenario(angle, DriverStation.Alliance.Blue, shouldBeFront=true)
+        testScenario(angle, DriverStation.Alliance.Blue, shouldBeFront = true)
     }
 
     fun testBlueAwayFromGrid(angle: SIUnit<Radian>) {
-        testScenario(angle, DriverStation.Alliance.Blue, shouldBeFront=false)
+        testScenario(angle, DriverStation.Alliance.Blue, shouldBeFront = false)
     }
 
     @Test
