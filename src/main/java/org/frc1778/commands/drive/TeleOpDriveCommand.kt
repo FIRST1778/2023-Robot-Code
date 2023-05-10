@@ -65,8 +65,8 @@ class TeleOpDriveCommand: FalconCommand(Drive) {
     }
 
     companion object {
-        val translationX = Controls.steamDeck.getRawAxis(0)
-        val translationY = Controls.steamDeck.getRawAxis(1)
+        val translationX = Controls.steamDeck.getRawAxis(1)
+        val translationY = Controls.steamDeck.getRawAxis(0)
         val rotation = Controls.steamDeck.getRawAxis(4)
         // There are two switches at the top of the controller.  Right is hold, with
         // ID 1; left is toggle, with ID 2.
