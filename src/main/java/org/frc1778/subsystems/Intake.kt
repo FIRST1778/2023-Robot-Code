@@ -86,6 +86,7 @@ object Intake : FalconSubsystem() {
     override fun initSendable(builder: SendableBuilder?) {
         super.initSendable(builder)
         builder!!.addBooleanProperty("Line Break", { lineBreak.get()}, {})
+
     }
     init {
         Shuffleboard.getTab("Intake").add(this)
