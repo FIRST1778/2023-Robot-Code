@@ -24,6 +24,7 @@ import org.frc1778.commands.drive.TeleOpDriveCommand
 import org.frc1778.lib.DataLogger
 import org.frc1778.lib.FalconNeoSwerveModule
 import org.frc1778.lib.FalconSwerveDrivetrain
+import org.frc1778.lib.limelight.LimelightHelpers
 import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
@@ -34,26 +35,27 @@ import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.utils.Source
 import kotlin.math.hypot
 
-object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
+object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable {
     var aprilTagsEnabled: Boolean = false
 
     var scoringPose: Pose2d? = null
 
     private const val maxVoltage = 12.0
 
-    private var motorOutputLimiterEntry: GenericEntry =
-        Constants.DriveConstants.driveTab.add("Motor Percentage", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
-            .withProperties(
-                mapOf(
-                    "min" to 0.0, "max" to 100.0, "Block increment" to 10.0
-                )
-            ).entry!!
+    private var motorOutputLimiterEntry: GenericEntry = Constants.DriveConstants.driveTab.add("Motor Percentage", 100.0)
+        .withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(
+            mapOf(
+                "min" to 0.0, "max" to 100.0, "Block increment" to 10.0
+            )
+        ).entry!!
 
     val driveLogger = DataLogger("Drive")
+
     init {
         driveLogger.add("X") { robotPosition.translation.x }
         driveLogger.add("Y") { robotPosition.translation.y }
-        driveLogger.add("Rotation") {robotPosition.rotation.degrees}
+        driveLogger.add("Rotation") { robotPosition.rotation.degrees }
     }
 
     public override val modules: List<FalconNeoSwerveModule> = listOf(
@@ -69,7 +71,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         for (module in modules.reversed()) {
             Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
         }
-        Constants.DriveConstants.driveTab.add("Drive", this).withSize(3,4)
+        Constants.DriveConstants.driveTab.add("Drive", this).withSize(3, 4)
         modules.forEach {
             it.setAngle(0.0)
         }
@@ -94,33 +96,22 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     override val gyro: Source<Rotation2d> = { Rotation2d(Gyro.rawYaw()) }
 
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
-        if (!aprilTagsEnabled)
-            return null
+        if (!aprilTagsEnabled) return null
 
-        val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
-        if (result == null || !result.isPresent())
-            return null
-        return result.get().estimatedPose.toPose2d() to result.get().timestampSeconds
+        val limeLightResults = LimelightHelpers.getLatestResults("")
+
+        return limeLightResults.targetingResults.botPose2d to limeLightResults.targetingResults.timestamp_LIMELIGHT_publish
     }
 
     //TODO: Tune Holonomic Drive Controller
     override val controller: HolonomicDriveController = HolonomicDriveController(
         PIDController(
-            0.75,
-            0.0,
-            0.15
+            0.75, 0.0, 0.15
 
-        ),
-        PIDController(
-            0.75,
-            0.0,
-            0.15
-        ),
-        ProfiledPIDController(
-            0.2,
-            0.0,
-            0.02,
-            TrapezoidProfile.Constraints(
+        ), PIDController(
+            0.75, 0.0, 0.15
+        ), ProfiledPIDController(
+            0.2, 0.0, 0.02, TrapezoidProfile.Constraints(
                 Constants.DriveConstants.maxAngularSpeed.value * 25.0,
                 Constants.DriveConstants.maxAngularAcceleration.value * 18.5
             )
@@ -129,7 +120,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
 
 
     )
-
 
 
     /**
@@ -180,16 +170,14 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     //TODO: Possibly use Pathfinding to generate a trajectory to our goal
     fun trajectoryToGoal(): PathPlannerTrajectory? {
         val currChassisSpeeds = kinematics.toChassisSpeeds(*swerveModuleStates().toTypedArray())
-        if(scoringPose == null) return null
+        if (scoringPose == null) return null
         return PathPlanner.generatePath(
-            PathConstraints(maxSpeed.value, 3.0),
-            PathPoint(
+            PathConstraints(maxSpeed.value, 3.0), PathPoint(
                 robotPosition.translation,
                 Transform2d(robotPosition, scoringPose).translation.angle,
                 robotPosition.rotation,
                 hypot(currChassisSpeeds.vxMetersPerSecond, currChassisSpeeds.vyMetersPerSecond)
-            ),
-            PathPoint(
+            ), PathPoint(
                 scoringPose!!.translation,
                 Transform2d(scoringPose, robotPosition).translation.angle,
                 robotPosition.rotation
@@ -197,20 +185,16 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         )
     }
 
-    fun trajectoryToPose(pose: Pose2d) : Trajectory {
+    fun trajectoryToPose(pose: Pose2d): Trajectory {
         val currChassisSpeeds = kinematics.toChassisSpeeds(*swerveModuleStates().toTypedArray())
         return PathPlanner.generatePath(
-            PathConstraints(maxSpeed.value, 3.0),
-            PathPoint(
+            PathConstraints(maxSpeed.value, 3.0), PathPoint(
                 robotPosition.translation,
                 Transform2d(robotPosition, scoringPose).translation.angle,
                 robotPosition.rotation,
                 hypot(currChassisSpeeds.vxMetersPerSecond, currChassisSpeeds.vyMetersPerSecond)
-            ),
-            PathPoint(
-                pose.translation,
-                Transform2d(pose, robotPosition).translation.angle,
-                robotPosition.rotation
+            ), PathPoint(
+                pose.translation, Transform2d(pose, robotPosition).translation.angle, robotPosition.rotation
             )
         )
     }
@@ -222,9 +206,11 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
 
     override fun initSendable(builder: SendableBuilder?) {
         super.initSendable(builder)
-        builder!!.addDoubleProperty("Max Angular Speed", {Constants.DriveConstants.maxAngularSpeed.value * 17.0
+        builder!!.addDoubleProperty("Max Angular Speed", {
+            Constants.DriveConstants.maxAngularSpeed.value * 17.0
         }, {})
-        builder.addDoubleProperty("Max Angular Accel", {Constants.DriveConstants.maxAngularAcceleration.value * 10.0
+        builder.addDoubleProperty("Max Angular Accel", {
+            Constants.DriveConstants.maxAngularAcceleration.value * 10.0
         }, {})
     }
 }
