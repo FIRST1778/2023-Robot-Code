@@ -36,7 +36,7 @@ import org.ghrobotics.lib.utils.Source
 import kotlin.math.hypot
 
 object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable {
-    var aprilTagsEnabled: Boolean = false
+    var aprilTagsEnabled: Boolean = true
 
     var scoringPose: Pose2d? = null
 
@@ -98,7 +98,9 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable {
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
         if (!aprilTagsEnabled) return null
 
-        val limeLightResults = LimelightHelpers.getLatestResults("")
+        val limeLightResults = LimelightHelpers.getLatestResults("EyeOfSauron")
+
+
 
         return limeLightResults.targetingResults.botPose2d to limeLightResults.targetingResults.timestamp_LIMELIGHT_publish
     }
