@@ -29,7 +29,7 @@ class BalanceCommand: FalconCommand(Drive) {
     }
 
     override fun execute() {
-        val inclination = Gyro.boardInclination()
+        val inclination = Gyro.inclination().degrees
         val velocity = pid.calculate(sin(inclination), 0.0)
         Drive.swerveDrive(-velocity, 0.0, 0.0, true)
         balanceAnimation.execute()

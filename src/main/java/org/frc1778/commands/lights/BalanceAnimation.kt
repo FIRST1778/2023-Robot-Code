@@ -29,7 +29,7 @@ class BalanceAnimation : FalconCommand(Lights) {
     override fun execute() {
         //Second abs is to deal with edge cases were read inclination is greater than expected max inclination
         val numLedsLit: Int =
-            ceil(numLedsPerSection * abs(MAX_INCLINATION - abs(Math.toDegrees(Gyro.boardInclination()))) / MAX_INCLINATION).toInt()
+            ceil(numLedsPerSection * abs(MAX_INCLINATION - abs(Gyro.inclination().degrees)) / MAX_INCLINATION).toInt()
 
         /**
          * This is a bit of a hack to get the lights to light up in the correct order.

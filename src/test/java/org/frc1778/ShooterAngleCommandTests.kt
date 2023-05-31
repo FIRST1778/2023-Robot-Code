@@ -18,7 +18,7 @@ class ShooterAngleCommandTests {
 
     fun testScenario(angle: SIUnit<Radian>, alliance: DriverStation.Alliance, shouldBeFront: Boolean) {
 
-        var cmd = ShooterAngleCommand(Level.Middle)
+        val cmd = ShooterAngleCommand(Level.Middle)
 
         Robot.alliance = alliance
         Drive.robotPosition = Pose2d(0.0, 0.0, Rotation2d(angle.value))

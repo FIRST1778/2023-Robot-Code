@@ -91,14 +91,14 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     // The gyro member is used for the SwerveDrivePoseEstimator and SwerveDriveOdometry.
     // This means we must use the raw yaw from the gyro instead of the odometry yaw (although
     // in general we prefer the latter over the former).
-    override val gyro: Source<Rotation2d> = { Rotation2d(Gyro.rawYaw()) }
+    override val gyro: Source<Rotation2d> = { Rotation2d(Gyro.yaw()) }
 
     override fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
         if (!aprilTagsEnabled)
             return null
 
         val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
-        if (result == null || !result.isPresent())
+        if (result == null || !result.isPresent)
             return null
         return result.get().estimatedPose.toPose2d() to result.get().timestampSeconds
     }
@@ -124,10 +124,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
                 Constants.DriveConstants.maxAngularSpeed.value * 25.0,
                 Constants.DriveConstants.maxAngularAcceleration.value * 18.5
             )
-
         )
-
-
     )
 
 
