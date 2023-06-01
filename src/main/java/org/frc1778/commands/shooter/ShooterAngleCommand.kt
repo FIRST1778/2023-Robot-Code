@@ -32,7 +32,7 @@ class ShooterAngleCommand(val scoringLevel: Level) : FalconCommand(Wrist) {
 
         val endPos = if (!Shooter.cubeStored) {
             Level.None.frontShooterPosition //Can't angle if no cube
-        } else if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
+        } else if (Gyro.direction180() == Gyro.forward()) {
             scoringLevel.frontShooterPosition
         } else {
             scoringLevel.rearShooterPosition

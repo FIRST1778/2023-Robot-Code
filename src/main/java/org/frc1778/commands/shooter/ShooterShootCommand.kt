@@ -15,7 +15,7 @@ class ShooterShootCommand : FalconCommand(Shooter, Intake) {
     override fun execute() {
 
         Shooter.shoot(
-            if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
+            if (Gyro.direction180() == Gyro.forward()) {
                 Wrist.getScoringLevel().frontShooterVoltage
             } else {
                 Wrist.getScoringLevel().rearShooterVoltage

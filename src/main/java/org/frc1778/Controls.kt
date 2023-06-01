@@ -117,6 +117,9 @@ object Controls {
         button(8) {
             changeOn(ShooterAngleCommand(Level.THREE_POINT))
         }
+        button(9) {
+
+        }
         button(11) {}
         button(10) { change(BalanceCommand()) }
         axisButton(1, -1.0) {}

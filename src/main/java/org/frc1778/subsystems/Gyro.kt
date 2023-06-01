@@ -11,6 +11,7 @@ import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.DriverStation
 import org.frc1778.Constants
+import org.frc1778.Controls
 import org.frc1778.Robot
 import org.ghrobotics.lib.commands.FalconSubsystem
 import kotlin.math.abs
@@ -38,15 +39,27 @@ object Gyro: FalconSubsystem(), Sendable {
         // ).withSize(3, 4)
     }
 
-    fun direction180(): Double {
-        return abs(PI * round(odometryYaw() / PI))
+    fun forward(): Double {
+        var v = if (Controls.operatorControllerBlue.getRawButton(11)()) {
+            -PI/2
+        } else {
+            0.0
+        }
+        if (Robot.alliance == DriverStation.Alliance.Blue) {
+            v += PI
+        }
+        return MathUtil.angleModulus(v)
     }
 
-    fun directionTowardsGrid(): Double {
-        return when (Robot.alliance) {
-            DriverStation.Alliance.Red -> 0.0
-            else -> PI
-        }
+    fun backward(): Double {
+        return MathUtil.angleModulus(forward() + PI)
+    }
+
+    fun direction180(): Double {
+        val f = forward()
+        val b = backward()
+        val x = odometryYaw()
+        return if (abs(x - f) < abs(x - b)) { f } else { b }
     }
 
     fun boardInclination(): Double {

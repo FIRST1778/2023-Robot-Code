@@ -31,7 +31,7 @@ import org.frc1778.subsystems.Wrist
  * object or package, it will get changed everywhere.)
  */
 object Robot : FalconTimedRobot() {
-    var alliance: Alliance = DriverStation.getAlliance()
+    var alliance: Alliance = Alliance.Blue
     private val eventLoop = EventLoop()
     private val brakeModeLimitSwitchHit = BooleanEvent(
         eventLoop, Wrist.brakeModeSwitch::get
