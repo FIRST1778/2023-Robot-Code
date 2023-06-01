@@ -1,15 +1,16 @@
-package org.frc1778.lib
+package org.frc1778.lib.swervedrive.commands
 
 
 import edu.wpi.first.wpilibj.Timer
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
+import org.frc1778.lib.swervedrive.FalconSwerveDrivetrain
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.debug.FalconDashboard
 import java.util.*
 
 class SwerveTrajectoryTrackerWithMarkersCommand(
-    private val drivetrain: FalconSwerveDrivetrain<*>,
+    private val drivetrain: FalconSwerveDrivetrain,
     private val trajectory: PathPlannerTrajectory,
     private val eventMap: HashMap<String, Command>
 ) : FalconCommand(drivetrain) {

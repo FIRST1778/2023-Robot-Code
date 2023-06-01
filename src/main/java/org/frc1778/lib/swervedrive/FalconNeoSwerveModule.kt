@@ -1,10 +1,12 @@
-package org.frc1778.lib
+package org.frc1778.lib.swervedrive
 
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
+import org.frc1778.lib.AbstractFalconAbsoluteEncoder
+import org.frc1778.lib.FalconCanCoder
 import org.ghrobotics.lib.mathematics.units.Ampere
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
@@ -50,7 +52,7 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
 
         }
     }
-    override var turnMotor = with(swerveModuleConstants) {
+    override var azimuthMotor = with(swerveModuleConstants) {
         falconMAX(
             kAzimuthTalonId, CANSparkMaxLowLevel.MotorType.kBrushless, kAzimuthNativeUnitModel
         ) {
@@ -103,7 +105,7 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
     }
 
     private fun stateAngle(): Double {
-        var motorAngle = turnMotor.encoder.position.value
+        var motorAngle = azimuthMotor.encoder.position.value
         motorAngle %= 2.0 * PI
         if (motorAngle < 0.0) motorAngle += 2.0 * PI
         return motorAngle
@@ -120,7 +122,7 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
     }
 
     override fun setAngle(angle: Double) {
-        var currentAngleRadians = turnMotor.encoder.position.value
+        var currentAngleRadians = azimuthMotor.encoder.position.value
 
         // Reset the NEO's encoder periodically when the module is not rotating.
         // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
@@ -128,11 +130,11 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
         // Reset the NEO's encoder periodically when the module is not rotating.
         // Sometimes (~5% of the time) when we initialize, the absolute encoder isn't fully set up, and we don't
         // end up getting a good reading. If we reset periodically this won't matter anymore.
-        if (abs(turnMotor.encoder.velocity.value) < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
+        if (abs(azimuthMotor.encoder.velocity.value) < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
             if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
                 resetIteration = 0
                 val absoluteAngle: SIUnit<Radian> = encoder.absolutePosition
-                turnMotor.encoder.resetPosition(absoluteAngle)
+                azimuthMotor.encoder.resetPosition(absoluteAngle)
                 currentAngleRadians = absoluteAngle.value
             }
         } else {
@@ -156,7 +158,7 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
 
         referenceAngle = angle
 
-        turnMotor.setPosition(adjustedReferenceAngleRadians.radians)
+        azimuthMotor.setPosition(adjustedReferenceAngleRadians.radians)
 
     }
 
@@ -165,7 +167,7 @@ class FalconNeoSwerveModule(private val swerveModuleConstants: SwerveModuleConst
     }
 
     fun setPositionToAbsoluteEncoder() {
-        turnMotor.encoder.resetPosition(encoder.absolutePosition)
+        azimuthMotor.encoder.resetPosition(encoder.absolutePosition)
     }
 
 

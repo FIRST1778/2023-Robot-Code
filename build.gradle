@@ -8,7 +8,6 @@ plugins {
     id 'com.google.devtools.ksp' version '1.8.0-1.0.9'
 }
 
-
 def javaVersion = JavaVersion.VERSION_11
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
@@ -70,7 +69,7 @@ configurations.all {
     exclude group: "edu.wpi.first.wpilibj"
 }
 
-def autoLogBranch = "0130d27f75"
+def autoLogBranch = "15fc84d16b"
 
 dependencies {
     implementation "com.github.FIRST1778:FalconLibrary:Swerve-Drive-Implementation-SNAPSHOT"
@@ -80,8 +79,6 @@ dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
     implementation 'com.github.ajalt.colormath:colormath:3.2.1'
-    implementation 'com.squareup:kotlinpoet:1.12.0'
-    implementation 'com.squareup:kotlinpoet-javapoet:1.12.0'
 
 
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
@@ -117,7 +114,7 @@ kotlin {
     }
 }
 
-test {
+test{
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }

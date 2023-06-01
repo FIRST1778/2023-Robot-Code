@@ -6,23 +6,22 @@
  * Copyright 2019, Green Hope Falcons
  */
 
-package org.frc1778.lib
+package org.frc1778.lib.swervedrive.commands
 
-import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.Timer
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
+import org.frc1778.lib.swervedrive.FalconSwerveDrivetrain
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
 import org.ghrobotics.lib.mathematics.units.inFeet
 import org.ghrobotics.lib.utils.Source
-import org.littletonrobotics.junction.LoggedRobot
 
 class SwerveTrajectoryTrackerCommand(
-    private val drivetrain: FalconSwerveDrivetrain<*>, private val trajectorySource: Source<PathPlannerTrajectory>
+    private val drivetrain: FalconSwerveDrivetrain, private val trajectorySource: Source<PathPlannerTrajectory>
 ) : FalconCommand(drivetrain) {
 
     private var prevStates = Array(4) { SwerveModuleState() }
@@ -57,10 +56,10 @@ class SwerveTrajectoryTrackerCommand(
             wheelStates
         )
 
-        if (LoggedRobot.isSimulation()) { drivetrain.resetPosition(
-                Pose2d(currentTrajectoryState.poseMeters.translation, currentTrajectoryState.holonomicRotation)
-            )
-        }
+//        if (LoggedRobot.isSimulation()) { drivetrain.resetPosition(
+//                Pose2d(currentTrajectoryState.poseMeters.translation, currentTrajectoryState.holonomicRotation)
+//            )
+//        }
 
         if (currentTrajectoryState != null) {
             val referencePose = currentTrajectoryState.poseMeters

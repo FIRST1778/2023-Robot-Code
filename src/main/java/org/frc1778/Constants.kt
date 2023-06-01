@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
-import org.frc1778.lib.SwerveModuleConstants
+import org.frc1778.lib.swervedrive.SwerveModuleConstants
 import org.ghrobotics.lib.mathematics.units.Frac
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit

@@ -6,7 +6,7 @@
  * Copyright 2019, Green Hope Falcons
  */
 
-package org.frc1778.lib
+package org.frc1778.lib.swervedrive
 
 import edu.wpi.first.math.controller.HolonomicDriveController
 import edu.wpi.first.math.geometry.Pose2d

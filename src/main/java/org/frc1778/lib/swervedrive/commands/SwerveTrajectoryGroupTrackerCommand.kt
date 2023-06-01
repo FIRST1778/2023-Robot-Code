@@ -1,14 +1,15 @@
-package org.frc1778.lib
+package org.frc1778.lib.swervedrive.commands
 
 import edu.wpi.first.wpilibj2.command.Command
 import edu.wpi.first.wpilibj2.command.InstantCommand
 import org.frc1778.lib.PathPlannerTrajectoryStopEventBuilder.stopEventGroup
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
+import org.frc1778.lib.swervedrive.FalconSwerveDrivetrain
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.sequential
 
 class SwerveTrajectoryGroupTrackerCommand(
-    private val drivetrain: FalconSwerveDrivetrain<*>,
+    private val drivetrain: FalconSwerveDrivetrain,
     private val trajectories: List<PathPlannerTrajectory>,
     private val eventMap: HashMap<String, Command>
 ) : FalconCommand(drivetrain) {

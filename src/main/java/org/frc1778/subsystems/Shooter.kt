@@ -8,16 +8,9 @@ import org.ghrobotics.lib.mathematics.units.derived.volts
 
 object Shooter : FalconSubsystem(), Sendable {
 
-    private lateinit var io: ShooterIO
+    private var io: ShooterIO = ShooterIOSparkMax()
     private val inputs = ShooterIOInputsAutoLogged()
     private val test = TestIOInputsAutoLogged()
-    fun withIO(io: ShooterIO): Shooter {
-        this.io = io
-        return this
-    }
-
-
-
 
 
     var cubeStored: Boolean

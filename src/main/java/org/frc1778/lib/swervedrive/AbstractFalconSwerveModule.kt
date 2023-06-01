@@ -6,10 +6,11 @@
  * Copyright 2019, Green Hope Falcons
  */
 
-package org.frc1778.lib
+package org.frc1778.lib.swervedrive
 
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import org.frc1778.lib.AbstractFalconAbsoluteEncoder
 import org.ghrobotics.lib.mathematics.units.Ampere
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
@@ -21,7 +22,7 @@ import org.ghrobotics.lib.motors.AbstractFalconMotor
 
 interface AbstractFalconSwerveModule<D : AbstractFalconMotor<Meter>, T: AbstractFalconMotor<Radian>> {
     val driveMotor: D
-    val turnMotor: T
+    val azimuthMotor: T
 
     val encoder: AbstractFalconAbsoluteEncoder<Radian>
 

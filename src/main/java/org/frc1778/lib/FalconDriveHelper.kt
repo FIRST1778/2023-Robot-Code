@@ -10,6 +10,7 @@ package org.frc1778.lib
 
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.ChassisSpeeds
+import org.frc1778.lib.swervedrive.FalconSwerveDrivetrain
 import org.ghrobotics.lib.mathematics.max
 import org.littletonrobotics.junction.LoggedRobot
 import kotlin.math.abs
@@ -133,7 +134,7 @@ class FalconDriveHelper {
 
 
     fun swerveDrive(
-        drivetrain: FalconSwerveDrivetrain<*>,
+        drivetrain: FalconSwerveDrivetrain,
         vx: Double,
         vy: Double,
         rotationInput: Double,
@@ -142,7 +143,7 @@ class FalconDriveHelper {
     ): ChassisSpeeds {
         //Get Current Robot Speed
         val currentChassisSpeeds = drivetrain.kinematics.toChassisSpeeds(
-            *drivetrain.swerveModuleStates().toTypedArray()
+            *drivetrain.swerveDriveIO.states
         )
         return ChassisSpeeds.fromFieldRelativeSpeeds(
             if (clampAcceleration && abs(vx - currentChassisSpeeds.vxMetersPerSecond) > kMaxAcceleration)
