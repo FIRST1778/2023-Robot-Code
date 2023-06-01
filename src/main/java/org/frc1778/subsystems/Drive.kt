@@ -32,14 +32,13 @@ import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.utils.Source
+import org.littletonrobotics.junction.Logger
 import kotlin.math.hypot
 
 object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     var aprilTagsEnabled: Boolean = false
 
     var scoringPose: Pose2d? = null
-
-    private const val maxVoltage = 12.0
 
     private var motorOutputLimiterEntry: GenericEntry =
         Constants.DriveConstants.driveTab.add("Motor Percentage", 100.0).withWidget(BuiltInWidgets.kNumberSlider)
@@ -212,10 +211,10 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         )
     }
 
-//    override fun periodic() {
-//        super.periodic() //DONT REMOVE
-//        driveLogger.log()
-//    }
+    override fun periodic() {
+        super.periodic() //DONT REMOVE
+        Logger.getInstance().recordOutput("Drive Pose", robotPosition)
+    }
 
     override fun initSendable(builder: SendableBuilder?) {
         super.initSendable(builder)

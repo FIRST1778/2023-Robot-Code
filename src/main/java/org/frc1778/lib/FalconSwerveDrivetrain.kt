@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
@@ -44,7 +45,7 @@ import org.ghrobotics.lib.mathematics.units.operations.div
 import org.ghrobotics.lib.mathematics.units.seconds
 import org.ghrobotics.lib.subsystems.SensorlessCompatibleSubsystem
 import org.ghrobotics.lib.utils.Source
-import java.util.*
+import org.littletonrobotics.junction.LoggedRobot
 
 abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> : TrajectoryTrackerSwerveDriveBase(),
     SensorlessCompatibleSubsystem {
@@ -154,6 +155,7 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> : Tr
 
         robotPosition = poseEstimator.update(periodicIO.gyro, periodicIO.positions)
 
+
         field.robotPose = Drive.robotPosition
 
         poseBuffer[Timer.getFPGATimestamp().seconds] = robotPosition
@@ -222,6 +224,24 @@ abstract class FalconSwerveDrivetrain<T : AbstractFalconSwerveModule<*, *>> : Tr
         val states = kinematics.toSwerveModuleStates(speeds)
         SwerveDriveKinematics.desaturateWheelSpeeds(states, maxSpeed.value)
         periodicIO.desiredOutput = Output.States(states)
+
+        if (LoggedRobot.isSimulation()) {
+            poseEstimator.resetPosition(
+                gyro(),
+                modules.positions.toTypedArray(),
+                Pose2d(
+                    robotPosition.translation.plus(
+                        Translation2d(
+                            speeds.vxMetersPerSecond * 0.02,
+                            speeds.vyMetersPerSecond * 0.02
+                        )
+                    ),
+                    robotPosition.rotation.plus(
+                        Rotation2d.fromRadians(speeds.omegaRadiansPerSecond * 0.2)
+                    )
+                )
+            )
+        }
 
     }
 

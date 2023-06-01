@@ -1,14 +1,21 @@
 package org.frc1778.subsystems
 
 import com.revrobotics.CANSparkMaxLowLevel
+import com.revrobotics.REVPhysicsSim
+import edu.wpi.first.math.MathUtil
 import edu.wpi.first.math.Nat
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.controller.LinearQuadraticRegulator
 import edu.wpi.first.math.estimator.KalmanFilter
+import edu.wpi.first.math.geometry.Pose3d
+import edu.wpi.first.math.geometry.Rotation3d
+import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.math.system.LinearSystemLoop
+import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.math.system.plant.LinearSystemId
 import edu.wpi.first.util.sendable.SendableBuilder
 import edu.wpi.first.wpilibj.DigitalInput
+import edu.wpi.first.wpilibj.DriverStation
 import org.frc1778.Constants
 import org.frc1778.Level
 import org.frc1778.lib.DataLogger
@@ -22,16 +29,21 @@ import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
 import org.ghrobotics.lib.motors.rev.falconMAX
+import org.littletonrobotics.junction.LoggedRobot
+import org.littletonrobotics.junction.Logger
+import kotlin.math.PI
 import kotlin.math.sin
 
 object Wrist : FalconSubsystem() {
+
+//    val wristIO = WristIO()
 
     val brakeModeSwitch = DigitalInput(3)
 
     val angleMotor = falconMAX(
         Constants.ShooterConstants.ANGLE_MOTOR_ID,
         CANSparkMaxLowLevel.MotorType.kBrushless,
-        Constants.ShooterConstants.ANGLE_MOTOR_UNIT_MODEL,
+        if (LoggedRobot.isReal()) Constants.ShooterConstants.ANGLE_MOTOR_UNIT_MODEL else NativeUnitRotationModel((2 * PI).nativeUnits),
     ) {
         brakeMode = true
         outputInverted = true
@@ -57,7 +69,17 @@ object Wrist : FalconSubsystem() {
 
     var dataLogger = DataLogger("Shooter")
 
+    val revMotorSim = REVPhysicsSim().apply {
+        addSparkMax(
+            angleMotor.canSparkMax,
+            DCMotor.getNEO(1).withReduction(1.0 / ((24.0 / 64.0) * (1.0 / 5.0) * (1.0 / 4.0)))
+        )
+    }
+
+
     init {
+        angleMotor.canSparkMax.encoder.position = 0.0
+        angleMotor.encoder.resetPosition(90.degrees)
         dataLogger.add("position", { getCurrentAngle().inDegrees() })
         dataLogger.add("desired position", { desiredAngle.inDegrees() })
         dataLogger.add("desired velocity", { desiredAngleVelocity })
@@ -77,7 +99,11 @@ object Wrist : FalconSubsystem() {
     }
 
     fun getCurrentAngle(): SIUnit<Radian> {
-        return encoder.absolutePosition
+        return if (LoggedRobot.isReal()) encoder.absolutePosition else MathUtil.inputModulus(
+            angleMotor.encoder.position.value,
+            0.0,
+            2.0 * PI
+        ).coerceIn(90.degrees.value, 300.degrees.value).radians
     }
 
     fun getDesiredAngleVelocity(): Double {
@@ -112,9 +138,12 @@ object Wrist : FalconSubsystem() {
             }
 
             angleMotor.setVoltage(nextVoltage.volts)
+
         } else {
-            resetDesiredAngle()
-            angleMotor.setVoltage(0.0.volts)
+            if (LoggedRobot.isReal()) {
+                resetDesiredAngle()
+                angleMotor.setVoltage(0.0.volts)
+            }
         }
     }
 
@@ -132,7 +161,34 @@ object Wrist : FalconSubsystem() {
     }
 
     override fun periodic() {
-        angleControl()
+        try {
+            angleControl()
+        } catch (e: Exception) {
+            DriverStation.reportError("Bad Angle ${getCurrentAngle()}", false)
+        }
+
+        Logger.getInstance().recordOutput(
+            "Wrist Pose", Pose3d(
+                Translation3d(-0.255, 0.0, 0.3175),
+                Rotation3d(0.0, (-(getCurrentAngle()) + 90.0.degrees).value, 0.0)
+            )
+        )
+        Logger.getInstance().recordOutput(
+            "Wrist Angle",
+            getCurrentAngle().value
+        )
+        Logger.getInstance().recordOutput(
+            "Wrist Native Unit Rotation",
+            angleMotor.canSparkMax.encoder.position
+        )
+    }
+
+    override fun simulationPeriodic() {
+        if(angleMotor.encoder.position < 90.degrees || angleMotor.encoder.position > 300.degrees) {
+            angleMotor.setVoltage(0.0.volts)
+            angleMotor.encoder.resetPosition(angleMotor.encoder.position.inDegrees().coerceIn(90.0, 300.0).degrees)
+        }
+        revMotorSim.run()
     }
 
     override fun lateInit() {
@@ -149,7 +205,8 @@ object Wrist : FalconSubsystem() {
     fun setScoringLevel(level: Level) {
         scoringLevel = level
     }
-    fun getScoringLevel(): Level{
+
+    fun getScoringLevel(): Level {
         return scoringLevel
     }
 
@@ -162,4 +219,23 @@ object Wrist : FalconSubsystem() {
 
 
     }
+
+//    @AutoLog
+//    class WristIO() {
+//        var wristVoltage: SIUnit<Volt> = 0.0.volts
+//        var scoringLevel: Level = Level.None
+//        var nextLevel: Level? = null
+//        var brakeModeSwitch: Boolean = false
+//        var brakeMode: Boolean = true
+//        var wristPose: Pose3d = Pose3d(
+//                Translation3d(-0.255, 0.0, 0.3175),
+//                Rotation3d(0.0, 0.0, 0.0)
+//            )
+//        val currentAngle: SIUnit<Radian>
+//            get() = getCurrentAngle()
+//
+//        var desiredAngle: SIUnit<Radian> = 90.degrees
+//        var desiredAngularVelocity: SIUnit<AngularVelocity> = SIUnit(0.0)
+//
+//    }
 }
