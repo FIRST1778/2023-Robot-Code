@@ -121,6 +121,8 @@ object Lights : FalconSubsystem() {
         }
     }
 
+    val morseCodeGeneratorIterator = morseCodeGenerator.iterator()
+
     private val spi = SPI(SPI.Port.kOnboardCS0).apply { setClockRate(4_000_000) }
 
     private fun emit(frame: ByteArray) {
@@ -168,7 +170,10 @@ object Lights : FalconSubsystem() {
         // Gavin)
         if (ticksLeftPerDit == 0) {
             ticksLeftPerDit = LedConstants.TICKS_PER_DIT
-            morseCodeLed = morseCodeGenerator.first()
+            // This will lazily generate the next morse code bit. Only issue is I have no idea how it will
+            // handle an infinite sequence. We might be able to convert it into a finite loop and just loop
+            // over the people in the same order every time.
+            morseCodeLed = morseCodeGeneratorIterator.next()
         } else {
             ticksLeftPerDit--
         }
