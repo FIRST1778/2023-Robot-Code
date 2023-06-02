@@ -6,10 +6,10 @@ import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Level
 import org.frc1778.animation.BlinkAnimation
 import org.frc1778.subsystems.Gyro
-import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.intake.Intake
 import org.frc1778.subsystems.Lights
-import org.frc1778.subsystems.Shooter
-import org.frc1778.subsystems.Wrist
+import org.frc1778.subsystems.shooter.Shooter
+import org.frc1778.subsystems.wrist.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian

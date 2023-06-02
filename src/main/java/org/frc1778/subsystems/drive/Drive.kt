@@ -1,4 +1,4 @@
-package org.frc1778.subsystems
+package org.frc1778.subsystems.drive
 
 import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.controller.HolonomicDriveController
@@ -25,6 +25,7 @@ import org.frc1778.lib.pathplanner.PathPoint
 import org.frc1778.lib.swervedrive.FalconSwerveDrivetrain
 import org.frc1778.lib.swervedrive.SwerveDriveIO
 import org.frc1778.lib.swervedrive.SwerveDriveInputsAutoLogged
+import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
@@ -172,6 +173,9 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
         robotPosition = poseEstimator.update(swerveDriveIO.gyro(), swerveDriveIO.positions)
 
         field.robotPose = robotPosition
+
+        swerveDriveIO.updateInputs(swerveDriveInputs)
+        Logger.getInstance().recordOutput("Robot Position", robotPosition)
 
         FalconDashboard.robotHeading = robotPosition.rotation.radians
         FalconDashboard.robotX = robotPosition.translation.x_u.inFeet()

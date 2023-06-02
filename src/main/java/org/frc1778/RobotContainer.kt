@@ -19,8 +19,8 @@ import org.frc1778.commands.shooter.ShooterSuckCommand
 import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
-import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.drive.Drive
+import org.frc1778.subsystems.shooter.Shooter
 import org.ghrobotics.lib.commands.parallelDeadline
 import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.utils.Source

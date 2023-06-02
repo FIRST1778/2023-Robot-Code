@@ -10,8 +10,8 @@ import org.frc1778.commands.shooter.ShooterAngleCommand
 import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPoint
-import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Wrist
+import org.frc1778.subsystems.drive.Drive
+import org.frc1778.subsystems.wrist.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.parallel
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d

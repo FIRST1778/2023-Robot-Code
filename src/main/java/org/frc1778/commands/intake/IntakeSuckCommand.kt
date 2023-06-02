@@ -1,6 +1,6 @@
 package org.frc1778.commands.intake
 
-import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.intake.Intake
 import org.ghrobotics.lib.commands.FalconCommand
 
 class IntakeSuckCommand : FalconCommand(Intake) {

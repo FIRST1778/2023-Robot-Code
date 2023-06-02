@@ -74,6 +74,9 @@ def autoLogBranch = "15fc84d16b"
 dependencies {
     implementation "com.github.FIRST1778:FalconLibrary:Swerve-Drive-Implementation-SNAPSHOT"
 
+    // The Autolog annotation from AdvantageKit doesn't support kotlin.
+    // This implementation bridges the gap between Kotlin and Java and adds
+    // support for SIUnit
     implementation "com.github.gamingnight5965:AutoLog:$autoLogBranch"
 
     implementation wpi.java.deps.wpilib()

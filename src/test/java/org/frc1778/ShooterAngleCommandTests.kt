@@ -5,9 +5,9 @@ import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.wpilibj.DriverStation
 import org.frc1778.commands.shooter.ShooterAngleCommand
-import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.drive.Drive
 import org.frc1778.subsystems.Gyro
-import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.shooter.Shooter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.degrees

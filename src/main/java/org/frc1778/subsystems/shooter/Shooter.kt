@@ -1,17 +1,16 @@
-package org.frc1778.subsystems
+package org.frc1778.subsystems.shooter
 
 import edu.wpi.first.util.sendable.Sendable
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Volt
 import org.ghrobotics.lib.mathematics.units.derived.volts
+import org.littletonrobotics.junction.Logger
 
 object Shooter : FalconSubsystem(), Sendable {
 
     private var io: ShooterIO = ShooterIOSparkMax()
     private val inputs = ShooterIOInputsAutoLogged()
-    private val test = TestIOInputsAutoLogged()
-
 
     var cubeStored: Boolean
         get() = inputs.shooterLoaded
@@ -29,6 +28,7 @@ object Shooter : FalconSubsystem(), Sendable {
 
     override fun periodic() {
         io.updateInputs(inputs)
+        Logger.getInstance().processInputs("Shooter Inputs", inputs)
     }
 
 //    override fun lateInit() {

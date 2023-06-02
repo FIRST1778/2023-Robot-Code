@@ -1,6 +1,6 @@
 package org.frc1778.commands.shooter
 
-import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.shooter.Shooter
 import org.ghrobotics.lib.commands.FalconCommand
 
 class ShooterSuckCommand : FalconCommand(Shooter) {

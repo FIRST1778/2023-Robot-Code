@@ -5,7 +5,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile
 import org.frc1778.Constants
 import org.frc1778.Controls
 import org.frc1778.Robot
-import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.drive.Drive
 import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
 import kotlin.math.PI

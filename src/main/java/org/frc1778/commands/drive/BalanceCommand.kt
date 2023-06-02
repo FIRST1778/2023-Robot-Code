@@ -2,7 +2,7 @@ package org.frc1778.commands.drive
 
 import edu.wpi.first.math.controller.PIDController
 import org.frc1778.commands.lights.BalanceAnimation
-import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.drive.Drive
 import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
 import kotlin.math.sin

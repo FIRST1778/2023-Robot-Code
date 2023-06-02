@@ -1,6 +1,6 @@
 package org.frc1778.commands.drive
 
-import org.frc1778.subsystems.Drive
+import org.frc1778.subsystems.drive.Drive
 import org.ghrobotics.lib.commands.FalconCommand
 
 class DriveBrakeCommand: FalconCommand(Drive) {

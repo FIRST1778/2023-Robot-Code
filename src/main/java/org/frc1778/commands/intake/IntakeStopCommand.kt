@@ -1,7 +1,7 @@
 package org.frc1778.commands.intake
 
-import org.frc1778.subsystems.Intake
-import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.intake.Intake
+import org.frc1778.subsystems.shooter.Shooter
 import org.ghrobotics.lib.commands.FalconCommand
 
 

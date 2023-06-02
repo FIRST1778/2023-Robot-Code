@@ -3,9 +3,9 @@ package org.frc1778.commands.lights
 import com.github.ajalt.colormath.model.RGB
 import edu.wpi.first.wpilibj.DriverStation
 import org.frc1778.Robot
-import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.intake.Intake
 import org.frc1778.subsystems.Lights
-import org.frc1778.subsystems.Shooter
+import org.frc1778.subsystems.shooter.Shooter
 import org.ghrobotics.lib.commands.FalconCommand
 
 class TeleopLightCommand: FalconCommand(Lights) {

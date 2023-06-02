@@ -1,4 +1,4 @@
-package org.frc1778.subsystems
+package org.frc1778.subsystems.drive
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
@@ -8,7 +8,8 @@ import org.frc1778.Constants
 import org.frc1778.lib.swervedrive.FalconNeoSwerveModule
 import org.frc1778.lib.swervedrive.SwerveDriveIO
 import org.frc1778.lib.swervedrive.SwerveDriveInputs
-import org.frc1778.subsystems.Drive.positions
+import org.frc1778.subsystems.Gyro
+import org.frc1778.subsystems.drive.Drive.positions
 import org.ghrobotics.lib.mathematics.units.amps
 import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.derived.volts

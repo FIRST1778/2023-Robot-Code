@@ -1,10 +1,10 @@
 package org.frc1778.commands.shooter
 
 import org.frc1778.subsystems.Gyro
-import org.frc1778.subsystems.Intake
+import org.frc1778.subsystems.intake.Intake
 import org.frc1778.subsystems.Lights
-import org.frc1778.subsystems.Shooter
-import org.frc1778.subsystems.Wrist
+import org.frc1778.subsystems.shooter.Shooter
+import org.frc1778.subsystems.wrist.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 

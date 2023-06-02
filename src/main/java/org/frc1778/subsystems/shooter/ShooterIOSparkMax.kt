@@ -1,4 +1,4 @@
-package org.frc1778.subsystems
+package org.frc1778.subsystems.shooter
 
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.wpilibj.DigitalInput

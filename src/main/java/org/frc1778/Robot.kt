@@ -16,12 +16,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.lights.TeleopLightCommand
 import org.frc1778.lib.LoggedFalconTimedRobot
-import org.frc1778.subsystems.Drive
-import org.frc1778.subsystems.Intake
 import org.frc1778.subsystems.Lights
-import org.frc1778.subsystems.Shooter
 import org.frc1778.subsystems.Vision
-import org.frc1778.subsystems.Wrist
+import org.frc1778.subsystems.drive.Drive
+import org.frc1778.subsystems.intake.Intake
+import org.frc1778.subsystems.shooter.Shooter
+import org.frc1778.subsystems.wrist.Wrist
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.inDegrees
 import org.littletonrobotics.junction.Logger
@@ -43,7 +43,7 @@ object Robot : LoggedFalconTimedRobot() {
     var alliance: Alliance = DriverStation.getAlliance()
     private val eventLoop = EventLoop()
     private val brakeModeLimitSwitchHit = BooleanEvent(
-        eventLoop, Wrist.brakeModeSwitch::get
+        eventLoop, Wrist.io::brakeModeSwitch
     )
 
     //    val alliance: DriverStation.Alliance = Alliance.Red
@@ -181,7 +181,7 @@ object Robot : LoggedFalconTimedRobot() {
 
     override fun teleopInit() {
 //        Shooter.setVoltage(3.0.volts)
-        Wrist.angleMotor.encoder.resetPosition(90.degrees)
+        Wrist.io.resetPosition(90.degrees)
         autonomousCommand?.cancel()
         TeleopLightCommand().schedule()
         Wrist.resetDesiredAngle()
