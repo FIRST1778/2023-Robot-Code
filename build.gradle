@@ -77,6 +77,8 @@ dependencies {
     // The Autolog annotation from AdvantageKit doesn't support kotlin.
     // This implementation bridges the gap between Kotlin and Java and adds
     // support for SIUnit
+    // The code for this is also in the FalconLibrary, but I'm having some trouble
+    // getting it to work.
     implementation "com.github.gamingnight5965:AutoLog:$autoLogBranch"
 
     implementation wpi.java.deps.wpilib()
@@ -103,8 +105,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 
-    def akitJson = new groovy.json.JsonSlurper().parseText(new File(projectDir.getAbsolutePath() + "/vendordeps/AdvantageKit.json").text)
-//    kapt "org.littletonrobotics.akit.junction:junction-autolog:$akitJson.version"
+    // I want to replace this with Falcon Library
     ksp "com.github.gamingnight5965:AutoLog:$autoLogBranch"
 
 
