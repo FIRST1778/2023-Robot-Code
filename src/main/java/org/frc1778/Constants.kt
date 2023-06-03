@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
-import org.frc1778.lib.swervedrive.SwerveModuleConstants
 import org.ghrobotics.lib.mathematics.units.Frac
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
@@ -22,6 +21,7 @@ import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
+import org.ghrobotics.lib.subsystems.drive.swerve.SwerveModuleConstants
 import kotlin.math.PI
 import kotlin.math.hypot
 

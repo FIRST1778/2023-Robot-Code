@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import org.frc1778.Constants
 import org.frc1778.Robot
-import org.frc1778.lib.AbstractFalconGyro
 import org.frc1778.subsystems.drive.Drive
+import org.ghrobotics.lib.subsystems.drive.AbstractFalconGyro
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.round

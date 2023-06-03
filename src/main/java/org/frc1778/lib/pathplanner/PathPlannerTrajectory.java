@@ -75,6 +75,15 @@ public class PathPlannerTrajectory extends Trajectory {
         return this.markers;
     }
 
+    public com.pathplanner.lib.PathPlannerTrajectory toLibPathPlannerTrajectory() {
+        return new com.pathplanner.lib.PathPlannerTrajectory(
+                getStates(),
+                getMarkers().stream().map(EventMarker::toLibEventMarker).toList(),
+                getStartStopEvent().toLibStopEvent(),
+                getEndStopEvent().toLibStopEvent(),
+                fromGUI);
+    }
+
     /**
      * Sample the path at a point in time
      *
@@ -607,6 +616,10 @@ public class PathPlannerTrajectory extends Trajectory {
         public Translation2d positionMeters;
         public double waypointRelativePos;
 
+        public com.pathplanner.lib.PathPlannerTrajectory.EventMarker toLibEventMarker() {
+            return new com.pathplanner.lib.PathPlannerTrajectory.EventMarker(names, waypointRelativePos);
+        }
+
         public EventMarker(List<String> names, double waypointRelativePos) {
             this.names = names;
             this.waypointRelativePos = waypointRelativePos;
@@ -641,6 +654,10 @@ public class PathPlannerTrajectory extends Trajectory {
 
                 return null;
             }
+
+            public com.pathplanner.lib.PathPlannerTrajectory.StopEvent.ExecutionBehavior toLibExecutionBehavior() {
+                return com.pathplanner.lib.PathPlannerTrajectory.StopEvent.ExecutionBehavior.valueOf(value.toUpperCase());
+            }
         }
 
         public enum WaitBehavior {
@@ -667,6 +684,10 @@ public class PathPlannerTrajectory extends Trajectory {
 
                 return null;
             }
+
+            public com.pathplanner.lib.PathPlannerTrajectory.StopEvent.WaitBehavior toLibWaitBehavior() {
+                return com.pathplanner.lib.PathPlannerTrajectory.StopEvent.WaitBehavior.valueOf(value.toUpperCase());
+            }
         }
 
         public final List<String> names;
@@ -684,5 +705,11 @@ public class PathPlannerTrajectory extends Trajectory {
         public StopEvent() {
             this(new ArrayList<>(), ExecutionBehavior.PARALLEL, WaitBehavior.NONE, 0);
         }
+
+        public com.pathplanner.lib.PathPlannerTrajectory.StopEvent toLibStopEvent() {
+            return new com.pathplanner.lib.PathPlannerTrajectory.StopEvent(names, executionBehavior.toLibExecutionBehavior(), waitBehavior.toLibWaitBehavior(), waitTime);
+        }
     }
+
+
 }

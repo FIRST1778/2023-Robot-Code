@@ -72,7 +72,7 @@ configurations.all {
 def autoLogBranch = "15fc84d16b"
 
 dependencies {
-    implementation "com.github.FIRST1778:FalconLibrary:Swerve-Drive-Implementation-SNAPSHOT"
+    implementation "com.github.FIRST1778:FalconLibrary:2023.1.0"
 
     // The Autolog annotation from AdvantageKit doesn't support kotlin.
     // This implementation bridges the gap between Kotlin and Java and adds

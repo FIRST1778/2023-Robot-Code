@@ -5,20 +5,20 @@ import edu.wpi.first.math.geometry.Rotation2d
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import org.frc1778.Constants
-import org.frc1778.lib.swervedrive.FalconNeoSwerveModule
-import org.frc1778.lib.swervedrive.SwerveDriveIO
-import org.frc1778.lib.swervedrive.SwerveDriveInputs
 import org.frc1778.subsystems.Gyro
 import org.frc1778.subsystems.drive.Drive.positions
+import org.ghrobotics.lib.FalconNeoSwerveModule
 import org.ghrobotics.lib.mathematics.units.amps
 import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.mathematics.units.operations.div
 import org.ghrobotics.lib.mathematics.units.seconds
+import org.ghrobotics.lib.subsystems.drive.swerve.AbstractSwerveDriveInputs
+import org.ghrobotics.lib.subsystems.drive.swerve.SwerveDriveIO
 import org.ghrobotics.lib.utils.Source
 
-class NeoDriveIO : SwerveDriveIO {
+class SwerveDriveIOSparkMax : SwerveDriveIO {
     val modules: List<FalconNeoSwerveModule> = listOf(
         FalconNeoSwerveModule(Constants.DriveConstants.topLeftSwerveModuleConstants),
         FalconNeoSwerveModule(Constants.DriveConstants.topRightSwerveModuleConstants),
@@ -37,7 +37,7 @@ class NeoDriveIO : SwerveDriveIO {
         }
     }
 
-    override fun updateInputs(inputs: SwerveDriveInputs) {
+    override fun <T : AbstractSwerveDriveInputs> updateInputs(inputs: T) {
         inputs.leftFrontVoltage = 0.volts
         inputs.rightFrontVoltage = 0.volts
         inputs.rightBackVoltage = 0.volts

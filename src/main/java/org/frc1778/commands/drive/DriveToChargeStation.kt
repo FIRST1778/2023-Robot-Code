@@ -81,7 +81,7 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
             if (Wrist.getCurrentAngle() > 95.degrees) {
                 +ShooterAngleCommand(Level.None)
             }
-            +Drive.followTrajectory { trajectory }
+            +Drive.followTrajectory { trajectory.toLibPathPlannerTrajectory() }
         }
         trajectoryTrackerCommand.initialize()
     }

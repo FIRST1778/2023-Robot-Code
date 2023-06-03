@@ -297,6 +297,6 @@ object RobotContainer {
     private fun getAlliancePathGroup(
         name: String, constraints: PathConstraints, from: Alliance, to: Alliance = Robot.alliance
     ) = PathPlanner.loadPathGroup(name, constraints).map {
-        PathPlannerTrajectory.transformTrajectoryForAlliance(it, from, to)
+        PathPlannerTrajectory.transformTrajectoryForAlliance(it, from, to).toLibPathPlannerTrajectory()
     }
 }

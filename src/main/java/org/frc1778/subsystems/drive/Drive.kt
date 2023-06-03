@@ -22,9 +22,6 @@ import org.frc1778.lib.pathplanner.PathConstraints
 import org.frc1778.lib.pathplanner.PathPlanner
 import org.frc1778.lib.pathplanner.PathPlannerTrajectory
 import org.frc1778.lib.pathplanner.PathPoint
-import org.frc1778.lib.swervedrive.FalconSwerveDrivetrain
-import org.frc1778.lib.swervedrive.SwerveDriveIO
-import org.frc1778.lib.swervedrive.SwerveDriveInputsAutoLogged
 import org.frc1778.subsystems.Vision
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
@@ -33,6 +30,7 @@ import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.inFeet
+import org.ghrobotics.lib.subsystems.drive.swerve.FalconSwerveDrivetrain
 import org.ghrobotics.lib.utils.Source
 import org.littletonrobotics.junction.Logger
 import kotlin.math.hypot
@@ -44,8 +42,8 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
 
     private const val maxVoltage = 12.0
 
-    override val swerveDriveIO: SwerveDriveIO = NeoDriveIO()
-    override val swerveDriveInputs: SwerveDriveInputsAutoLogged = SwerveDriveInputsAutoLogged()
+    override val swerveDriveIO: SwerveDriveIOSparkMax = SwerveDriveIOSparkMax()
+    override val abstractSwerveDriveInputs: SwerveDriveInputsAutoLogged = SwerveDriveInputsAutoLogged()
 
     override fun lateInit() {
         super.lateInit()
@@ -163,7 +161,7 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
     }
 
     override fun periodic() {
-        Logger.getInstance().processInputs("Drive IO", swerveDriveInputs)
+        Logger.getInstance().processInputs("Drive IO", abstractSwerveDriveInputs)
 
         val cameraOut = getEstimatedCameraPose(robotPosition)
         if (cameraOut != null) {
@@ -174,7 +172,7 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
 
         field.robotPose = robotPosition
 
-        swerveDriveIO.updateInputs(swerveDriveInputs)
+        swerveDriveIO.updateInputs(abstractSwerveDriveInputs)
         Logger.getInstance().recordOutput("Robot Position", robotPosition)
 
         FalconDashboard.robotHeading = robotPosition.rotation.radians

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.lights.TeleopLightCommand
-import org.frc1778.lib.LoggedFalconTimedRobot
 import org.frc1778.subsystems.Lights
 import org.frc1778.subsystems.Vision
 import org.frc1778.subsystems.drive.Drive
@@ -24,6 +23,7 @@ import org.frc1778.subsystems.shooter.Shooter
 import org.frc1778.subsystems.wrist.Wrist
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.inDegrees
+import org.ghrobotics.lib.wrappers.LoggedFalconTimedRobot
 import org.littletonrobotics.junction.Logger
 import org.littletonrobotics.junction.networktables.NT4Publisher
 import org.littletonrobotics.junction.wpilog.WPILOGWriter
