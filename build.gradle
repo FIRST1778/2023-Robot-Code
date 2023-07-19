@@ -58,7 +58,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.FIRST1778:FalconLibrary:Swerve-Drive-Implementation-SNAPSHOT"
+    implementation "com.github.FIRST1778:FalconLibrary:e1e1271"
 
 //    implementation "com.pathplanner.lib:pathplannerLib-java:2023.4.4_BETA"
 
