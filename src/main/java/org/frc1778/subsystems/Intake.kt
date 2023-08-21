@@ -36,7 +36,7 @@ object Intake : FalconSubsystem() {
         PneumaticsModuleType.REVPH,
         30
     )
-    var lineBreakOverride : Boolean = false
+    var lineBreakOverride : Boolean = true
 
     private var intakeVoltage = 4.5.volts
 
@@ -59,14 +59,6 @@ object Intake : FalconSubsystem() {
         setMotorVoltage(intakeVoltage + 2.0.volts)
     }
     fun extend(){
-        if (Wrist.encoder.absolutePosition > 180.0.degrees) {
-            Wrist.setNextLevel(Level.None)
-        }
-        if (cubeStored()) {
-            retract()
-        } else {
-            solenoid.state = FalconSolenoid.State.Forward
-        }
     }
     fun retract(){
         solenoid.state = FalconSolenoid.State.Reverse

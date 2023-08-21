@@ -32,10 +32,8 @@ class ShooterAngleCommand(val scoringLevel: Level) : FalconCommand(Wrist) {
 
         val endPos = if (!Shooter.cubeStored) {
             Level.None.frontShooterPosition //Can't angle if no cube
-        } else if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
-            scoringLevel.frontShooterPosition
         } else {
-            scoringLevel.rearShooterPosition
+            scoringLevel.frontShooterPosition
         }
 
         if (endPos > 180.0.degrees) {
@@ -44,7 +42,7 @@ class ShooterAngleCommand(val scoringLevel: Level) : FalconCommand(Wrist) {
         timer.reset()
         timer.start()
         Wrist.setNextLevel(scoringLevel)
-        var startPosition: SIUnit<Radian> = Wrist.getCurrentAngle()
+        var startPosition: SIUfnit<Radian> = Wrist.getCurrentAngle()
 
         val constraints = TrapezoidProfile.Constraints(maxVelocity, maxAcceleration)
         val startState = TrapezoidProfile.State(startPosition.value, Wrist.getDesiredAngleVelocity())

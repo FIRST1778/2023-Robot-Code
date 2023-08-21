@@ -233,7 +233,7 @@ enum class Level(
         rearShooterPosition = 207.5.degrees,
         rearShooterVoltage = 3.8.volts,
         frontShooterPosition = 155.degrees,
-        frontShooterVoltage = 4.5.volts
+        frontShooterVoltage = 10.0.volts
 
     ),
     //Shoot to the Middle
@@ -242,7 +242,7 @@ enum class Level(
         rearShooterPosition = 210.0.degrees,
         rearShooterVoltage = 2.5.volts,
         frontShooterPosition = 150.degrees,
-        frontShooterVoltage = 3.2.volts
+        frontShooterVoltage = 10.0.volts
     ),
     //Shoot to the Bottom
     Bottom(
@@ -250,7 +250,7 @@ enum class Level(
         rearShooterPosition = 275.0.degrees,
         rearShooterVoltage = 1.5.volts,
         frontShooterPosition = 90.0.degrees,
-        frontShooterVoltage = 3.0.volts
+        frontShooterVoltage = 10.0.volts
     ),
     //Stow Shooter
     None(
@@ -258,7 +258,7 @@ enum class Level(
         rearShooterPosition = 90.0.degrees,
         rearShooterVoltage = 1.5.volts,
         frontShooterPosition = 90.0.degrees,
-        frontShooterVoltage = 1.5.volts
+        frontShooterVoltage = 3.0.volts
     ),
     //Shoot from Across Charge Station
     THREE_POINT(

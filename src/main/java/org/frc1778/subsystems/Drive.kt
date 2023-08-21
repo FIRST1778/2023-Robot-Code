@@ -42,7 +42,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     private const val maxVoltage = 12.0
 
     private var motorOutputLimiterEntry: GenericEntry =
-        Constants.DriveConstants.driveTab.add("Motor Percentage", 30.0).withWidget(BuiltInWidgets.kNumberSlider)
+        Constants.DriveConstants.driveTab.add("Motor Percentage", 0.0).withWidget(BuiltInWidgets.kNumberSlider)
             .withProperties(
                 mapOf(
                     "min" to 0.0, "max" to 100.0, "Block increment" to 10.0
@@ -82,7 +82,7 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
     override val trackWidth: Double = Constants.DriveConstants.trackWidth
     override val maxSpeed: SIUnit<Velocity<Meter>> = Constants.DriveConstants.maxSpeed
     override val motorOutputLimiter: Source<Double> = {
-        motorOutputLimiterEntry.getDouble(30.0) / 100.0
+        motorOutputLimiterEntry.getDouble(0.0) / 100.0
 //        1.00
     }
 

@@ -14,13 +14,7 @@ class ShooterShootCommand : FalconCommand(Shooter, Intake) {
 
     override fun execute() {
 
-        Shooter.shoot(
-            if (Gyro.direction180() == Gyro.directionTowardsGrid()) {
-                Wrist.getScoringLevel().frontShooterVoltage
-            } else {
-                Wrist.getScoringLevel().rearShooterVoltage
-            }
-        )
+        Shooter.shoot(Wrist.getScoringLevel().frontShooterVoltage)
         if (Wrist.getCurrentAngle() < 95.degrees) {
             Intake.spit()
         }

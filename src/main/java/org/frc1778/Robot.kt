@@ -57,7 +57,7 @@ object Robot : FalconTimedRobot() {
 
     init {
         +Vision
-        +Drive
+//        +Drive
         +Shooter
         +Lights
         +Intake
@@ -86,7 +86,7 @@ object Robot : FalconTimedRobot() {
 
 //        field.getObject("traj").setTrajectory(trajectory)
 
-        compressor.enableAnalog(95.0, 115.0)
+        compressor.enableAnalog(40.0, 80.0)
         powerTab.add("PDP", pdp).withSize(2, 2)
 
 //        Arm.initialize()

@@ -43,11 +43,12 @@ object Controls {
         button(7) { changeOn(IntakeLineBreakOverrideCommand()) }
         button(8) { changeOn(ShooterAngleCommand(Level.THREE_POINT)) }
 
-        axisButton(2, 0.95) {
+        axisButton(2, 0.50) {
             change(ShooterShootCommand())
             changeOff { ShooterAngleCommand(Level.None).schedule() }
         }
-        axisButton(3, 0.95) { change(
+        axisButton(3, 0.50
+        ) { change(
             sequential {
                 +ShooterAngleCommand(Level.None)
                 +parallelDeadline(ShooterSuckCommand()) {
