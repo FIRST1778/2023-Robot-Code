@@ -12,7 +12,7 @@ sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 
 compileKotlin {
-    kotlinOptions.jvmTarget = javaVersion.tostring()
+    kotlinOptions.jvmTarget = javaVersion.toString()
 }
 
 compileTestKotlin {
