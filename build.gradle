@@ -11,6 +11,14 @@ def javaVersion = JavaVersion.VERSION_11
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 
+compileKotlin {
+    kotlinOptions.jvmTarget = javaVersion.tostring()
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = javaVersion.toString()
+}
+
 def ROBOT_MAIN_CLASS = "org.frc1778.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -115,12 +123,6 @@ wpi.java.configureTestTasks(test)
 tasks.withType(JavaCompile).configureEach {
     // Configure string concat to always inline compile
     options.compilerArgs.add '-XDstringConcat=inline'
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
-    }
 }
 
 idea {
