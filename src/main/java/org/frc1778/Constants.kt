@@ -26,12 +26,24 @@ import kotlin.math.PI
 import kotlin.math.hypot
 
 object Constants {
-
     object DriveConstants {
         val driveTab: ShuffleboardTab = Shuffleboard.getTab("Drive")!!
         const val wheelBase: Double = 23.5
         const val trackWidth: Double = 23.5
+
+	/* The gear ratio for an MK4i L2 swerve module.
+	 * A table with the gear ratios can be found here:
+	 *
+	 *   https://www.chiefdelphi.com/t/sds-mk4-swerve-module/394644
+	 *
+	 * The value of these gear ratios, multiplied together, is
+	 * approximately equal to 1 : 6.75; this simpler number can be
+	 * found here:
+	 *
+	     https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
+	 */
         private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
+
         val maxSpeed: SIUnit<Frac<Meter, Second>> = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
         val maxAngularSpeed: SIUnit<Velocity<Radian>> =
             SIUnit((maxSpeed.value / hypot(trackWidth / 2.0, wheelBase / 2.0)))
