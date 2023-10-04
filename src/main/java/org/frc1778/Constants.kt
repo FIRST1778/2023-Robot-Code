@@ -40,7 +40,12 @@ object Constants {
 	 * approximately equal to 1 : 6.75; this simpler number can be
 	 * found here:
 	 *
-	     https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
+	 *   https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
+	 *
+	 * The official (but unmaintained) SwerveDriveSpecialties
+	 * repository with these values is here:
+	 *
+	 *   https://github.com/SwerveDriveSpecialties/Do-not-use-swerve-lib-2022-unmaintained/blob/55f3f1ad9e6bd81e56779d022a40917aacf8d3b3/src/main/java/com/swervedrivespecialties/swervelib/SdsModuleConfigurations.java#L26C7-L26C7
 	 */
         private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
 
