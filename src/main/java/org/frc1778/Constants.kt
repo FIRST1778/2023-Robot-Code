@@ -56,7 +56,7 @@ object Constants {
 
         const val pigeonCanID: Int = 21
         private const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
-        private const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
+        private const val driveMotorEncoderNativeUnitsPerRotation = 42.0 * driveReduction
 
         private val swerveDriveWheelOffsets = mapOf(
             "Top Left" to 271.7,
@@ -95,7 +95,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnitsPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveDeadband = 0.01
         }
         val topRightSwerveModuleConstants = SwerveModuleConstants().apply {
@@ -129,7 +129,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnitsPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
         }
         val bottomRightSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Bottom Right Swerve"
@@ -162,7 +162,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnitsPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveDeadband = 0.01
         }
         val bottomLeftSwerveModuleConstants = SwerveModuleConstants().apply {
@@ -196,7 +196,7 @@ object Constants {
             kDriveBrakeMode = true // neutral mode could change
             kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
             kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnisPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
+                NativeUnitLengthModel(driveMotorEncoderNativeUnitsPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
             kDriveDeadband = 0.01
         }
 
