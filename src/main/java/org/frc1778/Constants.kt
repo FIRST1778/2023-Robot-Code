@@ -59,10 +59,10 @@ object Constants {
         private const val driveMotorEncoderNativeUnitsPerRotation = 42.0 * driveReduction
 
         private val swerveDriveWheelOffsets = mapOf(
-            "Top Left" to 271.7,
-            "Top Right" to 17.9,
-            "Bottom Right" to 46.6,
-            "Bottom Left" to 273.8,
+            "Top Left" to 66.5,
+            "Top Right" to 249.4,
+            "Bottom Right" to 110.35,
+            "Bottom Left" to 255.45,
         )
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
