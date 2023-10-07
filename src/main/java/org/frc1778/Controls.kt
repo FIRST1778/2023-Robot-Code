@@ -1,6 +1,7 @@
 package org.frc1778
 
 import edu.wpi.first.wpilibj.Joystick
+import edu.wpi.first.wpilibj.XboxController
 import org.frc1778.commands.shooter.ShooterLoadCommand
 import org.frc1778.commands.drive.BalanceCommand
 import org.frc1778.commands.intake.IntakeLineBreakOverrideCommand
@@ -20,6 +21,7 @@ import kotlin.math.withSign
 object Controls {
     //TODO: Update to use a more personalized HID to go with new commands
     private val driverControllerGenericHID = Joystick(0)
+    val driverControllerRumble = XboxController(0)
     private val operatorControllerGenericHID1 = Joystick(1)
     private val operatorControllerGenericHID2 = Joystick(2)
 

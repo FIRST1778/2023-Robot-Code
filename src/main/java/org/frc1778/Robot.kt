@@ -3,7 +3,8 @@ package org.frc1778
 import edu.wpi.first.networktables.NetworkTableInstance
 import edu.wpi.first.wpilibj.Compressor
 import edu.wpi.first.wpilibj.DriverStation
-import edu.wpi.first.wpilibj.DriverStation.Alliance
+import edu.wpi.first.wpilibj.DriverStation.*
+import edu.wpi.first.wpilibj.GenericHID
 import edu.wpi.first.wpilibj.PneumaticHub
 import edu.wpi.first.wpilibj.PowerDistribution
 import edu.wpi.first.wpilibj.event.BooleanEvent
@@ -11,6 +12,7 @@ import edu.wpi.first.wpilibj.event.EventLoop
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
+import org.frc1778.Controls.driverController
 import org.frc1778.commands.lights.TeleopLightCommand
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.Drive
@@ -140,9 +142,16 @@ object Robot : FalconTimedRobot() {
         Wrist.resetDesiredAngle()
     }
 
+    var rumbleEnabled = true
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {
-//        Manipulator.angleMotor.setVoltage(12.0.volts)
+        if (rumbleEnabled) {
+            if (getMatchTime() < 20.0 && getMatchTime() > 19.0) {
+                Controls.driverControllerRumble.setRumble(GenericHID.RumbleType.kBothRumble, 0.8)
+            } else if(getMatchTime() < 19.0){
+                rumbleEnabled = false
+            }
+        }
     }
 
     override fun simulationPeriodic() {
