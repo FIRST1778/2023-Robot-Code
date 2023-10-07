@@ -150,6 +150,7 @@ object Robot : FalconTimedRobot() {
             if (matchTime < 20.0 && matchTime > 19.0) {
                 Controls.driverControllerGenericHID.setRumble(GenericHID.RumbleType.kBothRumble, 0.8)
             } else if(matchTime < 19.0){
+                Controls.driverControllerGenericHID.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
                 rumbleEnabled = false
             }
         }
