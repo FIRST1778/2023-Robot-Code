@@ -77,7 +77,6 @@ object Robot : FalconTimedRobot() {
         // button bindings, and put our autonomous chooser on the dashboard.
         RobotContainer
 
-        //TODO: These might be backwards
         brakeModeLimitSwitchHit.rising().ifHigh {
             Wrist.setBrakeMode(true)
         }
@@ -143,12 +142,14 @@ object Robot : FalconTimedRobot() {
     }
 
     var rumbleEnabled = true
+    var matchTime = 0.0
     /** This method is called periodically during operator control.  */
     override fun teleopPeriodic() {
         if (rumbleEnabled) {
-            if (getMatchTime() < 20.0 && getMatchTime() > 19.0) {
-                Controls.driverControllerRumble.setRumble(GenericHID.RumbleType.kBothRumble, 0.8)
-            } else if(getMatchTime() < 19.0){
+            matchTime = getMatchTime()
+            if (matchTime < 20.0 && matchTime > 19.0) {
+                Controls.driverControllerGenericHID.setRumble(GenericHID.RumbleType.kBothRumble, 0.8)
+            } else if(matchTime < 19.0){
                 rumbleEnabled = false
             }
         }
