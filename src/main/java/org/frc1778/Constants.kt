@@ -31,176 +31,73 @@ object Constants {
         const val wheelBase: Double = 23.5
         const val trackWidth: Double = 23.5
 
-	/* The gear ratio for an MK4i L2 swerve module.
-	 * A table with the gear ratios can be found here:
-	 *
-	 *   https://www.chiefdelphi.com/t/sds-mk4-swerve-module/394644
-	 *
-	 * The value of these gear ratios, multiplied together, is
-	 * approximately equal to 1 : 6.75; this simpler number can be
-	 * found here:
-	 *
-	 *   https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
-	 *
-	 * The official (but unmaintained) SwerveDriveSpecialties
-	 * repository with these values is here:
-	 *
-	 *   https://github.com/SwerveDriveSpecialties/Do-not-use-swerve-lib-2022-unmaintained/blob/55f3f1ad9e6bd81e56779d022a40917aacf8d3b3/src/main/java/com/swervedrivespecialties/swervelib/SdsModuleConfigurations.java#L26C7-L26C7
-	 */
+        // The gear ratio for an MK4i L2 swerve module.  The value of
+        // these gear ratios, multiplied together, is approximately
+        // equal to 1 : 6.75.
+        //
+        //   https://www.chiefdelphi.com/t/sds-mk4-swerve-module/394644
+        //   https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
+        //   https://github.com/SwerveDriveSpecialties/Do-not-use-swerve-lib-2022-unmaintained
+        //     SdsModuleConfigurations.java:26
+
         private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
 
-        val maxSpeed: SIUnit<Frac<Meter, Second>> = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
-        val maxAngularSpeed: SIUnit<Velocity<Radian>> =
-            SIUnit((maxSpeed.value / hypot(trackWidth / 2.0, wheelBase / 2.0)))
-        val maxAngularAcceleration: SIUnit<Acceleration<Radian>> = SIUnit(maxAngularSpeed.value * (3.0))
+        // TODO (simon 2023-10-10): meaning and derivation of these variables?
+        //
+        // These can't be declared "const val" because they're SIUnits.
+        val maxSpeed: SIUnit<Frac<Meter, Second>>
+                = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
+        val maxAngularSpeed: SIUnit<Velocity<Radian>>
+                = SIUnit((maxSpeed.value / hypot(trackWidth / 2.0, wheelBase / 2.0)))
+        val maxAngularAcceleration: SIUnit<Acceleration<Radian>>
+                = SIUnit(maxAngularSpeed.value * (3.0))
 
         const val pigeonCanID: Int = 21
-        private const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
-        private const val driveMotorEncoderNativeUnitsPerRotation = 42.0 * driveReduction
 
-        private val swerveDriveWheelOffsets = mapOf(
-            "Top Left" to 66.5,
-            "Top Right" to 249.4,
-            "Bottom Right" to 110.35,
-            "Bottom Left" to 255.45,
-        )
+        const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
+        const val driveMotorEncoderNativeUnitsPerRotation = 42.0 * driveReduction
+
+        // These variables override the defaults from
+        // lib/SwerveModuleConstants.kt.  Every couple of matches,
+        // someone needs to realign the swerve modules and update the
+        // kAzimuthEncoderHomeOffset fields (marked by ***) using
+        // SmartDashboard.
+
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
             kDriveTalonId = 6
             kAzimuthTalonId = 5
             kCanCoderId = 10
-
-            kCanCoderNativeUnitModel = NativeUnitRotationModel(2048.nativeUnits)
-
-            // general azimuth
-            kInvertAzimuth = true
-            kInvertAzimuthSensorPhase = false
-            kAzimuthBrakeMode = true // neutral mode could change
-            //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
-            kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(swerveDriveWheelOffsets["Top Left"]!!)
-
-
-            // azimuth motion
-            kAzimuthKp = 1.0
-            kAzimuthKi = 0.0
-            kAzimuthKd = 0.1
-            kAzimuthKf = 0.0
-            kAzimuthIZone = 0.0
-
-
-            // general drive
+            kAzimuthEncoderHomeOffset = -Math.toRadians(66.5)  // ************
             kInvertDrive = true
-            kInvertDriveSensorPhase = false
-            kDriveBrakeMode = true // neutral mode could change
-            kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
-            kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnitsPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
-            kDriveDeadband = 0.01
         }
+
         val topRightSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Right Swerve"
             kDriveTalonId = 8
             kAzimuthTalonId = 7
             kCanCoderId = 11
-
-            kCanCoderNativeUnitModel = NativeUnitRotationModel(2048.nativeUnits)
-
-            // general azimuth
-            kInvertAzimuth = true
-            kInvertAzimuthSensorPhase = false
-            kAzimuthBrakeMode = true // neutral mode could change
-            //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
-            kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(swerveDriveWheelOffsets["Top Right"]!!)
-
-
-            // azimuth motion
-            kAzimuthKp = 1.0
-            kAzimuthKi = 0.0
-            kAzimuthKd = 0.1
-            kAzimuthKf = 0.0
-            kAzimuthIZone = 0.0
-
-
-            // general drive
+            kAzimuthEncoderHomeOffset = -Math.toRadians(249.4)  // *************
             kInvertDrive = false
-            kInvertDriveSensorPhase = false
-            kDriveBrakeMode = true // neutral mode could change
-            kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
-            kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnitsPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
         }
+
         val bottomRightSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Bottom Right Swerve"
             kDriveTalonId = 2
             kAzimuthTalonId = 1
             kCanCoderId = 12
-
-            kCanCoderNativeUnitModel = NativeUnitRotationModel(2048.nativeUnits)
-
-            // general azimuth
-            kInvertAzimuth = true
-            kInvertAzimuthSensorPhase = false
-            kAzimuthBrakeMode = true // neutral mode could change
-            //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
-            kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(swerveDriveWheelOffsets["Bottom Right"]!!)
-
-
-            // azimuth motion
-            kAzimuthKp = 1.0
-            kAzimuthKi = 0.0
-            kAzimuthKd = 0.1
-            kAzimuthKf = 0.0
-            kAzimuthIZone = 0.0
-
-
-            // general drive
+            kAzimuthEncoderHomeOffset = -Math.toRadians(110.35)  // *************
             kInvertDrive = false
-            kInvertDriveSensorPhase = false
-            kDriveBrakeMode = true // neutral mode could change
-            kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
-            kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnitsPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
-            kDriveDeadband = 0.01
         }
+
         val bottomLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Bottom Left Swerve"
             kDriveTalonId = 4
             kAzimuthTalonId = 3
             kCanCoderId = 13
-
-            kCanCoderNativeUnitModel = NativeUnitRotationModel(2048.nativeUnits)
-
-            // general azimuth
-            kInvertAzimuth = true
-            kInvertAzimuthSensorPhase = false
-            kAzimuthBrakeMode = true // neutral mode could change
-            //         kAzimuthTicksPerRadian = 4096.0 / (2 * Math.PI) // for azimuth
-            kAzimuthNativeUnitModel = NativeUnitRotationModel(azimuthMotorEncoderNativeUnitsPerRotation.nativeUnits)
-            kAzimuthEncoderHomeOffset = -Math.toRadians(swerveDriveWheelOffsets["Bottom Left"]!!)
-
-
-            // azimuth motion
-            kAzimuthKp = 1.0
-            kAzimuthKi = 0.0
-            kAzimuthKd = 0.1
-            kAzimuthKf = 0.0
-            kAzimuthIZone = 0.0
-
-
-            // general drive
+            kAzimuthEncoderHomeOffset = -Math.toRadians(255.45)  // ************
             kInvertDrive = true
-            kInvertDriveSensorPhase = false
-            kDriveBrakeMode = true // neutral mode could change
-            kWheelDiameter = 4.0 // Probably should tune for each individual wheel maybe
-            kDriveNativeUnitModel =
-                NativeUnitLengthModel(driveMotorEncoderNativeUnitsPerRotation.nativeUnits, (kWheelDiameter / 2).inches)
-            kDriveDeadband = 0.01
         }
-
-
     }
 
     object ShooterConstants {
@@ -219,9 +116,9 @@ object Constants {
         )
     }
 
-	object LedConstants {
-		const val NUM_LEDS: Int = 7 * 4
-		const val NUM_LEDS_PER_SECTION: Int = 7
+    object LedConstants {
+        const val NUM_LEDS: Int = 7 * 4
+        const val NUM_LEDS_PER_SECTION: Int = 7
         val MORSE_CODE = arrayOf(
             ".-", "-...", "-.-.", "-..", // A-D
             ".", "..-.", "--.", "....", // E-H
@@ -232,7 +129,7 @@ object Constants {
             "-.--", "--.." // Y-Z
         )
         const val TICKS_PER_DIT = 8  // 8 * 20 ms = 160 ms per dit
-	}
+    }
 
 
 }
