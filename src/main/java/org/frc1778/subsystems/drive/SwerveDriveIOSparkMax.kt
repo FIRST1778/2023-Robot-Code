@@ -37,7 +37,14 @@ class SwerveDriveIOSparkMax : SwerveDriveIO {
         }
     }
 
+    /**
+     * Update the inputs to the swerve drive.
+     *
+     * TODO: Update to actually grab values from the maodules
+     * @param inputs The inputs to the swerve drive.
+     */
     override fun <T : AbstractSwerveDriveInputs> updateInputs(inputs: T) {
+
         inputs.leftFrontVoltage = 0.volts
         inputs.rightFrontVoltage = 0.volts
         inputs.rightBackVoltage = 0.volts
