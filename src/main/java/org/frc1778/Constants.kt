@@ -39,12 +39,8 @@ object Constants {
         //   https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
         //   https://github.com/SwerveDriveSpecialties/Do-not-use-swerve-lib-2022-unmaintained
         //     SdsModuleConfigurations.java:26
-
         private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
 
-        // TODO (simon 2023-10-10): meaning and derivation of these variables?
-        //
-        // These can't be declared "const val" because they're SIUnits.
         val maxSpeed: SIUnit<Frac<Meter, Second>>
                 = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
         val maxAngularSpeed: SIUnit<Velocity<Radian>>
@@ -57,18 +53,19 @@ object Constants {
         const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
         const val driveMotorEncoderNativeUnitsPerRotation = 42.0 * driveReduction
 
-        // These variables override the defaults from
-        // lib/SwerveModuleConstants.kt.  Every couple of matches,
-        // someone needs to realign the swerve modules and update the
-        // kAzimuthEncoderHomeOffset fields (marked by ***) using
-        // SmartDashboard.
+        // See lib/SwerveModuleConstants.kt for default values and
+        // comments on each member.
+        //
+        // Every few matches, we need to realign the swerve modules and
+        // measure new kAzimuthEncoderHomeOffset values (marked ***) with
+        // Shuffleboard.
 
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
             kDriveTalonId = 6
             kAzimuthTalonId = 5
             kCanCoderId = 10
-            kAzimuthEncoderHomeOffset = -Math.toRadians(66.5)  // ************
+            kAzimuthEncoderHomeOffset = -Math.toRadians(66.5)  // **********
             kInvertDrive = true
         }
 
@@ -77,7 +74,7 @@ object Constants {
             kDriveTalonId = 8
             kAzimuthTalonId = 7
             kCanCoderId = 11
-            kAzimuthEncoderHomeOffset = -Math.toRadians(249.4)  // *************
+            kAzimuthEncoderHomeOffset = -Math.toRadians(249.4)  // **********
             kInvertDrive = false
         }
 
@@ -86,7 +83,7 @@ object Constants {
             kDriveTalonId = 2
             kAzimuthTalonId = 1
             kCanCoderId = 12
-            kAzimuthEncoderHomeOffset = -Math.toRadians(110.35)  // *************
+            kAzimuthEncoderHomeOffset = -Math.toRadians(110.35)  // **********
             kInvertDrive = false
         }
 
@@ -95,16 +92,16 @@ object Constants {
             kDriveTalonId = 4
             kAzimuthTalonId = 3
             kCanCoderId = 13
-            kAzimuthEncoderHomeOffset = -Math.toRadians(255.45)  // ************
+            kAzimuthEncoderHomeOffset = -Math.toRadians(255.45)  // **********
             kInvertDrive = true
         }
     }
 
     object ShooterConstants {
+        val shooterTab = Shuffleboard.getTab("Shooter")!!
         const val ANGLE_MOTOR_GEAR_REDUCTION: Double = ((24.0 / 64.0) * (1.0 / 5.0) * (1.0 / 4.0))
         val ANGLE_MOTOR_UNIT_MODEL = NativeUnitRotationModel((42.0 * (1 / ANGLE_MOTOR_GEAR_REDUCTION)).nativeUnits)
         const val ANGLE_MOTOR_ID: Int = 16
-        val shooterTab = Shuffleboard.getTab("Shooter")!!
     }
 
     object VisionConstants {
@@ -130,8 +127,6 @@ object Constants {
         )
         const val TICKS_PER_DIT = 8  // 8 * 20 ms = 160 ms per dit
     }
-
-
 }
 
 enum class Level(
@@ -141,16 +136,14 @@ enum class Level(
     val frontShooterPosition: SIUnit<Radian>,
     val frontShooterVoltage: SIUnit<Volt>
 ) {
-    //Shoot for the Top
+    // Top, middle, and bottom row of the grid.
     Top(
         optionName = "Top",
         rearShooterPosition = 207.5.degrees,
         rearShooterVoltage = 3.8.volts,
         frontShooterPosition = 155.degrees,
         frontShooterVoltage = 4.5.volts
-
     ),
-    //Shoot to the Middle
     Middle(
         optionName = "Middle",
         rearShooterPosition = 210.0.degrees,
@@ -158,7 +151,6 @@ enum class Level(
         frontShooterPosition = 150.degrees,
         frontShooterVoltage = 3.2.volts
     ),
-    //Shoot to the Bottom
     Bottom(
         optionName = "Bottom",
         rearShooterPosition = 275.0.degrees,
