@@ -65,7 +65,7 @@ object Constants {
             kDriveTalonId = 6
             kAzimuthTalonId = 5
             kCanCoderId = 10
-            kAzimuthEncoderHomeOffset = -Math.toRadians(66.5)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(64.7)  // **********
             kInvertDrive = true
         }
 
@@ -74,7 +74,7 @@ object Constants {
             kDriveTalonId = 8
             kAzimuthTalonId = 7
             kCanCoderId = 11
-            kAzimuthEncoderHomeOffset = -Math.toRadians(249.4)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(249.65)  // **********
             kInvertDrive = false
         }
 
@@ -83,7 +83,7 @@ object Constants {
             kDriveTalonId = 2
             kAzimuthTalonId = 1
             kCanCoderId = 12
-            kAzimuthEncoderHomeOffset = -Math.toRadians(110.35)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(109.45)  // **********
             kInvertDrive = false
         }
 
@@ -92,7 +92,7 @@ object Constants {
             kDriveTalonId = 4
             kAzimuthTalonId = 3
             kCanCoderId = 13
-            kAzimuthEncoderHomeOffset = -Math.toRadians(255.45)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(250.5)  // **********
             kInvertDrive = true
         }
     }
