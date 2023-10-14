@@ -99,8 +99,7 @@ object Robot : FalconTimedRobot() {
 
         Shuffleboard.update()
         Controls.driverController.update()
-        Controls.operatorControllerRed.update()
-        Controls.operatorControllerBlue.update()
+        Controls.xboxController.update()
     }
 
     override fun disabledInit() {
