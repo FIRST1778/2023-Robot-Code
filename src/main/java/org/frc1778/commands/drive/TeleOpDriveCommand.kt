@@ -8,12 +8,21 @@ import org.frc1778.Robot
 import org.frc1778.subsystems.Drive
 import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
+import kotlin.math.abs
 import kotlin.math.PI
-import kotlin.math.pow
 import kotlin.math.round
 import kotlin.math.withSign
 
 class TeleOpDriveCommand: FalconCommand(Drive) {
+    private fun deadband(x: Double, tolerance: Double): Double {
+        if (abs(x) < tolerance) {
+            return 0.0
+        }
+        return x.withSign((x - tolerance) / (1.0 - tolerance))
+    }
+
+    private fun scale(x: Double): Double = (x*x).withSign(x)
+
     private var autoAlignWasActive = false
     private lateinit var goalRotation: Rotation2d
 
@@ -36,8 +45,9 @@ class TeleOpDriveCommand: FalconCommand(Drive) {
 
     override fun execute() {
         var radiansPerSecond: Double
+        val state = Controls.driveState()
 
-        if (autoAlignActive()) {
+        if (state.align) {
             if (!autoAlignWasActive) {
                 resetAutoAlign()
             }
@@ -47,29 +57,17 @@ class TeleOpDriveCommand: FalconCommand(Drive) {
             )
         } else {
             // Get rotation from the joystick.  Only use the up/down axis.
-            radiansPerSecond = -Controls.handleDeadBand(rotation(), 0.1).pow(2)
-                .withSign(rotation()) * Constants.DriveConstants.maxAngularSpeed.value
+            radiansPerSecond = -scale(deadband(state.rot, 0.1)) * Constants.DriveConstants.maxAngularSpeed.value
         }
 
+        val modifier = Robot.driveInversion * Constants.DriveConstants.maxSpeed.value
+
         Drive.swerveDrive(
-            Controls.handleDeadBand(translationX(), 0.1).pow(2).withSign(
-                translationX() * Robot.driveInversion
-            ) * Constants.DriveConstants.maxSpeed.value,
-            -Controls.handleDeadBand(translationY(), 0.1).pow(2).withSign(
-                translationY() * Robot.driveInversion
-            ) * Constants.DriveConstants.maxSpeed.value,
+            scale(deadband(state.dx, 0.1)) * modifier,
+            scale(deadband(state.dy, 0.1)) * modifier,
             radiansPerSecond, true
         )
 
-        autoAlignWasActive = autoAlignActive()
-    }
-
-    companion object {
-        val translationX = Controls.driverController.getRawAxis(2)
-        val translationY = Controls.driverController.getRawAxis(3)
-        val rotation = Controls.driverController.getRawAxis(0)
-        // There are two switches at the top of the controller.  Right is hold, with
-        // ID 1; left is toggle, with ID 2.
-        val autoAlignActive = Controls.driverController.getRawButton(1)
+        autoAlignWasActive = state.align
     }
 }

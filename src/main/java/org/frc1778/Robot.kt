@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.event.EventLoop
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
-import org.frc1778.Controls.driverController
 import org.frc1778.commands.lights.TeleopLightCommand
 import org.frc1778.lib.FalconTimedRobot
 import org.frc1778.subsystems.Drive
@@ -96,10 +95,8 @@ object Robot : FalconTimedRobot() {
 
 
     override fun robotPeriodic() {
-
         Shuffleboard.update()
-        Controls.driverController.update()
-        Controls.xboxController.update()
+        Controls.update()
     }
 
     override fun disabledInit() {
@@ -147,9 +144,9 @@ object Robot : FalconTimedRobot() {
         if (rumbleEnabled) {
             matchTime = getMatchTime()
             if (matchTime < 20.0 && matchTime > 19.0) {
-                Controls.driverControllerGenericHID.setRumble(GenericHID.RumbleType.kBothRumble, 0.8)
+                Controls.rumble(0.8)
             } else if(matchTime < 19.0){
-                Controls.driverControllerGenericHID.setRumble(GenericHID.RumbleType.kBothRumble, 0.0)
+                Controls.rumble(0.0)
                 rumbleEnabled = false
             }
         }
