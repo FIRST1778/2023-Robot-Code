@@ -7,7 +7,7 @@ import org.frc1778.subsystems.Gyro
 import org.ghrobotics.lib.commands.FalconCommand
 import kotlin.math.sin
 
-class BalanceCommand: FalconCommand(Drive) {
+class OldBalanceCommand: FalconCommand(Drive) {
     companion object {
         const val PROPORTIONAL: Double = 2.0 // (m/sec)/m
         const val INTEGRAL: Double = 0.05
