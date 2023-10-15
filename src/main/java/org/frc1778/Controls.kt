@@ -38,7 +38,7 @@ object Controls {
         button(3) { changeOn(ShooterAngleCommand(Level.Middle)) }  // X
         button(4) { changeOn(ShooterAngleCommand(Level.Top)) }     // Y
         button(7) { changeOn(IntakeLineBreakOverrideCommand()) }   // 2 squares
-        button(8) { changeOn(ShooterAngleCommand(Level.THREE_POINT)) } // hamburger
+        button(8) { changeOn(ShooterAngleCommand(Level.ThreePoint)) } // hamburger
         axisButton(2, 0.7) {  // LT
             change(ShooterShootCommand())
             changeOff { ShooterAngleCommand(Level.None).schedule() }
@@ -85,7 +85,7 @@ object Controls {
         button(5) { changeOn(ShooterAngleCommand(Level.Middle)) }
         button(6) { changeOn(ShooterAngleCommand(Level.Top)) }
         button(7) { changeOn(ShooterAngleCommand(Level.None)) }
-        button(8) { changeOn(ShooterAngleCommand(Level.THREE_POINT)) }
+        button(8) { changeOn(ShooterAngleCommand(Level.ThreePoint)) }
         button(10) { change(BalanceCommand()) }
         button(2) {}
         button(3) {}

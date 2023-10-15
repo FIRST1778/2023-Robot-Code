@@ -167,7 +167,7 @@ enum class Level(
         frontShooterVoltage = 1.5.volts
     ),
     //Shoot from Across Charge Station
-    THREE_POINT(
+    ThreePoint(
         optionName = "3 Point",
         rearShooterPosition = 225.0.degrees,
         rearShooterVoltage = 10.0.volts,
@@ -175,7 +175,7 @@ enum class Level(
         frontShooterVoltage = 10.0.volts
     ),
     //Shoot From atop Charge Station
-    CHARGE_STATION(
+    ChargeStation(
         optionName = "Don't Choose ME",
         rearShooterPosition = 225.0.degrees,
         rearShooterVoltage = 10.0.volts,

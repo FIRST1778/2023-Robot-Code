@@ -196,17 +196,17 @@ object RobotContainer {
         setDefaultOption(AutoMode.default.optionName, AutoMode.default)
     }
     private val firstShootingLevelChooser = SendableChooser<Level>().apply {
-        Level.values().filterNot { it == Level.CHARGE_STATION || it == Level.THREE_POINT }
+        Level.values().filterNot { it == Level.ChargeStation || it == Level.ThreePoint }
             .forEach { addOption(it.optionName, it) }
         setDefaultOption(Level.Bottom.optionName, Level.Bottom)
     }
     private val secondShootingLevelChooser = SendableChooser<Level>().apply {
-        Level.values().filterNot { it == Level.CHARGE_STATION || it == Level.THREE_POINT }
+        Level.values().filterNot { it == Level.ChargeStation || it == Level.ThreePoint }
             .forEach { addOption(it.optionName, it) }
         setDefaultOption(Level.Bottom.optionName, Level.Bottom)
     }
     private val thirdShootingLevelChooser = SendableChooser<Level>().apply {
-        Level.values().filterNot { it == Level.CHARGE_STATION || it == Level.THREE_POINT }
+        Level.values().filterNot { it == Level.ChargeStation || it == Level.ThreePoint }
             .forEach { addOption(it.optionName, it) }
         setDefaultOption(Level.Bottom.optionName, Level.Bottom)
     }
@@ -283,7 +283,7 @@ object RobotContainer {
                     }
                     +sequential {
                         +ShooterSuckCommand()
-                        +ShooterAngleCommand(Level.THREE_POINT)
+                        +ShooterAngleCommand(Level.ThreePoint)
                         +ShooterShootCommand().withTimeout(0.5)
                         +ShooterAngleCommand(Level.None)
                     }
