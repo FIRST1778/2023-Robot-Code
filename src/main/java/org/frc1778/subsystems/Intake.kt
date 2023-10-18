@@ -18,25 +18,25 @@ import org.ghrobotics.lib.wrappers.FalconDoubleSolenoid
 import org.ghrobotics.lib.wrappers.FalconSolenoid
 
 object Intake : FalconSubsystem() {
-    //TODO Get linebreak channel
-    val lineBreak: DigitalInput = DigitalInput(1)
+    private val lineBreak = DigitalInput(1)
+    var lineBreakOverride: Boolean = false
 
-
-    var beltMotor = falconMAX(15, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)) {
+    private val beltMotor = falconMAX(15, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)) {
         brakeMode = true
         outputInverted = true
     }
-    var wheelMotor = falconMAX(14, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)){
+
+    private val wheelMotor = falconMAX(14, CANSparkMaxLowLevel.MotorType.kBrushless, NativeUnitRotationModel(46.nativeUnits)){
         brakeMode = true
         outputInverted = true
     }
-    val solenoid = FalconDoubleSolenoid(
+
+    private val solenoid = FalconDoubleSolenoid(
         0,
         1,
         PneumaticsModuleType.REVPH,
         30
     )
-    var lineBreakOverride : Boolean = false
 
     private var intakeVoltage = 4.5.volts
 
@@ -59,7 +59,8 @@ object Intake : FalconSubsystem() {
 //        }
         setMotorVoltage(intakeVoltage + 2.0.volts)
     }
-    fun extend(){
+    
+    fun extend() {
         if (Wrist.encoder.absolutePosition > 180.0.degrees) {
             Wrist.setNextLevel(Level.None)
         }
@@ -69,7 +70,7 @@ object Intake : FalconSubsystem() {
             solenoid.state = FalconSolenoid.State.Forward
         }
     }
-    fun retract(){
+    fun retract() {
         solenoid.state = FalconSolenoid.State.Reverse
     }
 
