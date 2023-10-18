@@ -44,11 +44,12 @@ object Intake : FalconSubsystem() {
         beltMotor.setVoltage(voltage)
         wheelMotor.setVoltage(voltage/5)
     }
-    fun cubeStored() : Boolean {
-        return if (!lineBreakOverride) {
-            !lineBreak.get()
-        }else{
-            false
+
+    fun cubeStored(): Boolean {
+        if (lineBreakOverride) {
+            return false
+        } else {
+            return !lineBreak.get()
         }
     }
 
