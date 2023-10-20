@@ -65,7 +65,7 @@ object Constants {
             kDriveTalonId = 6
             kAzimuthTalonId = 5
             kCanCoderId = 10
-            kAzimuthEncoderHomeOffset = -Math.toRadians(64.7)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(64.8)  // **********
             kInvertDrive = true
         }
 
@@ -74,7 +74,7 @@ object Constants {
             kDriveTalonId = 8
             kAzimuthTalonId = 7
             kCanCoderId = 11
-            kAzimuthEncoderHomeOffset = -Math.toRadians(249.65)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(249.55)  // **********
             kInvertDrive = false
         }
 
@@ -83,7 +83,7 @@ object Constants {
             kDriveTalonId = 2
             kAzimuthTalonId = 1
             kCanCoderId = 12
-            kAzimuthEncoderHomeOffset = -Math.toRadians(109.45)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(108.1)  // **********
             kInvertDrive = false
         }
 
@@ -92,7 +92,7 @@ object Constants {
             kDriveTalonId = 4
             kAzimuthTalonId = 3
             kCanCoderId = 13
-            kAzimuthEncoderHomeOffset = -Math.toRadians(250.5)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(250.7)  // **********
             kInvertDrive = true
         }
     }
@@ -139,8 +139,8 @@ enum class Level(
     // Top, middle, and bottom row of the grid.
     Top(
         optionName = "Top",
-        rearShooterPosition = 207.5.degrees,
-        rearShooterVoltage = 3.8.volts,
+        rearShooterPosition = 208.degrees,
+        rearShooterVoltage = 4.5.volts,
         frontShooterPosition = 155.degrees,
         frontShooterVoltage = 4.5.volts
     ),
