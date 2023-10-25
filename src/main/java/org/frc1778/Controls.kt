@@ -38,7 +38,7 @@ object Controls {
 
     val xboxController = XboxController.mapControls {
         button(1) { changeOn(ShooterAngleCommand(Level.Bottom)) }
-        button(2) { changeOn(ShooterAngleCommand(Level.None)) }
+        button(2) { change(BalanceCommand()) }
         button(3) { changeOn(ShooterAngleCommand(Level.Middle)) }
         button(4) { changeOn(ShooterAngleCommand(Level.Top)) }
         button(7) { changeOn(IntakeLineBreakOverrideCommand()) }

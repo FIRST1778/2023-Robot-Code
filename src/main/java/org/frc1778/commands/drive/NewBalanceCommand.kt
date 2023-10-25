@@ -16,18 +16,20 @@ class BalanceCommand: FalconCommand(Drive) {
     // BalanceCommand (the interface is the same).
 
     private object Constants {
-        const val initialFactor: Double = -2.0  // (m/s) / m
+        const val proportional: Double = 2.0  // (m/s) / m
+        const val derivative: Double = 0.125  // (m/s) / (m/s)
         const val backoff: Double = 0.4
-        const val tolerance: Double = 0.1  // m
+        const val tolerance: Double = 0.055  // m
+        const val errorTolerance: Double = 0.4
     }
 
     val balanceAnimation = BalanceAnimation()
 
-    var factor = Double.NaN
     var sign = Double.NaN
+    var multiplier = Double.NAN
 
     override fun initialize() {
-        factor = Constants.initialFactor
+        var multiplier = 1.0
         sign = 0.0
         balanceAnimation.initialize()
     }

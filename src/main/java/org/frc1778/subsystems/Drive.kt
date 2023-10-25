@@ -65,7 +65,6 @@ object Drive : FalconSwerveDrivetrain<FalconNeoSwerveModule>(), Sendable{
         )
 
     init {
-
         for (module in modules.reversed()) {
             Constants.DriveConstants.driveTab.add(module.name, module).withSize(3, 4)
         }
