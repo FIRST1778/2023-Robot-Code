@@ -19,22 +19,9 @@ import kotlin.math.withSign
 
 object Controls {
     //TODO: Update to use a more personalized HID to go with new commands
-    val driverControllerGenericHID = Joystick(0)
-    private val XboxController = Joystick(1)
+    private val XboxController = Joystick(0)
 
 //    private val runIntakeCommand = RunIntake()
-
-    val driverController = driverControllerGenericHID.mapControls {
-        //TODO: Find Correct Button ID
-        button(1) {
-            whileOn {
-//                Drive.gamePiecePlacementTrajectoryFollowCommand?.schedule()
-            }
-            changeOff {
-//                Drive.gamePiecePlacementTrajectoryFollowCommand?.cancel()
-            }
-        }
-    }
 
     val xboxController = XboxController.mapControls {
         button(1) { changeOn(ShooterAngleCommand(Level.Bottom)) }
