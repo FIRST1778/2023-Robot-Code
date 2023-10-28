@@ -27,8 +27,8 @@ object Controls {
 
     private val driverController = FalconHIDBuilder(driverHID).build()
 
-    private val xboxController = addXboxControls(xboxHID).build()
-    private val steamDeckController = addXboxControls(steamDeckHID).build()
+    private val xboxController = addXboxControls(xboxHID)
+    private val steamDeckController = addXboxControls(steamDeckHID)
 
     // The Steam deck and the XBox controller use the same mappings with
     // the same button IDs.
@@ -53,7 +53,7 @@ object Controls {
                 }
             )
         }
-    }
+    }.build()
 
     private val redController = redHID.mapControls {
         button(1) { change(IntakeSpitCommand()) }
