@@ -28,6 +28,11 @@ import kotlin.math.hypot
 object Constants {
     object DriveConstants {
         val driveTab: ShuffleboardTab = Shuffleboard.getTab("Drive")!!
+
+        // TODO: !!! These have been treated as if they were meters
+        // the whole season!  If we treat them as inches (which is what
+        // they were meant to represent), our max angular velocity
+        // could get a LOT larger...
         const val wheelBase: Double = 23.5
         const val trackWidth: Double = 23.5
 
