@@ -33,8 +33,8 @@ object Constants {
 
     object DriveConstants {
         val driveTab: ShuffleboardTab = Shuffleboard.getTab("Drive")!!
-        const val wheelBase: Double = 23.5
-        const val trackWidth: Double = 23.5
+        val wheelBase: Double = 23.5.inches.value
+        val trackWidth: Double = 23.5.inches.value
         val driveBaseRadius = hypot(trackWidth / 2.0, wheelBase / 2.0)
         const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
         const val steerReduction  = 12.8

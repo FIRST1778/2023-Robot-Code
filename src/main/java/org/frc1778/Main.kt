@@ -2,7 +2,6 @@
 package org.frc1778
 
 
-
 /**
  * Main initialization function. Do not perform any initialization here
  * other than calling `RobotBase.startRobot`. Do not modify this file

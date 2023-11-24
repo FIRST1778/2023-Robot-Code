@@ -51,6 +51,10 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
         defaultCommand = TeleOpDriveCommand()
     }
 
+    override fun autoReset() {
+        resetPosition(Pose2d(), swerveDriveIO.positions)
+    }
+
     override val wheelbase: Double = Constants.DriveConstants.wheelBase
 
     override val trackWidth: Double = Constants.DriveConstants.trackWidth

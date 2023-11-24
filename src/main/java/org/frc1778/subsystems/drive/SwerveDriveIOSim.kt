@@ -59,13 +59,13 @@ class SwerveDriveIOSim : SwerveDriveIO {
             .withFeedbackSource(SwerveModuleConstants.SwerveModuleSteerFeedbackType.RemoteCANcoder)
             .withSpeedAt12VoltsMps(Constants.DriveConstants.maxSpeed.value)
             .withCANcoderOffset(constants.kAzimuthEncoderHomeOffset / 360)
-            .withDriveMotorGearRatio(Constants.DriveConstants.driveReduction)
+            .withDriveMotorGearRatio(1/Constants.DriveConstants.driveReduction)
             .withSteerMotorGearRatio(Constants.DriveConstants.steerReduction)
             .withWheelRadius(constants.kWheelDiameter / 2)
             .withSteerMotorGains(
-                Slot0Configs().withKP(constants.kAzimuthKp * 2).withKD(constants.kAzimuthKd / 2)
+                Slot0Configs()
+                    .withKP(constants.kAzimuthKp * 2)
             )
-//            .withDriveMotorInverted(constants.kInvertDrive)
 
 
     private val modules = moduleConstants.map {
@@ -78,10 +78,10 @@ class SwerveDriveIOSim : SwerveDriveIO {
 
     private val sim = SimSwerveDrivetrain(
         listOf(
-            Translation2d(Drive.wheelbase / 2, Drive.trackWidth / 2),
-            Translation2d(Drive.wheelbase / 2, -Drive.trackWidth / 2),
-            Translation2d(-Drive.wheelbase / 2, -Drive.trackWidth / 2),
-            Translation2d(-Drive.wheelbase / 2, Drive.trackWidth / 2),
+            Translation2d(Constants.DriveConstants.wheelBase / 2, Constants.DriveConstants.trackWidth / 2),
+            Translation2d(Constants.DriveConstants.wheelBase / 2, -Constants.DriveConstants.trackWidth / 2),
+            Translation2d(-Constants.DriveConstants.wheelBase / 2, -Constants.DriveConstants.trackWidth / 2),
+            Translation2d(-Constants.DriveConstants.wheelBase / 2, Constants.DriveConstants.trackWidth / 2),
         ).toTypedArray(), pigeon2, SwerveDrivetrainConstants().withPigeon2Id(21), *moduleConstants.toTypedArray()
     )
 
