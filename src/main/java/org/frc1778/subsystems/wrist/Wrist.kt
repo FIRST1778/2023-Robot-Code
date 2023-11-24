@@ -137,15 +137,15 @@ object Wrist : FalconSubsystem() {
         }
 
         io.updateInputs(wristInputs)
-        Logger.getInstance().processInputs("Wrist Inputs",wristInputs)
+        Logger.processInputs("Wrist Inputs",wristInputs)
 
-        Logger.getInstance().recordOutput(
+        Logger.recordOutput(
             "Wrist Pose", Pose3d(
                 Translation3d(-0.255, 0.0, 0.3175),
                 Rotation3d(0.0, (-(getCurrentAngle()) + 90.0.degrees).value, 0.0)
             )
         )
-        Logger.getInstance().recordOutput(
+        Logger.recordOutput(
             "Wrist Angle",
             getCurrentAngle().value
         )

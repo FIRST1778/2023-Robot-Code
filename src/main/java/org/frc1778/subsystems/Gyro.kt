@@ -1,6 +1,8 @@
 package org.frc1778.subsystems
 
-import com.ctre.phoenix.sensors.Pigeon2
+import com.ctre.phoenix6.configs.MountPoseConfigs
+import com.ctre.phoenix6.configs.Pigeon2Configuration
+import com.ctre.phoenix6.hardware.Pigeon2
 import edu.wpi.first.math.MathUtil
 import edu.wpi.first.wpilibj.DriverStation
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
@@ -20,12 +22,19 @@ object Gyro: AbstractFalconGyro() {
     private val pigeon = Pigeon2(Constants.DriveConstants.pigeonCanID)
 
     init {
-        pigeon.configMountPose(Pigeon2.AxisDirection.PositiveY, Pigeon2.AxisDirection.PositiveZ, 500)
+        pigeon.configurator.apply(
+            Pigeon2Configuration()
+                .withMountPose(
+                    MountPoseConfigs()
+                        .withMountPoseYaw(-90.0)
+                )
+
+        )
     }
 
-    override fun yaw() = Math.toRadians(pigeon.yaw)
-    override fun pitch() = Math.toRadians(pigeon.pitch)
-    override fun roll() = Math.toRadians(pigeon.roll)
+    override fun yaw() = Math.toRadians(pigeon.yaw.value)
+    override fun pitch() = Math.toRadians(pigeon.pitch.value)
+    override fun roll() = Math.toRadians(pigeon.roll.value)
     override fun odometryYaw() = MathUtil.angleModulus(Drive.robotPosition.rotation.radians)
 
     fun direction180(): Double {

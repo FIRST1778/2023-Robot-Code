@@ -35,14 +35,16 @@ object Constants {
         val driveTab: ShuffleboardTab = Shuffleboard.getTab("Drive")!!
         const val wheelBase: Double = 23.5
         const val trackWidth: Double = 23.5
-        private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
+        val driveBaseRadius = hypot(trackWidth / 2.0, wheelBase / 2.0)
+        const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
+        const val steerReduction  = 12.8
         val maxSpeed: SIUnit<Frac<Meter, Second>> = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
         val maxAngularSpeed: SIUnit<Velocity<Radian>> =
-            SIUnit((maxSpeed.value / hypot(trackWidth / 2.0, wheelBase / 2.0)))
+            SIUnit((maxSpeed.value / driveBaseRadius))
         val maxAngularAcceleration: SIUnit<Acceleration<Radian>> = SIUnit(maxAngularSpeed.value * (3.0))
 
         const val pigeonCanID: Int = 21
-        private const val azimuthMotorEncoderNativeUnitsPerRotation = 21.5
+        private const val azimuthMotorEncoderNativeUnitsPerRotation = 42.0 / steerReduction
         private const val driveMotorEncoderNativeUnisPerRotation = 42.0 * driveReduction
 
         private val swerveDriveWheelOffsets = mapOf(

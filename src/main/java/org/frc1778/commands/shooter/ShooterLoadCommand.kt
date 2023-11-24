@@ -1,15 +1,16 @@
 package org.frc1778.commands.shooter
 
+import edu.wpi.first.wpilibj2.command.Command
+import edu.wpi.first.wpilibj2.command.WaitCommand
+import org.frc1778.commands.intake.IntakeSuckCommand
+import org.frc1778.commands.intake.IntakeToShooterCommand
 import org.frc1778.subsystems.intake.Intake
-import org.frc1778.commands.intake.*
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.sequential
-import edu.wpi.first.wpilibj2.command.CommandBase
-import edu.wpi.first.wpilibj2.command.WaitCommand
 
 
 class ShooterLoadCommand : FalconCommand(Intake) {
-	lateinit var command: CommandBase
+	lateinit var command: Command
 
 	override fun initialize() {
 		command = sequential {

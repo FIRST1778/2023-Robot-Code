@@ -1,6 +1,8 @@
 package org.frc1778.subsystems.drive
 
 import com.gamingnight.junction.AutoLog
+import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.math.kinematics.SwerveModuleState
 import org.ghrobotics.lib.mathematics.units.Ampere
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
@@ -18,15 +20,25 @@ import org.ghrobotics.lib.subsystems.drive.swerve.AbstractSwerveDriveInputs
 
 @AutoLog
 open class SwerveDriveInputs : AbstractSwerveDriveInputs {
-    override var leftFrontVoltage: SIUnit<Volt> = 0.volts
-    override var rightFrontVoltage: SIUnit<Volt> = 0.volts
-    override var rightBackVoltage: SIUnit<Volt> = 0.volts
-    override var leftBackVoltage: SIUnit<Volt> = 0.volts
+    override var leftFrontDriveVoltage: SIUnit<Volt> = 0.volts
+    override var rightFrontDriveVoltage: SIUnit<Volt> = 0.volts
+    override var rightBackDriveVoltage: SIUnit<Volt> = 0.volts
+    override var leftBackDriveVoltage: SIUnit<Volt> = 0.volts
 
-    override var leftFrontCurrent: SIUnit<Ampere> = 0.amps
-    override var rightFrontCurrent: SIUnit<Ampere> = 0.amps
-    override var rightBackCurrent: SIUnit<Ampere> = 0.amps
-    override var leftBackCurrent: SIUnit<Ampere> = 0.amps
+    override var leftFrontDriveCurrent: SIUnit<Ampere> = 0.amps
+    override var rightFrontDriveCurrent: SIUnit<Ampere> = 0.amps
+    override var rightBackDriveCurrent: SIUnit<Ampere> = 0.amps
+    override var leftBackDriveCurrent: SIUnit<Ampere> = 0.amps
+
+    override var leftFrontSteerVoltage: SIUnit<Volt> = 0.volts
+    override var rightFrontSteerVoltage: SIUnit<Volt> = 0.volts
+    override var rightBackSteerVoltage: SIUnit<Volt> = 0.volts
+    override var leftBackSteerVoltage: SIUnit<Volt> = 0.volts
+
+    override var leftFrontSteerCurrent: SIUnit<Ampere> = 0.amps
+    override var rightFrontSteerCurrent: SIUnit<Ampere> = 0.amps
+    override var rightBackSteerCurrent: SIUnit<Ampere> = 0.amps
+    override var leftBackSteerCurrent: SIUnit<Ampere> = 0.amps
 
     override var leftFrontPosition: SIUnit<Meter> = 0.meters
     override var rightFrontPosition: SIUnit<Meter> = 0.meters
@@ -47,6 +59,11 @@ open class SwerveDriveInputs : AbstractSwerveDriveInputs {
     override var rightFrontFeedforward: SIUnit<Volt> = 0.volts
     override var rightBackFeedforward: SIUnit<Volt> = 0.volts
     override var leftBackFeedforward: SIUnit<Volt> = 0.volts
+
+    override var chassisSpeeds: ChassisSpeeds = ChassisSpeeds()
+
+    override var states: List<SwerveModuleState> = listOf()
+    override var desiredStates: List<SwerveModuleState> = listOf()
 
     override var gyroRaw: SIUnit<Radian> = 0.0.radians
 }

@@ -2,6 +2,9 @@ package org.frc1778.subsystems.drive
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward
 import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Translation2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
 import org.frc1778.Constants
@@ -26,6 +29,20 @@ class SwerveDriveIOSparkMax : SwerveDriveIO {
         FalconNeoSwerveModule(Constants.DriveConstants.bottomLeftSwerveModuleConstants),
     )
 
+    /**
+     * Wheel Positions in order
+     * - Front Left
+     * - Front Right
+     * - Back Right
+     * - Back Left
+     */
+    override val kinematics: SwerveDriveKinematics = SwerveDriveKinematics(
+        Translation2d(Drive.wheelbase / 2, Drive.trackWidth / 2),
+        Translation2d(Drive.wheelbase / 2, -Drive.trackWidth / 2),
+        Translation2d(-Drive.wheelbase / 2, -Drive.trackWidth / 2),
+        Translation2d(-Drive.wheelbase / 2, Drive.trackWidth / 2),
+    )
+
     val motorCharacterization: SimpleMotorFeedforward = SimpleMotorFeedforward(0.0, 0.0, 0.0)
 
     init {
@@ -37,48 +54,14 @@ class SwerveDriveIOSparkMax : SwerveDriveIO {
         }
     }
 
-    /**
-     * Update the inputs to the swerve drive.
-     *
-     * TODO: Update to actually grab values from the maodules
-     * @param inputs The inputs to the swerve drive.
-     */
-    override fun <T : AbstractSwerveDriveInputs> updateInputs(inputs: T) {
-
-        inputs.leftFrontVoltage = 0.volts
-        inputs.rightFrontVoltage = 0.volts
-        inputs.rightBackVoltage = 0.volts
-        inputs.leftBackVoltage = 0.volts
-
-        inputs.leftFrontCurrent = 0.amps
-        inputs.rightFrontCurrent = 0.amps
-        inputs.rightBackCurrent = 0.amps
-        inputs.leftBackCurrent = 0.amps
-
-        inputs.leftFrontPosition = 0.meters
-        inputs.rightFrontPosition = 0.meters
-        inputs.rightBackPosition = 0.meters
-        inputs.leftBackPosition = 0.meters
-
-        inputs.leftFrontRotation = 0.radians
-        inputs.rightFrontRotation = 0.radians
-        inputs.rightBackRotation = 0.radians
-        inputs.leftBackRotation = 0.radians
-
-        inputs.leftFrontVelocity = 0.meters / 1.seconds
-        inputs.rightFrontVelocity = 0.meters / 1.seconds
-        inputs.rightBackVelocity = 0.meters / 1.seconds
-        inputs.leftBackVelocity = 0.meters / 1.seconds
-
-        inputs.leftFrontFeedforward = 0.volts
-        inputs.rightFrontFeedforward = 0.volts
-        inputs.rightBackFeedforward = 0.volts
-        inputs.leftBackFeedforward = 0.volts
-
-        inputs.gyroRaw = 0.0.radians
+    override fun setChassisSpeeds(chassisSpeeds: ChassisSpeeds) {
+        val speeds = kinematics.toWheelSpeeds(chassisSpeeds)
+        SwerveDriveKinematics.desaturateWheelSpeeds(speeds.states, Drive.maxSpeed.value)
+        setModuleStates(speeds.states)
     }
 
-    override fun setModuleStates(states: Array<SwerveModuleState>) {
+
+    private fun setModuleStates(states: Array<SwerveModuleState>) {
         for (i in 0..3) {
             modules[i].setState(states[i])
         }
@@ -103,4 +86,50 @@ class SwerveDriveIOSparkMax : SwerveDriveIO {
     // This means we must use the raw yaw from the gyro instead of the odometry yaw (although
     // in general we prefer the latter over the former).
     override val gyro: Source<Rotation2d> = { Rotation2d(Gyro.yaw()) }
+
+    /**
+     * Update the inputs to the swerve drive.
+     *
+     * TODO: Update to actually grab values from the maodules
+     * @param inputs The inputs to the swerve drive.
+     */
+    override fun <T : AbstractSwerveDriveInputs> updateInputs(inputs: T) {
+
+        inputs.leftFrontDriveVoltage = 0.volts
+        inputs.rightFrontDriveVoltage = 0.volts
+        inputs.rightBackDriveVoltage = 0.volts
+        inputs.leftBackDriveVoltage = 0.volts
+
+        inputs.leftFrontDriveCurrent = 0.amps
+        inputs.rightFrontDriveCurrent = 0.amps
+        inputs.rightBackDriveCurrent = 0.amps
+        inputs.leftBackDriveCurrent = 0.amps
+
+        inputs.leftFrontPosition = 0.meters
+        inputs.rightFrontPosition = 0.meters
+        inputs.rightBackPosition = 0.meters
+        inputs.leftBackPosition = 0.meters
+
+        inputs.leftFrontRotation = 0.radians
+        inputs.rightFrontRotation = 0.radians
+        inputs.rightBackRotation = 0.radians
+        inputs.leftBackRotation = 0.radians
+
+        inputs.leftFrontVelocity = 0.meters / 1.seconds
+        inputs.rightFrontVelocity = 0.meters / 1.seconds
+        inputs.rightBackVelocity = 0.meters / 1.seconds
+        inputs.leftBackVelocity = 0.meters / 1.seconds
+
+        inputs.leftFrontFeedforward = 0.volts
+        inputs.rightFrontFeedforward = 0.volts
+        inputs.rightBackFeedforward = 0.volts
+        inputs.leftBackFeedforward = 0.volts
+
+        inputs.gyroRaw = 0.0.radians
+
+        inputs.chassisSpeeds = kinematics.toChassisSpeeds(*states)
+
+    }
+
+
 }

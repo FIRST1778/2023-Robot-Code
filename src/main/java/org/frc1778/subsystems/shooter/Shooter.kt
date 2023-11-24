@@ -28,7 +28,7 @@ object Shooter : FalconSubsystem(), Sendable {
 
     override fun periodic() {
         io.updateInputs(inputs)
-        Logger.getInstance().processInputs("Shooter Inputs", inputs)
+        Logger.processInputs("Shooter Inputs", inputs)
     }
 
 //    override fun lateInit() {

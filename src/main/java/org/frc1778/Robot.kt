@@ -16,10 +16,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard
 import edu.wpi.first.wpilibj2.command.Command
 import org.frc1778.commands.lights.TeleopLightCommand
 import org.frc1778.subsystems.Lights
-import org.frc1778.subsystems.Vision
 import org.frc1778.subsystems.drive.Drive
 import org.frc1778.subsystems.intake.Intake
 import org.frc1778.subsystems.shooter.Shooter
+import org.frc1778.subsystems.vision.Vision
+import org.frc1778.subsystems.vision.VisionIOLimelight
 import org.frc1778.subsystems.wrist.Wrist
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.inDegrees
@@ -40,7 +41,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter
  * object or package, it will get changed everywhere.)
  */
 object Robot : LoggedFalconTimedRobot() {
-    var alliance: Alliance = DriverStation.getAlliance()
+    var alliance: Alliance = DriverStation.getAlliance().orElse(Alliance.Blue)
     private val eventLoop = EventLoop()
     private val brakeModeLimitSwitchHit = BooleanEvent(
         eventLoop, Wrist.io::brakeModeSwitch
@@ -65,40 +66,40 @@ object Robot : LoggedFalconTimedRobot() {
     }
 
     init {
-        +Vision
         +Drive
         +Shooter
         +Lights
         +Intake
         +Wrist
+        +Vision.withIO(VisionIOLimelight())
         Wrist.setBrakeMode(true)
 
     }
 
 
     override fun robotInit() {
-        Logger.getInstance().recordMetadata("ProjectName", "Cold Fusion") // Set a metadata value
+        Logger.recordMetadata("ProjectName", "Cold Fusion") // Set a metadata value
 
         if (isReal()) {
-            Logger.getInstance().addDataReceiver(WPILOGWriter("/media/sda1/")) // Log to a USB stick
-            Logger.getInstance().addDataReceiver(NT4Publisher()) // Publish data to NetworkTables
+            Logger.addDataReceiver(WPILOGWriter("/U")) // Log to a USB stick
+            Logger.addDataReceiver(NT4Publisher()) // Publish data to NetworkTables
             PowerDistribution(1, PowerDistribution.ModuleType.kRev) // Enables power distribution logging
         } else {
 //            setUseTiming(false) // Run as fast as possible
 //            val logPath = LogFileUtil.findReplayLog() // Pull the replay log from AdvantageScope (or prompt the user)
-//            Logger.getInstance().setReplaySource(WPILOGReader(logPath)) // Read replay log
-//            Logger.getInstance()
+//            Logger.setReplaySource(WPILOGReader(logPath)) // Read replay log
+//            Logger
 //                .addDataReceiver(WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))) // Save outputs to a new log
 
-            Logger.getInstance().addDataReceiver(NT4Publisher())
+            Logger.addDataReceiver(NT4Publisher())
         }
 
 
 
-// Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+// Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
 
-// Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
-        Logger.getInstance()
+// Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+        Logger
             .start() // Start logging! No more data receivers, replay sources, or metadata values may be added
 
 
@@ -165,7 +166,7 @@ object Robot : LoggedFalconTimedRobot() {
     override fun autonomousInit() {
         TeleopLightCommand().schedule()
         Wrist.resetDesiredAngle()
-        alliance = DriverStation.getAlliance()
+        alliance = DriverStation.getAlliance().orElse(Alliance.Blue)
         driveInversion = when (alliance) {
             Alliance.Red -> -1
             else -> 1

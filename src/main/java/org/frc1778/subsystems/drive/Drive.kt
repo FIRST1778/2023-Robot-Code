@@ -1,28 +1,22 @@
 package org.frc1778.subsystems.drive
 
+import com.pathplanner.lib.controllers.PPHolonomicDriveController
+import com.pathplanner.lib.path.PathConstraints
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig
+import com.pathplanner.lib.util.PIDConstants
 import edu.wpi.first.math.VecBuilder
-import edu.wpi.first.math.controller.HolonomicDriveController
-import edu.wpi.first.math.controller.PIDController
-import edu.wpi.first.math.controller.ProfiledPIDController
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
-import edu.wpi.first.math.geometry.Transform2d
-import edu.wpi.first.math.geometry.Translation2d
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics
+import edu.wpi.first.math.geometry.Pose3d
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
-import edu.wpi.first.math.trajectory.Trajectory
-import edu.wpi.first.math.trajectory.TrapezoidProfile
 import edu.wpi.first.util.sendable.Sendable
 import edu.wpi.first.util.sendable.SendableBuilder
+import edu.wpi.first.wpilibj.RobotBase.isReal
 import org.frc1778.Constants
 import org.frc1778.commands.drive.TeleOpDriveCommand
-import org.frc1778.lib.pathplanner.PathConstraints
-import org.frc1778.lib.pathplanner.PathPlanner
-import org.frc1778.lib.pathplanner.PathPlannerTrajectory
-import org.frc1778.lib.pathplanner.PathPoint
-import org.frc1778.subsystems.Vision
+import org.frc1778.subsystems.vision.Vision
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
@@ -31,9 +25,10 @@ import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.inFeet
 import org.ghrobotics.lib.subsystems.drive.swerve.FalconSwerveDrivetrain
+import org.ghrobotics.lib.subsystems.drive.swerve.SwerveDriveIO
 import org.ghrobotics.lib.utils.Source
 import org.littletonrobotics.junction.Logger
-import kotlin.math.hypot
+
 
 object Drive : FalconSwerveDrivetrain(), Sendable {
     var aprilTagsEnabled: Boolean = false
@@ -42,8 +37,13 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
 
     private const val maxVoltage = 12.0
 
-    override val swerveDriveIO: SwerveDriveIOSparkMax = SwerveDriveIOSparkMax()
-    override val abstractSwerveDriveInputs: SwerveDriveInputsAutoLogged = SwerveDriveInputsAutoLogged()
+    override var swerveDriveIO: SwerveDriveIO = if (isReal()) {
+        SwerveDriveIOSparkMax()
+    } else {
+        SwerveDriveIOSim()
+    }
+    override val swerveDriveInputs: SwerveDriveInputsAutoLogged = SwerveDriveInputsAutoLogged()
+
 
     override fun lateInit() {
         super.lateInit()
@@ -53,49 +53,45 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
 
     override val wheelbase: Double = Constants.DriveConstants.wheelBase
 
-
     override val trackWidth: Double = Constants.DriveConstants.trackWidth
     override val maxSpeed: SIUnit<Velocity<Meter>> = Constants.DriveConstants.maxSpeed
+
+    var desiredWheelStates: Array<SwerveModuleState> = swerveDriveIO.states
+
     override val motorOutputLimiter: Source<Double> = {
         1.00
     }
-
-    override val controller: HolonomicDriveController = HolonomicDriveController(
-        PIDController(
-            0.75, 0.0, 0.15
-
-        ), PIDController(
-            0.75, 0.0, 0.15
-        ), ProfiledPIDController(
-            0.2, 0.0, 0.02, TrapezoidProfile.Constraints(
-                Constants.DriveConstants.maxAngularSpeed.value * 25.0,
-                Constants.DriveConstants.maxAngularAcceleration.value * 18.5
-            )
-        )
+    override val pathConstraints: PathConstraints = PathConstraints(
+        Constants.DriveConstants.maxSpeed.value,
+        maxSpeed.value * 3,
+        Constants.DriveConstants.maxAngularSpeed.value,
+        Constants.DriveConstants.maxAngularAcceleration.value * 30
     )
 
-    fun getEstimatedCameraPose(previousEstimatedRobotPosition: Pose2d): Pair<Pose2d, Double>? {
-        if (!aprilTagsEnabled) return null
+    val translationPIDConstants = PIDConstants(
+        0.75, 0.0, 0.15
 
-        val result = Vision.getEstimatedGlobalPose(previousEstimatedRobotPosition)
-        if (result == null || !result.isPresent) return null
-        return result.get().estimatedPose.toPose2d() to result.get().timestampSeconds
+    )
+    val rotationPIDConstants = PIDConstants(
+        0.2, 0.0, 0.02
+    )
+
+    override val pathFollowingConfig: HolonomicPathFollowerConfig = HolonomicPathFollowerConfig(
+        translationPIDConstants,
+        rotationPIDConstants,
+        maxSpeed.value,
+        Constants.DriveConstants.driveBaseRadius,
+        replanningConfig
+    )
+
+    override val controller = PPHolonomicDriveController(
+        translationPIDConstants, rotationPIDConstants, maxSpeed.value, Constants.DriveConstants.driveBaseRadius
+    )
+
+    fun getEstimatedCameraPose(): Pair<Pose3d, Double>? {
+        return Vision.getRobotPose3d()
     }
 
-
-    /**
-     * Wheel Positions in order
-     * - Front Left
-     * - Front Right
-     * - Back Right
-     * - Back Left
-     */
-    override val kinematics: SwerveDriveKinematics = SwerveDriveKinematics(
-        Translation2d(wheelbase / 2, trackWidth / 2),
-        Translation2d(wheelbase / 2, -trackWidth / 2),
-        Translation2d(-wheelbase / 2, -trackWidth / 2),
-        Translation2d(-wheelbase / 2, trackWidth / 2),
-    )
 
     override fun disableClosedLoopControl() {
 
@@ -105,13 +101,13 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
 
     }
 
-    val odometry: SwerveDriveOdometry = SwerveDriveOdometry(kinematics, swerveDriveIO.gyro(), swerveDriveIO.positions)
+    val odometry: SwerveDriveOdometry = SwerveDriveOdometry(swerveDriveIO.kinematics, swerveDriveIO.gyro(), swerveDriveIO.positions)
 
     // Estimator for the robot pose to integrate vision approximation,
     // Two vectors represent the std dv of the robot pose and the std dv of the camera pose.
     // Currently filled with default values.
     private val poseEstimator = SwerveDrivePoseEstimator(
-        kinematics,
+        swerveDriveIO.kinematics,
         swerveDriveIO.gyro(),
         swerveDriveIO.positions,
         robotPosition,
@@ -128,52 +124,45 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
         poseEstimator.resetPosition(swerveDriveIO.gyro(), positions, pose)
     }
 
-    //TODO: Possibly use Pathfinding to generate a trajectory to our goal
-    fun trajectoryToGoal(): PathPlannerTrajectory? {
-        val currChassisSpeeds = kinematics.toChassisSpeeds(*swerveModuleStates().toTypedArray())
-        if (scoringPose == null) return null
-        return PathPlanner.generatePath(
-            PathConstraints(maxSpeed.value, 3.0), PathPoint(
-                robotPosition.translation,
-                Transform2d(robotPosition, scoringPose).translation.angle,
-                robotPosition.rotation,
-                hypot(currChassisSpeeds.vxMetersPerSecond, currChassisSpeeds.vyMetersPerSecond)
-            ), PathPoint(
-                scoringPose!!.translation,
-                Transform2d(scoringPose, robotPosition).translation.angle,
-                robotPosition.rotation
-            )
-        )
-    }
-
-    fun trajectoryToPose(pose: Pose2d): Trajectory {
-        val currChassisSpeeds = kinematics.toChassisSpeeds(*swerveModuleStates().toTypedArray())
-        return PathPlanner.generatePath(
-            PathConstraints(maxSpeed.value, 3.0), PathPoint(
-                robotPosition.translation,
-                Transform2d(robotPosition, scoringPose).translation.angle,
-                robotPosition.rotation,
-                hypot(currChassisSpeeds.vxMetersPerSecond, currChassisSpeeds.vyMetersPerSecond)
-            ), PathPoint(
-                pose.translation, Transform2d(pose, robotPosition).translation.angle, robotPosition.rotation
-            )
-        )
-    }
-
     override fun periodic() {
-        Logger.getInstance().processInputs("Drive IO", abstractSwerveDriveInputs)
+        Logger.processInputs("Drive IO", swerveDriveInputs)
 
-        val cameraOut = getEstimatedCameraPose(robotPosition)
+        val cameraOut = getEstimatedCameraPose()
         if (cameraOut != null) {
             val (cameraEstimatedRobotPose, timeStamp) = cameraOut
-            poseEstimator.addVisionMeasurement(cameraEstimatedRobotPose, timeStamp)
+            poseEstimator.addVisionMeasurement(cameraEstimatedRobotPose.toPose2d(), timeStamp)
         }
         robotPosition = poseEstimator.update(swerveDriveIO.gyro(), swerveDriveIO.positions)
 
         field.robotPose = robotPosition
 
-        swerveDriveIO.updateInputs(abstractSwerveDriveInputs)
-        Logger.getInstance().recordOutput("Robot Position", robotPosition)
+        swerveDriveIO.updateInputs(swerveDriveInputs)
+        Logger.recordOutput("Robot Position", robotPosition)
+        Logger.recordOutput(
+            "Swerve Drive States", listOf(
+                swerveDriveInputs.states[0].angle.radians,
+                swerveDriveInputs.states[0].speedMetersPerSecond,
+                swerveDriveInputs.states[1].angle.radians,
+                swerveDriveInputs.states[1].speedMetersPerSecond,
+                swerveDriveInputs.states[2].angle.radians,
+                swerveDriveInputs.states[2].speedMetersPerSecond,
+                swerveDriveInputs.states[3].angle.radians,
+                swerveDriveInputs.states[3].speedMetersPerSecond
+            ).toDoubleArray()
+        )
+
+        Logger.recordOutput(
+            "Swerve Drive Desired States", listOf(
+                swerveDriveInputs.desiredStates[0].angle.radians,
+                swerveDriveInputs.desiredStates[0].speedMetersPerSecond,
+                swerveDriveInputs.desiredStates[1].angle.radians,
+                swerveDriveInputs.desiredStates[1].speedMetersPerSecond,
+                swerveDriveInputs.desiredStates[2].angle.radians,
+                swerveDriveInputs.desiredStates[2].speedMetersPerSecond,
+                swerveDriveInputs.desiredStates[3].angle.radians,
+                swerveDriveInputs.desiredStates[3].speedMetersPerSecond
+            ).toDoubleArray()
+        )
 
         FalconDashboard.robotHeading = robotPosition.rotation.radians
         FalconDashboard.robotX = robotPosition.translation.x_u.inFeet()

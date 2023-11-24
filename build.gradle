@@ -1,14 +1,12 @@
-import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
-
 plugins {
     id "java"
-    id "org.jetbrains.kotlin.jvm" version "1.8.0"
-    id "edu.wpi.first.GradleRIO" version "2023.4.3"
+    id "org.jetbrains.kotlin.jvm" version "1.9.20"
+    id "edu.wpi.first.GradleRIO" version "2024.1.1-beta-3"
     id "idea"
-    id 'com.google.devtools.ksp' version '1.8.0-1.0.9'
+    id 'com.google.devtools.ksp' version '1.9.20-1.0.14'
 }
 
-def javaVersion = JavaVersion.VERSION_11
+def javaVersion = JavaVersion.VERSION_17
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 
@@ -30,8 +28,7 @@ deploy {
                 // First part is artifact name, 2nd is artifact type
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
-                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
-                }
+                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {}
 
                 // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
@@ -51,6 +48,7 @@ wpi.java.debugJni = false
 // Set this to true to enable desktop support
 
 def includeDesktopSupport = true
+
 
 repositories {
     maven { url "https://jitpack.io" }
@@ -72,7 +70,7 @@ configurations.all {
 def autoLogBranch = "15fc84d16b"
 
 dependencies {
-    implementation "com.github.FIRST1778:FalconLibrary:2023.1.0"
+    implementation 'com.github.FIRST1778:FalconLibrary:4e16cf58ba'
 
     // The Autolog annotation from AdvantageKit doesn't support kotlin.
     // This implementation bridges the gap between Kotlin and Java and adds
@@ -115,6 +113,9 @@ kotlin {
     sourceSets {
         main.kotlin.srcDirs += 'build/generated/ksp/main/kotlin'
         test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
+    }
+    compilerOptions {
+        apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9
     }
 }
 
@@ -165,4 +166,8 @@ idea {
         testSourceDirs = testSourceDirs + file('build/generated/ksp/test/kotlin')
         generatedSourceDirs = generatedSourceDirs + file('build/generated/ksp/main/kotlin') + file('build/generated/ksp/test/kotlin')
     }
+}
+
+wrapper {
+    gradleVersion = "8.4"
 }

@@ -40,7 +40,7 @@ object Intake : FalconSubsystem() {
 
     override fun periodic() {
         io.updateInputs(intakeInputs)
-        Logger.getInstance().processInputs("Intake Inputs", intakeInputs)
+        Logger.processInputs("Intake Inputs", intakeInputs)
     }
 
     override fun initSendable(builder: SendableBuilder?) {
