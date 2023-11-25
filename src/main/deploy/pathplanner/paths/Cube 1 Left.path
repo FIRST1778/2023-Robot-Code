@@ -8,34 +8,34 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.0034815050654595,
-        "y": 4.3912158580379925
+        "x": 2.9648089484858215,
+        "y": 4.641477296273127
       },
       "isLocked": false
     },
     {
       "anchor": {
-        "x": 3.7532506448750413,
-        "y": 4.837198718619977
+        "x": 3.9561382563386664,
+        "y": 4.574183185456242
       },
       "prevControl": {
-        "x": 2.6897530542564647,
-        "y": 4.768585970838132
+        "x": 3.2751421603243522,
+        "y": 4.570764464452712
       },
       "nextControl": {
-        "x": 5.164530151053598,
-        "y": 4.928249009341175
+        "x": 4.561950611137627,
+        "y": 4.577224470764147
       },
       "isLocked": false
     },
     {
       "anchor": {
-        "x": 6.623550593748834,
-        "y": 4.654231391201726
+        "x": 7.53593853469616,
+        "y": 4.574183185456242
       },
       "prevControl": {
-        "x": 5.068328310693711,
-        "y": 4.665666849165367
+        "x": 5.980716251641037,
+        "y": 4.585618643419883
       },
       "nextControl": null,
       "isLocked": false
@@ -43,10 +43,45 @@
   ],
   "rotationTargets": [],
   "constraintZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "Lower Shooter",
+      "waypointRelativePos": 0.3,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Lower Shooter"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Intake",
+      "waypointRelativePos": 1.55,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Suck To Shooter"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 3.75,
+    "maxAcceleration": 3.125,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
@@ -55,6 +90,6 @@
     "rotation": 0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Auto Left",
   "previewStartingState": null
 }

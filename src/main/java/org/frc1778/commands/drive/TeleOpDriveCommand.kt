@@ -6,7 +6,7 @@ import org.frc1778.Controls
 import org.frc1778.Robot
 import org.frc1778.subsystems.drive.Drive
 import org.ghrobotics.lib.commands.FalconCommand
-import kotlin.math.abs
+import org.ghrobotics.lib.utils.DoubleSource
 import kotlin.math.pow
 import kotlin.math.withSign
 
@@ -48,9 +48,6 @@ class TeleOpDriveCommand: FalconCommand(Drive) {
             radiansPerSecond = -Controls.handleDeadBand(rotation(), 0.1).pow(2)
                 .withSign(rotation()) * Constants.DriveConstants.maxAngularSpeed.value
 //        }
-        if(abs(radiansPerSecond) > 0.1) {
-           println("radiansPerSecond: $radiansPerSecond")
-        }
         Drive.swerveDrive(
             Controls.handleDeadBand(translationX(), 0.1).pow(2).withSign(
                 translationX() * Robot.driveInversion
@@ -65,12 +62,16 @@ class TeleOpDriveCommand: FalconCommand(Drive) {
     }
 
     companion object {
-        val translationX = Controls.driverController.getRawAxis(1)
-        val translationY = Controls.driverController.getRawAxis(0)
-        val rotation = Controls.driverController.getRawAxis(2)
+        val translationX = -Controls.driverController.getRawAxis(5)
+        val translationY = Controls.driverController.getRawAxis(4)
+        val rotation = Controls.driverController.getRawAxis(0)
 //        val rotation = {.25}
         // There are two switches at the top of the controller.  Right is hold, with
         // ID 1; left is toggle, with ID 2.
         val autoAlignActive = Controls.driverController.getRawButton(1)
+
+        private operator fun DoubleSource.unaryMinus(): DoubleSource {
+            return { -this() }
+        }
     }
 }

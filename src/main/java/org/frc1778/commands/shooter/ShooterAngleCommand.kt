@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.Timer
 import org.frc1778.Level
 import org.frc1778.animation.BlinkAnimation
 import org.frc1778.subsystems.Gyro
-import org.frc1778.subsystems.intake.Intake
 import org.frc1778.subsystems.Lights
+import org.frc1778.subsystems.intake.Intake
 import org.frc1778.subsystems.shooter.Shooter
 import org.frc1778.subsystems.wrist.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
@@ -27,6 +27,7 @@ class ShooterAngleCommand(val scoringLevel: Level) : FalconCommand(Wrist) {
     val maxAcceleration: Double = 9.0 // rad/sec
     val maxVelocity: Double = 5.0
     var endPos: SIUnit<Radian>? = null
+    lateinit var endState: TrapezoidProfile.State
 
     override fun initialize() {
 
@@ -44,17 +45,21 @@ class ShooterAngleCommand(val scoringLevel: Level) : FalconCommand(Wrist) {
         timer.reset()
         timer.start()
         Wrist.setNextLevel(scoringLevel)
-        var startPosition: SIUnit<Radian> = Wrist.getCurrentAngle()
-
+        val startPosition: SIUnit<Radian> = Wrist.getCurrentAngle()
         val constraints = TrapezoidProfile.Constraints(maxVelocity, maxAcceleration)
         val startState = TrapezoidProfile.State(startPosition.value, Wrist.getDesiredAngleVelocity())
-        val endState = TrapezoidProfile.State(endPos.value, END_VEL)
-        profile = TrapezoidProfile(constraints, endState, startState)
+        endState = TrapezoidProfile.State(endPos.value, END_VEL)
+        profile = TrapezoidProfile(constraints)
+        profile.calculate(0.0, endState, startState)
         this.endPos = endPos
     }
 
     override fun execute() {
-        val state = profile.calculate(timer.get())
+        val state = profile.calculate(
+            timer.get(), endState, TrapezoidProfile.State(
+                Wrist.getCurrentAngle().value, Wrist.getDesiredAngleVelocity()
+            )
+        )
         Wrist.setDesiredAngleVelocity(state.velocity)
         Wrist.setDesiredAngle(state.position.radians)
     }

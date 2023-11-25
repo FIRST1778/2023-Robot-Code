@@ -8,6 +8,9 @@ import edu.wpi.first.math.VecBuilder
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
 import edu.wpi.first.math.geometry.Pose2d
 import edu.wpi.first.math.geometry.Pose3d
+import edu.wpi.first.math.geometry.Rotation2d
+import edu.wpi.first.math.geometry.Transform2d
+import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry
 import edu.wpi.first.math.kinematics.SwerveModulePosition
 import edu.wpi.first.math.kinematics.SwerveModuleState
@@ -44,7 +47,6 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
     }
     override val swerveDriveInputs: SwerveDriveInputsAutoLogged = SwerveDriveInputsAutoLogged()
 
-
     override fun lateInit() {
         super.lateInit()
         Constants.DriveConstants.driveTab.add("Drive", this).withSize(3, 4)
@@ -52,7 +54,7 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
     }
 
     override fun autoReset() {
-        resetPosition(Pose2d(), swerveDriveIO.positions)
+//        resetPosition(Pose2d(), swerveDriveIO.positions)
     }
 
     override val wheelbase: Double = Constants.DriveConstants.wheelBase
@@ -60,7 +62,6 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
     override val trackWidth: Double = Constants.DriveConstants.trackWidth
     override val maxSpeed: SIUnit<Velocity<Meter>> = Constants.DriveConstants.maxSpeed
 
-    var desiredWheelStates: Array<SwerveModuleState> = swerveDriveIO.states
 
     override val motorOutputLimiter: Source<Double> = {
         1.00
@@ -72,10 +73,18 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
         Constants.DriveConstants.maxAngularAcceleration.value * 30
     )
 
-    val translationPIDConstants = PIDConstants(
-        0.75, 0.0, 0.15
+    val translationPIDConstants = if(isReal()) {
+        PIDConstants(
+            0.75, 0.0, 0.15
 
-    )
+        )
+    } else {
+        // Sim doesn't have inertia so no k
+        PIDConstants(
+            2.5, 0.125, 0.25
+
+        )
+    }
     val rotationPIDConstants = PIDConstants(
         0.2, 0.0, 0.02
     )
@@ -105,7 +114,8 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
 
     }
 
-    val odometry: SwerveDriveOdometry = SwerveDriveOdometry(swerveDriveIO.kinematics, swerveDriveIO.gyro(), swerveDriveIO.positions)
+    val odometry: SwerveDriveOdometry =
+        SwerveDriveOdometry(swerveDriveIO.kinematics, swerveDriveIO.gyro(), swerveDriveIO.positions)
 
     // Estimator for the robot pose to integrate vision approximation,
     // Two vectors represent the std dv of the robot pose and the std dv of the camera pose.
@@ -122,13 +132,17 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
 
     fun setPose(pose: Pose2d) {
         resetPosition(pose, swerveDriveIO.positions)
+
     }
 
     override fun resetPosition(pose: Pose2d, positions: Array<SwerveModulePosition>) {
+        controller.reset(pose, ChassisSpeeds())
         poseEstimator.resetPosition(swerveDriveIO.gyro(), positions, pose)
     }
 
+
     override fun periodic() {
+        swerveDriveIO.updateInputs(swerveDriveInputs)
         Logger.processInputs("Drive IO", swerveDriveInputs)
 
         val cameraOut = getEstimatedCameraPose()
@@ -136,12 +150,26 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
             val (cameraEstimatedRobotPose, timeStamp) = cameraOut
             poseEstimator.addVisionMeasurement(cameraEstimatedRobotPose.toPose2d(), timeStamp)
         }
-        robotPosition = poseEstimator.update(swerveDriveIO.gyro(), swerveDriveIO.positions)
+
+        val useSwervePositions = true
+        if (isReal() || useSwervePositions) {
+            robotPosition = poseEstimator.update(swerveDriveIO.gyro(), swerveDriveIO.positions)
+        } else {
+            robotPosition += Transform2d(
+                swerveDriveInputs.desiredChassisSpeeds.vxMetersPerSecond * 0.02,
+                swerveDriveInputs.desiredChassisSpeeds.vyMetersPerSecond * 0.02,
+                Rotation2d.fromRadians(swerveDriveInputs.desiredChassisSpeeds.omegaRadiansPerSecond * 0.02)
+            )
+        }
 
         field.robotPose = robotPosition
 
-        swerveDriveIO.updateInputs(swerveDriveInputs)
-        Logger.recordOutput("Robot Position", robotPosition)
+
+        Logger.recordOutput(
+            "Robot Position", doubleArrayOf(
+                robotPosition.translation.x, robotPosition.translation.y, robotPosition.rotation.radians
+            )
+        )
         Logger.recordOutput(
             "Swerve Drive States", listOf(
                 swerveDriveInputs.states[0].angle.radians,

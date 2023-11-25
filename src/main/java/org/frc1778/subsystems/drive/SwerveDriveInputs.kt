@@ -61,6 +61,7 @@ open class SwerveDriveInputs : AbstractSwerveDriveInputs {
     override var leftBackFeedforward: SIUnit<Volt> = 0.volts
 
     override var chassisSpeeds: ChassisSpeeds = ChassisSpeeds()
+    override var desiredChassisSpeeds: ChassisSpeeds = ChassisSpeeds()
 
     override var states: List<SwerveModuleState> = listOf()
     override var desiredStates: List<SwerveModuleState> = listOf()

@@ -78,6 +78,8 @@ object Robot : LoggedFalconTimedRobot() {
 
 
     override fun robotInit() {
+
+
         Logger.recordMetadata("ProjectName", "Cold Fusion") // Set a metadata value
 
         if (isReal()) {
@@ -145,8 +147,8 @@ object Robot : LoggedFalconTimedRobot() {
     override fun robotPeriodic() {
         Shuffleboard.update()
         Controls.driverController.update()
-        Controls.operatorControllerRed.update()
-        Controls.operatorControllerBlue.update()
+//        Controls.operatorControllerRed.update()
+//        Controls.operatorControllerBlue.update()
     }
 
     override fun disabledInit() {

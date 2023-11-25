@@ -1,6 +1,7 @@
 package org.frc1778.subsystems.shooter
 
 import edu.wpi.first.util.sendable.Sendable
+import edu.wpi.first.wpilibj.RobotBase.isReal
 import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Volt
@@ -9,7 +10,11 @@ import org.littletonrobotics.junction.Logger
 
 object Shooter : FalconSubsystem(), Sendable {
 
-    private var io: ShooterIO = ShooterIOSparkMax()
+    private var io: ShooterIO = if(isReal()) {
+        ShooterIOSparkMax()
+    } else {
+        ShooterIOSim()
+    }
     private val inputs = ShooterIOInputsAutoLogged()
 
     var cubeStored: Boolean

@@ -87,6 +87,7 @@ class SwerveDriveIOSim : SwerveDriveIO {
 
     override val gyro: Source<Rotation2d> = { pigeon2.rotation2d }
     private var desiredStates = Array(4) { SwerveModuleState() }
+    private var desiredSpeeds = ChassisSpeeds()
     override val positions: Array<SwerveModulePosition>
         get() = Array(4) {
             modules[it].getPosition(true)
@@ -99,14 +100,12 @@ class SwerveDriveIOSim : SwerveDriveIO {
     override val kinematics: SwerveDriveKinematics = sim.Kinem
 
     override fun setChassisSpeeds(chassisSpeeds: ChassisSpeeds) {
+        desiredSpeeds = chassisSpeeds
         val states = kinematics.toSwerveModuleStates(chassisSpeeds)
         SwerveDriveKinematics.desaturateWheelSpeeds(
             states,
             Constants.DriveConstants.maxSpeed.value,
         )
-        if (states.sumOf { it.speedMetersPerSecond } < 0.01 && (chassisSpeeds.vxMetersPerSecond != 0.0 || chassisSpeeds.vyMetersPerSecond != 0.0 || chassisSpeeds.omegaRadiansPerSecond != 0.0)) {
-            println("Chassis Speeds but no Wheel Speeds")
-        }
             setModuleStates(states)
         }
 
@@ -169,6 +168,7 @@ class SwerveDriveIOSim : SwerveDriveIO {
             inputs.gyroRaw = pigeon2.angle.degrees
 
             inputs.chassisSpeeds = sim.Kinem.toChassisSpeeds(*states)
+            inputs.desiredChassisSpeeds = desiredSpeeds
 
             inputs.states = states.toList()
             inputs.desiredStates = desiredStates.toList()
