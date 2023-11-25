@@ -27,19 +27,25 @@ class ShooterIOSparkMax: ShooterIO {
         )
     }
 
+    private var loaded = false
+
     //TODO Get DIO
     private val limitSwitch = DigitalInput(2)
 
     override fun updateInputs(inputs: ShooterIOInputs) {
-//        if(!limitSwitch.get()) {
-//            ShooterIO.ShooterIOInputs.shooterLoaded = true
-//        }
-//        ShooterIO.ShooterIOInputs.shooterVoltage = parentShooterMotor.voltageOutput.value
-//        ShooterIO.ShooterIOInputs.limitSwitchReading = limitSwitch.get()
+        if(!limitSwitch.get()) {
+            inputs.shooterLoaded = true
+        }
+        inputs.shooterVoltage = parentShooterMotor.voltageOutput.value
+        inputs.limitSwitchReading = limitSwitch.get()
     }
 
     override fun setVoltage(voltage: SIUnit<Volt>) {
         parentShooterMotor.setVoltage(voltage)
+    }
+
+    override fun setLoaded(loaded: Boolean) {
+        this.loaded = loaded
     }
 
     override fun stop() {

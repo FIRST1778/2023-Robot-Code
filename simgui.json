@@ -86,11 +86,6 @@
           "visible": true
         }
       },
-      "/Shuffleboard/Field/Field": {
-        "window": {
-          "visible": true
-        }
-      },
       "/Shuffleboard/Shooter/Shooter": {
         "window": {
           "visible": true
@@ -103,6 +98,9 @@
       "open": false
     },
     "transitory": {
+      "PathPlanner": {
+        "open": true
+      },
       "Shuffleboard": {
         "Drive": {
           "Bottom Left Swerve": {
@@ -121,9 +119,22 @@
             "open": true
           },
           "open": true
-        },
-        "open": true
+        }
       }
     }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Server": {
+      "Publishers": {
+        "open": true
+      },
+      "open": true
+    }
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

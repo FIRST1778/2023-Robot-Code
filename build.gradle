@@ -70,7 +70,7 @@ configurations.all {
 def autoLogBranch = "15fc84d16b"
 
 dependencies {
-    implementation 'com.github.FIRST1778:FalconLibrary:4e16cf58ba'
+    implementation 'com.github.FIRST1778:FalconLibrary:5e159aabef'
 
     // The Autolog annotation from AdvantageKit doesn't support kotlin.
     // This implementation bridges the gap between Kotlin and Java and adds

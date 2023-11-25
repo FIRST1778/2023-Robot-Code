@@ -26,13 +26,13 @@ import kotlin.math.sin
 
 object Wrist : FalconSubsystem() {
 
-    val io = if(LoggedRobot.isReal()) {
+    val io = if (LoggedRobot.isReal()) {
         WristIOSparkMax()
     } else {
         WristIOSim()
     }
 
-    val wristInputs = WristInputsAutoLogged()
+    private val wristInputs = WristInputsAutoLogged()
 
 
     //TODO: Update to new weights
@@ -48,7 +48,6 @@ object Wrist : FalconSubsystem() {
     val angleControlEnabled = true
 
     var dataLogger = DataLogger("Shooter")
-
 
 
     init {
@@ -90,30 +89,29 @@ object Wrist : FalconSubsystem() {
 
     //TODO Get angle offset for gravity/feedforward
     val angleOffset: SIUnit<Radian> = 36.0.degrees
+    @Suppress("UsePropertyAccessSyntax")
     private fun angleControl() {
-        @Suppress("UsePropertyAccessSyntax")
-        if (angleControlEnabled && ((scoringLevel != Level.None) || (nextLevel != Level.None)) || getCurrentAngle() > 92.degrees) {
-            angleLoop.setNextR(VecBuilder.fill(desiredAngle.value, desiredAngleVelocity))
-            angleLoop.correct(VecBuilder.fill(getCurrentAngle().value))
-            angleLoop.predict(0.020) // 20 ms
 
-            var nextVoltage = angleLoop.getU(0)
+//      if (angleControlEnabled && ((scoringLevel != Level.None) || (nextLevel != Level.None)) || getCurrentAngle() > 92.degrees) {
+        angleLoop.setNextR(VecBuilder.fill(desiredAngle.value, desiredAngleVelocity))
+        angleLoop.correct(VecBuilder.fill(getCurrentAngle().value))
+        angleLoop.predict(0.020) // 20 ms
 
-            //TODO: See if this is throwing things off
-            feedforwardVoltage = angle_kS * sin(getCurrentAngle().value + angleOffset.value)
-            nextVoltage += feedforwardVoltage
-            if (nextVoltage > 12) {
-                nextVoltage = 12.0
-            }
+        var nextVoltage = angleLoop.getU(0)
 
-            io.setVoltage(nextVoltage.volts)
-
-        } else {
-            if (LoggedRobot.isReal()) {
-                resetDesiredAngle()
-                io.setVoltage(0.0.volts)
-            }
+        //TODO: See if this is throwing things off
+        feedforwardVoltage = angle_kS * sin(getCurrentAngle().value + angleOffset.value)
+        nextVoltage += feedforwardVoltage
+        if (nextVoltage > 12) {
+            nextVoltage = 12.0
         }
+
+        io.setVoltage(nextVoltage.volts)
+
+//        } else {
+//            resetDesiredAngle()
+//            io.setVoltage(0.0.volts)
+//        }
     }
 
     fun setNextLevel(level: Level) {
@@ -137,20 +135,30 @@ object Wrist : FalconSubsystem() {
         }
 
         io.updateInputs(wristInputs)
-        Logger.processInputs("Wrist Inputs",wristInputs)
+        Logger.processInputs("Wrist Inputs", wristInputs)
+
+        val wristPose3d = Pose3d(
+            Translation3d(-0.255, 0.0, 0.3175), Rotation3d(90.degrees.value, 0.0, getCurrentAngle().value)
+        )
 
         Logger.recordOutput(
-            "Wrist Pose", Pose3d(
-                Translation3d(-0.255, 0.0, 0.3175),
-                Rotation3d(0.0, (-(getCurrentAngle()) + 90.0.degrees).value, 0.0)
+            "Wrist Pose", doubleArrayOf(
+                wristPose3d.translation.x,
+                wristPose3d.translation.y,
+                wristPose3d.translation.z,
+                wristPose3d.rotation.x,
+                wristPose3d.rotation.y,
+                wristPose3d.rotation.z
+
             )
         )
         Logger.recordOutput(
-            "Wrist Angle",
-            getCurrentAngle().value
+            "Wrist Angle", getCurrentAngle().value
+        )
+        Logger.recordOutput(
+            "Wrist Angle Degrees", getCurrentAngle().inDegrees()
         )
     }
-
 
 
     fun setScoringLevel(level: Level) {
