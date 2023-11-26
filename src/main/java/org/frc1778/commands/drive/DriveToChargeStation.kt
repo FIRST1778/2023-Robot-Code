@@ -11,7 +11,6 @@ import org.frc1778.subsystems.drive.Drive
 import org.frc1778.subsystems.wrist.Wrist
 import org.ghrobotics.lib.commands.FalconCommand
 import org.ghrobotics.lib.commands.parallel
-import org.ghrobotics.lib.commands.sequential
 import org.ghrobotics.lib.mathematics.twodim.geometry.Rectangle2d
 import org.ghrobotics.lib.mathematics.units.derived.degrees
 
@@ -20,22 +19,19 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
 
     override fun initialize() {
         command = parallel {
-            if(Wrist.getCurrentAngle() > 95.degrees) {
+            if (Wrist.getCurrentAngle() > 95.degrees) {
                 +ShooterAngleCommand(Level.None)
             }
             StationBalancingPaths.entries.firstOrNull {
                 Drive.robotPosition.translation in it.qualifier
             }?.let {
-                +sequential {
+
                     +AutoBuilder.pathfindThenFollowPath(
                         PathPlannerPath.fromPathFile(if (outerBalance) it.pathNames.first else it.pathNames.second),
                         Drive.pathConstraints,
 //                    Double.MAX_VALUE // Rotation Delay Distance. We don't want to rotate so big number
                     )
-                    +AutoBuilder.followPathWithEvents(
-                        PathPlannerPath.fromPathFile(if (outerBalance) it.pathNames.first else it.pathNames.second),
-                    )
-                }
+
             } ?: +Commands.none()
 
         }
@@ -56,9 +52,8 @@ class DriveToChargeStation(private val outerBalance: Boolean) : FalconCommand(Dr
         command.end(interrupted)
     }
 
-    override fun isFinished(): Boolean {
-        return command.isFinished
-    }
+    override fun isFinished(): Boolean = command.isFinished
+
     enum class StationBalancingPaths(
         val pathNames: Pair<String, String>, val qualifier: Rectangle2d
     ) {

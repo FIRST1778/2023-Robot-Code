@@ -5,13 +5,14 @@ import edu.wpi.first.apriltag.AprilTagFields
 import edu.wpi.first.math.geometry.Rotation3d
 import edu.wpi.first.math.geometry.Transform3d
 import edu.wpi.first.math.geometry.Translation3d
+import edu.wpi.first.math.system.plant.DCMotor
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab
 import org.ghrobotics.lib.mathematics.units.Frac
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.Second
-import org.ghrobotics.lib.mathematics.units.derived.Acceleration
+import org.ghrobotics.lib.mathematics.units.derived.LinearAcceleration
 import org.ghrobotics.lib.mathematics.units.derived.Radian
 import org.ghrobotics.lib.mathematics.units.derived.Velocity
 import org.ghrobotics.lib.mathematics.units.derived.Volt
@@ -21,12 +22,14 @@ import org.ghrobotics.lib.mathematics.units.inches
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitLengthModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.NativeUnitRotationModel
 import org.ghrobotics.lib.mathematics.units.nativeunit.nativeUnits
+import org.ghrobotics.lib.mathematics.units.pounds
 import org.ghrobotics.lib.subsystems.drive.swerve.SwerveModuleConstants
 import kotlin.math.PI
 import kotlin.math.hypot
 
 object Constants {
     val currentMode = Mode.SIM
+
     enum class Mode {
         REAL, SIM
     }
@@ -37,11 +40,17 @@ object Constants {
         val trackWidth: Double = 23.5.inches.value
         val driveBaseRadius = hypot(trackWidth / 2.0, wheelBase / 2.0)
         const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
-        const val steerReduction  = 12.8
+        const val steerReduction = 12.8
         val maxSpeed: SIUnit<Frac<Meter, Second>> = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
-        val maxAngularSpeed: SIUnit<Velocity<Radian>> =
-            SIUnit((maxSpeed.value / driveBaseRadius))
-        val maxAngularAcceleration: SIUnit<Acceleration<Radian>> = SIUnit(maxAngularSpeed.value * (3.0))
+        val maxAngularSpeed: SIUnit<Velocity<Radian>> = SIUnit((maxSpeed.value / driveBaseRadius))
+        val maxAccel: SIUnit<LinearAcceleration> = DCMotor.getNEO(1).withReduction(1 / driveReduction).let { motor ->
+            //F = ma
+            //a = tau/mr
+            SIUnit(motor.getTorque(motor.stallCurrentAmps) / (4.inches.value/2 * 90.pounds.value))
+        }
+//        val maxAngularAcceleration: SIUnit<Acceleration<Radian>> = SIUnit(maxAngularSpeed.value * (3.0))
+        val maxAngularAcceleration = maxAccel / driveBaseRadius
+
 
         const val pigeonCanID: Int = 21
         private const val azimuthMotorEncoderNativeUnitsPerRotation = 42.0 / steerReduction
@@ -194,7 +203,8 @@ object Constants {
 
     object ShooterConstants {
         const val ANGLE_MOTOR_GEAR_REDUCTION: Double = ((24.0 / 64.0) * (1.0 / 5.0) * (1.0 / 4.0))
-        val ANGLE_MOTOR_UNIT_MODEL = NativeUnitRotationModel(((42.0 * (1.0/((24.0 / 64.0) * (1.0 / 5.0) * (1.0 / 4.0))))).nativeUnits)
+        val ANGLE_MOTOR_UNIT_MODEL =
+            NativeUnitRotationModel(((42.0 * (1.0 / ((24.0 / 64.0) * (1.0 / 5.0) * (1.0 / 4.0))))).nativeUnits)
         const val ANGLE_MOTOR_ID: Int = 16
         val shooterTab = Shuffleboard.getTab("Shooter")!!
     }
@@ -208,9 +218,9 @@ object Constants {
         )
     }
 
-	object LedConstants {
-		const val NUM_LEDS: Int = 7 * 4
-		const val NUM_LEDS_PER_SECTION: Int = 7
+    object LedConstants {
+        const val NUM_LEDS: Int = 7 * 4
+        const val NUM_LEDS_PER_SECTION: Int = 7
         val MORSE_CODE = arrayOf(
             ".-", "-...", "-.-.", "-..", // A-D
             ".", "..-.", "--.", "....", // E-H
@@ -221,7 +231,7 @@ object Constants {
             "-.--", "--.." // Y-Z
         )
         const val TICKS_PER_DIT = 8  // 8 * 20 ms = 160 ms per dit
-	}
+    }
 
 
 }
@@ -242,6 +252,7 @@ enum class Level(
         frontShooterVoltage = 4.5.volts
 
     ),
+
     //Shoot to the Middle
     Middle(
         optionName = "Middle",
@@ -250,6 +261,7 @@ enum class Level(
         frontShooterPosition = 150.degrees,
         frontShooterVoltage = 3.2.volts
     ),
+
     //Shoot to the Bottom
     Bottom(
         optionName = "Bottom",
@@ -258,6 +270,7 @@ enum class Level(
         frontShooterPosition = 90.0.degrees,
         frontShooterVoltage = 3.0.volts
     ),
+
     //Stow Shooter
     None(
         optionName = "Hopper",
@@ -266,6 +279,7 @@ enum class Level(
         frontShooterPosition = 90.0.degrees,
         frontShooterVoltage = 1.5.volts
     ),
+
     //Shoot from Across Charge Station
     THREE_POINT(
         optionName = "3 Point",
@@ -274,6 +288,7 @@ enum class Level(
         frontShooterPosition = 150.0.degrees,
         frontShooterVoltage = 10.0.volts
     ),
+
     //Shoot From atop Charge Station
     CHARGE_STATION(
         optionName = "Don't Choose ME",

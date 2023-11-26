@@ -54,7 +54,7 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
     }
 
     override fun autoReset() {
-//        resetPosition(Pose2d(), swerveDriveIO.positions)
+        controller.reset(robotPosition, ChassisSpeeds())
     }
 
     override val wheelbase: Double = Constants.DriveConstants.wheelBase
@@ -68,23 +68,16 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
     }
     override val pathConstraints: PathConstraints = PathConstraints(
         Constants.DriveConstants.maxSpeed.value,
-        maxSpeed.value * 3,
+        Constants.DriveConstants.maxAccel.value,
         Constants.DriveConstants.maxAngularSpeed.value,
-        Constants.DriveConstants.maxAngularAcceleration.value * 30
+        Constants.DriveConstants.maxAngularAcceleration.value
     )
 
-    val translationPIDConstants = if(isReal()) {
-        PIDConstants(
+    val translationPIDConstants = PIDConstants(
             0.75, 0.0, 0.15
 
         )
-    } else {
-        // Sim doesn't have inertia so no k
-        PIDConstants(
-            2.5, 0.125, 0.25
 
-        )
-    }
     val rotationPIDConstants = PIDConstants(
         0.2, 0.0, 0.02
     )
@@ -151,10 +144,11 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
             poseEstimator.addVisionMeasurement(cameraEstimatedRobotPose.toPose2d(), timeStamp)
         }
 
-        val useSwervePositions = true
+        val useSwervePositions = false
         if (isReal() || useSwervePositions) {
             robotPosition = poseEstimator.update(swerveDriveIO.gyro(), swerveDriveIO.positions)
         } else {
+            swerveDriveInputs.chassisSpeeds = swerveDriveInputs.desiredChassisSpeeds
             robotPosition += Transform2d(
                 swerveDriveInputs.desiredChassisSpeeds.vxMetersPerSecond * 0.02,
                 swerveDriveInputs.desiredChassisSpeeds.vyMetersPerSecond * 0.02,
