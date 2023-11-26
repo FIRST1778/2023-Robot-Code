@@ -1,8 +1,8 @@
 package org.frc1778.subsystems.drive
 
-import com.gamingnight.junction.AutoLog
 import edu.wpi.first.math.kinematics.ChassisSpeeds
 import edu.wpi.first.math.kinematics.SwerveModuleState
+import org.ghrobotics.lib.junction.AutoLog
 import org.ghrobotics.lib.mathematics.units.Ampere
 import org.ghrobotics.lib.mathematics.units.Meter
 import org.ghrobotics.lib.mathematics.units.SIUnit

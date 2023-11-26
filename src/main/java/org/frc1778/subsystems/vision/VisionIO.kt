@@ -1,7 +1,7 @@
 package org.frc1778.subsystems.vision
 
-import com.gamingnight.junction.AutoLog
 import edu.wpi.first.math.geometry.Pose3d
+import org.ghrobotics.lib.junction.AutoLog
 
 
 @AutoLog

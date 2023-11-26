@@ -1,6 +1,6 @@
 package org.frc1778.subsystems.shooter
 
-import com.gamingnight.junction.AutoLog
+import org.ghrobotics.lib.junction.AutoLog
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.derived.Volt
 

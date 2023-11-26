@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
     id "java"
     id "org.jetbrains.kotlin.jvm" version "1.9.20"
@@ -68,16 +71,10 @@ configurations.all {
 }
 
 def autoLogBranch = "15fc84d16b"
+def falconLibraryBranch = "a21da4035c"
 
 dependencies {
-    implementation 'com.github.FIRST1778:FalconLibrary:5e159aabef'
-
-    // The Autolog annotation from AdvantageKit doesn't support kotlin.
-    // This implementation bridges the gap between Kotlin and Java and adds
-    // support for SIUnit
-    // The code for this is also in the FalconLibrary, but I'm having some trouble
-    // getting it to work.
-    implementation "com.github.gamingnight5965:AutoLog:$autoLogBranch"
+    implementation "com.github.FIRST1778:FalconLibrary:$falconLibraryBranch"
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
@@ -104,7 +101,7 @@ dependencies {
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 
     // I want to replace this with Falcon Library
-    ksp "com.github.gamingnight5965:AutoLog:$autoLogBranch"
+    ksp "com.github.FIRST1778:FalconLibrary:$falconLibraryBranch"
 
 
 }
@@ -115,7 +112,8 @@ kotlin {
         test.kotlin.srcDirs += 'build/generated/ksp/test/kotlin'
     }
     compilerOptions {
-        apiVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9
+        apiVersion = KotlinVersion.KOTLIN_1_9
+        jvmTarget = JvmTarget.JVM_17
     }
 }
 
@@ -145,12 +143,6 @@ wpi.java.configureTestTasks(test)
 tasks.withType(JavaCompile).configureEach {
     // Configure string concat to always inline compile
     options.compilerArgs.add '-XDstringConcat=inline'
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = javaVersion.toString()
-    }
 }
 
 idea {

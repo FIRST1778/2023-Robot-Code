@@ -6,6 +6,7 @@ import org.ghrobotics.lib.commands.FalconSubsystem
 import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.littletonrobotics.junction.Logger
 
+
 object Intake : FalconSubsystem() {
 
     private val io = IntakeIOSparkMax()

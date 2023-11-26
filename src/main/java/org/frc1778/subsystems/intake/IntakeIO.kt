@@ -1,11 +1,11 @@
 package org.frc1778.subsystems.intake
 
-import com.gamingnight.junction.AutoLog
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.wpilibj.DigitalInput
 import edu.wpi.first.wpilibj.PneumaticsModuleType
 import org.frc1778.Level
 import org.frc1778.subsystems.wrist.Wrist
+import org.ghrobotics.lib.junction.AutoLog
 import org.ghrobotics.lib.mathematics.units.Ampere
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.amps

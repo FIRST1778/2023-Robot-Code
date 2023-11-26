@@ -1,10 +1,10 @@
 package org.frc1778.subsystems.wrist
 
-import com.gamingnight.junction.AutoLog
 import com.revrobotics.CANSparkMaxLowLevel
 import edu.wpi.first.wpilibj.DigitalInput
 import org.frc1778.Constants
 import org.frc1778.subsystems.ShooterAbsoluteEncoder
+import org.ghrobotics.lib.junction.AutoLog
 import org.ghrobotics.lib.mathematics.units.Ampere
 import org.ghrobotics.lib.mathematics.units.SIUnit
 import org.ghrobotics.lib.mathematics.units.amps
