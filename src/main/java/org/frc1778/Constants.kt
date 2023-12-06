@@ -39,7 +39,8 @@ object Constants {
         //   https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
         //   https://github.com/SwerveDriveSpecialties/Do-not-use-swerve-lib-2022-unmaintained
         //     SdsModuleConfigurations.java:26
-        private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
+        //private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
+        private const val driveReduction = 1.0 / 6.12
 
         val maxSpeed: SIUnit<Frac<Meter, Second>>
                 = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
