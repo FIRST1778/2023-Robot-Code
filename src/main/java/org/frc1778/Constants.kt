@@ -39,7 +39,8 @@ object Constants {
         //   https://www.swervedrivespecialties.com/products/mk4i-swerve-module?variant=39598777172081
         //   https://github.com/SwerveDriveSpecialties/Do-not-use-swerve-lib-2022-unmaintained
         //     SdsModuleConfigurations.java:26
-        private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
+        //private const val driveReduction = (14.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0)
+        private const val driveReduction = 1.0 / 6.12
 
         val maxSpeed: SIUnit<Frac<Meter, Second>>
                 = SIUnit((5676 / 60.0) * driveReduction * 4.inches.value * PI)
@@ -65,7 +66,7 @@ object Constants {
             kDriveTalonId = 6
             kAzimuthTalonId = 5
             kCanCoderId = 10
-            kAzimuthEncoderHomeOffset = -Math.toRadians(64.8)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(66.23)  // **********
             kInvertDrive = true
         }
 
@@ -74,7 +75,7 @@ object Constants {
             kDriveTalonId = 8
             kAzimuthTalonId = 7
             kCanCoderId = 11
-            kAzimuthEncoderHomeOffset = -Math.toRadians(249.55)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(252.4)  // **********
             kInvertDrive = false
         }
 
@@ -83,7 +84,7 @@ object Constants {
             kDriveTalonId = 2
             kAzimuthTalonId = 1
             kCanCoderId = 12
-            kAzimuthEncoderHomeOffset = -Math.toRadians(108.1)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(109.1)  // **********
             kInvertDrive = false
         }
 
@@ -92,7 +93,7 @@ object Constants {
             kDriveTalonId = 4
             kAzimuthTalonId = 3
             kCanCoderId = 13
-            kAzimuthEncoderHomeOffset = -Math.toRadians(250.7)  // **********
+            kAzimuthEncoderHomeOffset = -Math.toRadians(250.2)  // **********
             kInvertDrive = true
         }
     }
