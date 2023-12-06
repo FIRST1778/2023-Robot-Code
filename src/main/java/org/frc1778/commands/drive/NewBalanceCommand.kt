@@ -8,11 +8,11 @@ import org.ghrobotics.lib.commands.FalconCommand
 
 class BalanceCommand: FalconCommand(Drive) {
     private object Config {
-        const val proportional: Double = 2.0 // (m/sec)/m
-        const val derivative: Double = 0.125
+        const val proportional: Double = -1.6 // (m/sec)/m
+        const val derivative: Double = 0.25
         const val error_tolerance: Double = 0.055
         const val derivative_tolerance: Double = 0.4
-        const val backoff: Double = 0.4
+        const val backoff: Double = 0.7
     }
 
     val balanceAnimation = BalanceAnimation()

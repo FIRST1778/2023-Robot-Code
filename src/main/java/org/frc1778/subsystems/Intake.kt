@@ -38,10 +38,10 @@ object Intake : FalconSubsystem() {
     )
     var lineBreakOverride : Boolean = false
 
-    private var intakeVoltage = 4.volts
+    private var intakeVoltage = 10.volts
 
-    fun setMotorVoltage(voltage : SIUnit<Volt>){
-        beltMotor.setVoltage(voltage)
+    private fun setMotorVoltage(voltage : SIUnit<Volt>){
+        beltMotor.setVoltage(voltage/3)
         wheelMotor.setVoltage(voltage/5)
     }
     fun cubeStored() : Boolean {

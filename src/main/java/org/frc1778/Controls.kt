@@ -37,17 +37,18 @@ object Controls {
     }
 
     val xboxController = XboxController.mapControls {
-        button(1) { changeOn(ShooterAngleCommand(Level.Bottom)) }
-        button(2) { change(BalanceCommand()) }
-        button(3) { changeOn(ShooterAngleCommand(Level.Middle)) }
-        button(4) { changeOn(ShooterAngleCommand(Level.Top)) }
-        button(7) { changeOn(IntakeLineBreakOverrideCommand()) }
-        button(8) { changeOn(ShooterAngleCommand(Level.THREE_POINT)) }
+        button(1) { changeOn(ShooterAngleCommand(Level.Bottom)) } //A
+//        button(2) { change(BalanceCommand()) } //B
+        button(3) { changeOn(ShooterAngleCommand(Level.Middle)) }//X
+        button(4) { changeOn(ShooterAngleCommand(Level.Top)) }//Y
+        button(6) { change(IntakeSuckCommand()) }//RB
+        button(7) { changeOn(IntakeLineBreakOverrideCommand()) }//Back
+        button(8) { changeOn(ShooterAngleCommand(Level.THREE_POINT)) }//Start
 
         axisButton(2, 0.7) {
             change(ShooterShootCommand())
             changeOff { ShooterAngleCommand(Level.None).schedule() }
-        }
+        }//LT
         axisButton(3, 0.7) { change(
             sequential {
                 +ShooterAngleCommand(Level.None)
@@ -55,7 +56,7 @@ object Controls {
                     +ShooterLoadCommand()
                 }
             }
-        ) }
+        ) }//RB
     }
 
     fun handleDeadBand(x: Double, tolerance: Double): Double {
