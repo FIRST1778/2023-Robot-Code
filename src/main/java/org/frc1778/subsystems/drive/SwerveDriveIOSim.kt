@@ -22,8 +22,10 @@ import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.derived.volts
 import org.ghrobotics.lib.mathematics.units.meters
+import org.ghrobotics.lib.mathematics.units.nativeunit.DefaultNativeUnitModel
 import org.ghrobotics.lib.mathematics.units.operations.div
 import org.ghrobotics.lib.mathematics.units.seconds
+import org.ghrobotics.lib.motors.ctre.falconFX
 import org.ghrobotics.lib.subsystems.drive.swerve.AbstractSwerveDriveInputs
 import org.ghrobotics.lib.subsystems.drive.swerve.SwerveDriveIO
 import org.ghrobotics.lib.utils.Source
@@ -36,6 +38,10 @@ class SwerveDriveIOSim : SwerveDriveIO {
                 MountPoseConfigs().withMountPoseYaw(-90.0)
             )
         )
+    }
+
+    val falcon = falconFX(34, DefaultNativeUnitModel) {
+
     }
 
     private val moduleConstants = listOf(

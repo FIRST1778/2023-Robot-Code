@@ -158,12 +158,15 @@ object Drive : FalconSwerveDrivetrain(), Sendable {
 
         field.robotPose = robotPosition
 
+        Logger.recordOutput("Robot Pose Struct", Pose2d.struct, robotPosition)
+
 
         Logger.recordOutput(
             "Robot Position", doubleArrayOf(
                 robotPosition.translation.x, robotPosition.translation.y, robotPosition.rotation.radians
             )
         )
+
         Logger.recordOutput(
             "Swerve Drive States", listOf(
                 swerveDriveInputs.states[0].angle.radians,

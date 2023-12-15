@@ -89,6 +89,7 @@ object Wrist : FalconSubsystem() {
 
     //TODO Get angle offset for gravity/feedforward
     val angleOffset: SIUnit<Radian> = 36.0.degrees
+
     @Suppress("UsePropertyAccessSyntax")
     private fun angleControl() {
 
@@ -127,6 +128,8 @@ object Wrist : FalconSubsystem() {
         io.brakeMode = brakeMode
     }
 
+    var angle = 0.0
+
     override fun periodic() {
         try {
             angleControl()
@@ -140,9 +143,22 @@ object Wrist : FalconSubsystem() {
         val wristPose3d = Pose3d(
             Translation3d(-0.255, 0.0, 0.3175), Rotation3d(90.degrees.value, 0.0, getCurrentAngle().value)
         )
+//        angle += 0.01
+//        val wristPose3d = Pose3d(
+//            Translation3d(-0.255, 0.0, 0.3175),
+//            Rotation3d(
+//                0.0,
+//                0.0,
+//                angle % (2 * PI)
+//            )
+//        )
+
+        Logger.recordOutput("Wrist Pose", Pose3d.struct, wristPose3d)
+
+
 
         Logger.recordOutput(
-            "Wrist Pose", doubleArrayOf(
+            "Wrist Pose Array", doubleArrayOf(
                 wristPose3d.translation.x,
                 wristPose3d.translation.y,
                 wristPose3d.translation.z,

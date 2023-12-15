@@ -58,6 +58,12 @@ class WristIOSparkMax() : WristIO {
         encoder.resetPosition(90.degrees)
     }
 
+    init {
+        angleMotor.canSparkMax.let{
+
+        }
+    }
+
     val encoder = ShooterAbsoluteEncoder(angleMotor.canSparkMax, NativeUnitRotationModel(1.nativeUnits)).apply {
         setInverted(true)
         resetPosition((210.75 - 90.0).degrees)
