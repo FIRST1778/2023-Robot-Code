@@ -1,0 +1,78 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.5084016094780255,
+        "y": 4.585618643419883
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.340949126900717,
+        "y": 4.586403445836859
+      },
+      "isLocked": false
+    },
+    {
+      "anchor": {
+        "x": 3.9102433809751087,
+        "y": 4.585618643419883
+      },
+      "prevControl": {
+        "x": 4.523188194773319,
+        "y": 4.585618643419883
+      },
+      "nextControl": {
+        "x": 3.2355513611203133,
+        "y": 4.585618643419883
+      },
+      "isLocked": false
+    },
+    {
+      "anchor": {
+        "x": 1.832093706983419,
+        "y": 4.414086773965274
+      },
+      "prevControl": {
+        "x": 3.135735914838448,
+        "y": 4.642795933238086
+      },
+      "nextControl": null,
+      "isLocked": false
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Angle Shooter",
+      "waypointRelativePos": 0.45,
+      "command": {
+        "type": "sequential",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Angle To Second Position"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.75,
+    "maxAcceleration": 3.125,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0
+  },
+  "reversed": false,
+  "folder": "Auto Left",
+  "previewStartingState": null
+}

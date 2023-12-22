@@ -1,0 +1,45 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 5.537182087202976,
+        "y": 3.373460099273978
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 4.824363044347352,
+        "y": 3.373460099273978
+      },
+      "isLocked": false
+    },
+    {
+      "anchor": {
+        "x": 3.8904761404387282,
+        "y": 3.373460099273978
+      },
+      "prevControl": {
+        "x": 4.850144504002773,
+        "y": 3.373460099273978
+      },
+      "nextControl": null,
+      "isLocked": false
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.75,
+    "maxAcceleration": 3.125,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0
+  },
+  "reversed": false,
+  "folder": "Charge Station",
+  "previewStartingState": null
+}
