@@ -64,8 +64,8 @@ object Constants {
         )
         val topLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Left Swerve"
-            kDriveTalonId = 6
-            kAzimuthTalonId = 5
+            kDriveId = 6
+            kAzimuthId = 5
             kCanCoderId = 10
 
             kCanCoderNativeUnitModel = NativeUnitRotationModel(2048.nativeUnits)
@@ -98,8 +98,8 @@ object Constants {
         }
         val topRightSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Top Right Swerve"
-            kDriveTalonId = 8
-            kAzimuthTalonId = 7
+            kDriveId = 8
+            kAzimuthId = 7
             kCanCoderId = 11
 
             kCanCoderNativeUnitModel = NativeUnitRotationModel(2048.nativeUnits)
@@ -131,8 +131,8 @@ object Constants {
         }
         val bottomRightSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Bottom Right Swerve"
-            kDriveTalonId = 2
-            kAzimuthTalonId = 1
+            kDriveId = 2
+            kAzimuthId = 1
             kCanCoderId = 12
 
             kCanCoderNativeUnitModel = NativeUnitRotationModel(2048.nativeUnits)
@@ -165,8 +165,8 @@ object Constants {
         }
         val bottomLeftSwerveModuleConstants = SwerveModuleConstants().apply {
             kName = "Bottom Left Swerve"
-            kDriveTalonId = 4
-            kAzimuthTalonId = 3
+            kDriveId = 4
+            kAzimuthId = 3
             kCanCoderId = 13
 
             kCanCoderNativeUnitModel = NativeUnitRotationModel(2048.nativeUnits)

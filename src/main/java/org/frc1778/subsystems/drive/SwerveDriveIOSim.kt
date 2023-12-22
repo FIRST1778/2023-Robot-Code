@@ -60,8 +60,8 @@ class SwerveDriveIOSim : SwerveDriveIO {
     )
 
     private fun SwerveModuleConstants.withSwerveConstants(constants: org.ghrobotics.lib.subsystems.drive.swerve.SwerveModuleConstants): SwerveModuleConstants =
-        this.withDriveMotorId(constants.kDriveTalonId)
-            .withSteerMotorId(constants.kAzimuthTalonId)
+        this.withDriveMotorId(constants.kDriveId)
+            .withSteerMotorId(constants.kAzimuthId)
             .withFeedbackSource(SwerveModuleConstants.SwerveModuleSteerFeedbackType.RemoteCANcoder)
             .withSpeedAt12VoltsMps(Constants.DriveConstants.maxSpeed.value)
             .withCANcoderOffset(constants.kAzimuthEncoderHomeOffset / 360)

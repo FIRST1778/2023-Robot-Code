@@ -10,7 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState
 import org.frc1778.Constants
 import org.frc1778.subsystems.Gyro
 import org.frc1778.subsystems.drive.Drive.positions
-import org.ghrobotics.lib.FalconNeoSwerveModule
+import org.ghrobotics.lib.FalconTalonNeoSwerveModule
 import org.ghrobotics.lib.mathematics.units.amps
 import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.derived.volts
@@ -21,12 +21,12 @@ import org.ghrobotics.lib.subsystems.drive.swerve.AbstractSwerveDriveInputs
 import org.ghrobotics.lib.subsystems.drive.swerve.SwerveDriveIO
 import org.ghrobotics.lib.utils.Source
 
-class SwerveDriveIOSparkMax : SwerveDriveIO {
-    val modules: List<FalconNeoSwerveModule> = listOf(
-        FalconNeoSwerveModule(Constants.DriveConstants.topLeftSwerveModuleConstants),
-        FalconNeoSwerveModule(Constants.DriveConstants.topRightSwerveModuleConstants),
-        FalconNeoSwerveModule(Constants.DriveConstants.bottomRightSwerveModuleConstants),
-        FalconNeoSwerveModule(Constants.DriveConstants.bottomLeftSwerveModuleConstants),
+class SwerveDriveIOPhoenix : SwerveDriveIO {
+    val modules = listOf(
+        FalconTalonNeoSwerveModule(Constants.DriveConstants.topLeftSwerveModuleConstants),
+        FalconTalonNeoSwerveModule(Constants.DriveConstants.topRightSwerveModuleConstants),
+        FalconTalonNeoSwerveModule(Constants.DriveConstants.bottomRightSwerveModuleConstants),
+        FalconTalonNeoSwerveModule(Constants.DriveConstants.bottomLeftSwerveModuleConstants),
     )
 
     /**

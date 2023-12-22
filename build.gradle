@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 plugins {
     id "java"
     id "org.jetbrains.kotlin.jvm" version "1.9.20"
-    id "edu.wpi.first.GradleRIO" version "2024.1.1-beta-3"
+    id "edu.wpi.first.GradleRIO" version "2024.1.1-beta-4"
     id "idea"
     id 'com.google.devtools.ksp' version '1.9.20-1.0.14'
 }
@@ -70,11 +70,10 @@ configurations.all {
     exclude group: "edu.wpi.first.wpilibj"
 }
 
-def autoLogBranch = "15fc84d16b"
-def falconLibraryBranch = "a21da4035c"
+def falconLibraryVersion = "2024.1.1-beta-4"
 
 dependencies {
-    implementation "com.github.FIRST1778:FalconLibrary:$falconLibraryBranch"
+    implementation "com.github.FIRST1778:FalconLibrary:$falconLibraryVersion"
 
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
@@ -100,8 +99,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
 
-    // I want to replace this with Falcon Library
-    ksp "com.github.FIRST1778:FalconLibrary:$falconLibraryBranch"
+    ksp "com.github.FIRST1778:FalconLibrary:$falconLibraryVersion"
 
 
 }
